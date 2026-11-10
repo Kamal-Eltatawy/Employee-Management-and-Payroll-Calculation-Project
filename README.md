@@ -49,6 +49,15 @@ Copy-Item .env.example .env     # once, then set the values
 # or: docker compose up --build  (the "urls" service prints the addresses once everything is healthy)
 ```
 
+### Or the images built by CI
+
+Every push to `main` publishes `ghcr.io/<owner>/<repo>-api` and `-web` (tags `latest` and the commit SHA) to GitHub Container Registry. To run exactly what CI tested, without .NET or Node on the machine:
+
+```powershell
+# in .env: IMAGE_PREFIX=ghcr.io/<owner>/<repo>   (lower-case)
+.\start.ps1 -FromRegistry
+```
+
 | What | Address |
 |---|---|
 | App, English | http://localhost:8080/en/ |
@@ -77,7 +86,7 @@ In Swagger: call `POST /api/auth/login`, click **Authorize**, paste the `accessT
 
 ### Tests
 
-GitHub Actions (`.github/workflows/ci.yml`) runs on every push and pull request: .NET build with warnings as errors, all unit and integration tests (Testcontainers SQL Server), the Angular build in both languages with its tests, and the Docker image build.
+GitHub Actions (`.github/workflows/ci.yml`) runs on every push and pull request: .NET build with warnings as errors, all unit and integration tests (Testcontainers SQL Server), the Angular build in both languages with its tests, and the Docker image build. On `main` the images are also published to GitHub Container Registry.
 
 ```powershell
 dotnet test --solution Payroll.slnx          # all .NET tests (integration tests need Docker running)

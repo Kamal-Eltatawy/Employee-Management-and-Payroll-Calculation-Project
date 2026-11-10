@@ -57,15 +57,45 @@ jobs:
         run: npx ng test --watch=false
 
   docker:
-    name: Docker images
+    name: Docker images (published to GHCR from main)
     runs-on: ubuntu-latest
     needs: [backend, frontend]
+    permissions:
+      contents: read
+      packages: write
     steps:
       - uses: actions/checkout@v4
 
-      # docker-compose.yml requires the variables from .env; the example values are enough to build the images.
-      - name: Use the example environment
-        run: cp .env.example .env
+      # Image names must be lower-case: ghcr.io/<owner>/<repo>-api and -web.
+      - name: Image names
+        run: echo "IMAGE_PREFIX=ghcr.io/${GITHUB_REPOSITORY,,}" >> "$GITHUB_ENV"
 
-      - name: Build the api and web images
-        run: docker compose build api web
+      - uses: docker/setup-buildx-action@v3
+
+      # Pull requests only build; a push to main also publishes (D64).
+      - name: Log in to GitHub Container Registry
+        if: github.event_name == 'push'
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: API image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: src/Payroll.Api/Dockerfile
+          push: ${{ github.event_name == 'push' }}
+          tags: |
+            ${{ env.IMAGE_PREFIX }}-api:latest
+            ${{ env.IMAGE_PREFIX }}-api:${{ github.sha }}
+
+      - name: Web image (Angular en + ar behind nginx)
+        uses: docker/build-push-action@v6
+        with:
+          context: client
+          push: ${{ github.event_name == 'push' }}
+          tags: |
+            ${{ env.IMAGE_PREFIX }}-web:latest
+            ${{ env.IMAGE_PREFIX }}-web:${{ github.sha }}

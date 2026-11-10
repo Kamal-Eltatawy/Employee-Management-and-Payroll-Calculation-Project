@@ -57,7 +57,7 @@
 
 ## Next action
 
-1. **Kamal**: commit + push `.github/workflows/ci.yml`, README, spec, PROGRESS; check the Actions tab: three green jobs. Then the project is complete.
+1. **Kamal**: commit + push; after CI, make the two packages public (or `docker login ghcr.io`), set `IMAGE_PREFIX` in `.env`, run `.\start.ps1 -FromRegistry`.
 
 (All previous commits are done. The git history is clean up to `a1284f3`.)
 
@@ -94,4 +94,5 @@
   - Kamal's run: build green, migration `AddRefreshTokenRotation` created, 284/285 tests. The failure: the option property was `ReuseGraceSeconds` while config/spec use `Auth:RefreshReuseGraceSeconds`, so the test's 0 never bound. Renamed the property to `RefreshReuseGraceSeconds`.
   - Final check against the assessment PDF: every required task covered; added an explicit rounding-rule assumption and a 6–8 h scope note to the README, completed `ai-usage/README.md` (exact skills, CLAUDE.md, tools) and the session-2 transcript. Only bonus item not done: CI (dropped by Kamal).
   - Kamal pushed the repository to his personal GitHub. **D63:** `.github/workflows/ci.yml` (backend build + all tests, frontend build en/ar + tests, Docker image build). README and spec updated.
+  - CI green on GitHub (Kamal). **D64:** images published to GHCR on push to main; `docker-compose.prod.yml`; `start.ps1 -FromRegistry`; `IMAGE_PREFIX`/`IMAGE_TAG` in `.env.example`.
   - NuGet audit (warnings as errors) flagged transitive `System.Security.Cryptography.Pkcs` 9.0.11 (via Microsoft.Data.SqlClient). Fixed with `CentralPackageTransitivePinningEnabled` + a pin to 10.0.14 in `Directory.Packages.props`.

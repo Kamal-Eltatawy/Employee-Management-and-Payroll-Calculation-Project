@@ -1,0 +1,13 @@
+# Runs the images published by CI (GitHub Container Registry) instead of building them locally (D64).
+# Usage (IMAGE_PREFIX in .env, e.g. ghcr.io/your-user/your-repo):
+#   docker compose -f docker-compose.yml -f docker-compose.prod.yml pull api web
+#   docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --no-build
+# or simply:  .\start.ps1 -FromRegistry
+services:
+  api:
+    image: ${IMAGE_PREFIX:?Set IMAGE_PREFIX in .env (see .env.example)}-api:${IMAGE_TAG:-latest}
+    pull_policy: always
+
+  web:
+    image: ${IMAGE_PREFIX:?Set IMAGE_PREFIX in .env (see .env.example)}-web:${IMAGE_TAG:-latest}
+    pull_policy: always
