@@ -33,7 +33,7 @@
 
 | Phase (master plan numbering) | Status |
 |---|---|
-| 1 Setup & skeleton | **in progress** (see below) |
+| 1 Setup & skeleton | **done** (waiting for Kamal's last commit) |
 | 2 Employee CRUD backend + tests | todo |
 | 3 Payroll backend + tests | todo |
 | 4 Angular client + logic tests | todo |
@@ -51,14 +51,13 @@
 | 2 Package pins | done (Kamal to commit) |
 | 3 Skeleton | done, build green (Kamal to commit) |
 | 4 Error handling | **done**: build green, 22/22 tests pass |
-| 5 Host / `.env` / compose | code written; build OK. **Docker Desktop was not running**: re-run `docker compose up -d db` after starting it, then `dotnet run` + `/swagger` + a 404 problem+json check |
+| 5 Host / `.env` / compose | **done**: db container up, API on :5080, unknown route → 404 problem+json with `traceId` |
 | 6 Angular scaffold | **done**: `ng serve` runs on Kamal's machine (Node 26.13.0) |
 
 ## Next action
 
-1. **Kamal** starts Docker Desktop, then runs the Task 5 checks (`docker compose up -d db`, `dotnet run`, `/swagger`, a 404 returned as problem+json). Then Kamal commits `src tests docker-compose.yml .env.example`.
-2. **Kamal** commits `client` + `docs/plans/PROGRESS.md` (client verified running).
-3. **Claude** moves on to Phase 2 (Employee CRUD backend + tests), after Kamal pastes the Phase 1 output.
+1. **Kamal** commits `src tests docker-compose.yml .env.example docs/plans/PROGRESS.md` (Phase 1 complete; client already committed in `a07590e4`).
+2. **Claude** starts Phase 2 (Employee CRUD backend + tests).
 
 (All previous commits are done. The git history is clean up to `a1284f3`.)
 
