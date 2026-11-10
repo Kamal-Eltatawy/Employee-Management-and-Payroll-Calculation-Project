@@ -33,20 +33,20 @@ public sealed class TaxScheme
 
     public TaxMethod Method { get; private set; }
 
-    /// <summary>The bracket shape each method needs. Generic bracket rules live in <see cref="PayrollPolicy"/>.</summary>
+    /// <summary>The bracket shape each method needs, or null when it fits. Generic bracket rules live in <see cref="PayrollPolicy"/>.</summary>
+    public string? DescribeBracketShapeProblem(int bracketCount) => Method switch
+    {
+        TaxMethod.Progressive when bracketCount == 0 => "A progressive tax needs at least one tax bracket.",
+        TaxMethod.Flat when bracketCount != 1 => "A flat tax needs exactly one open-ended tax bracket holding its rate.",
+        TaxMethod.Exempt when bracketCount != 0 => "A tax-exempt scheme has no tax brackets.",
+        _ => null,
+    };
+
     public void EnsureBracketsFit(IReadOnlyList<TaxBracketDefinition> brackets)
     {
-        var message = Method switch
+        if (DescribeBracketShapeProblem(brackets.Count) is { } problem)
         {
-            TaxMethod.Progressive when brackets.Count == 0 => "A progressive tax needs at least one tax bracket.",
-            TaxMethod.Flat when brackets.Count != 1 => "A flat tax needs exactly one open-ended tax bracket holding its rate.",
-            TaxMethod.Exempt when brackets.Count != 0 => "A tax-exempt scheme has no tax brackets.",
-            _ => null,
-        };
-
-        if (message is not null)
-        {
-            throw new DomainException(message);
+            throw new DomainException(problem);
         }
     }
 }

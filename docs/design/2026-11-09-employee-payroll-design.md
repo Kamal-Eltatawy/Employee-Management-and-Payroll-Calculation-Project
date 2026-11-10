@@ -295,7 +295,7 @@ Methods: `Rename(name)`, `SetTaxable(bool)`. The second throws if the type is a 
 | `InsuranceCap?` | `null` = no cap; otherwise ≥ 0 (a cap of 0 is a valid "0 insurance" cap, not "no cap") |
 | `TaxBrackets` | ≥ 1; ordered by `SortOrder`; `UpperBound` strictly ascending and > 0; **exactly the last** has `UpperBound = null`; `RatePercent` 0–100 |
 
-- **Immutability (D31):** `EnsureModifiable(PayrollMonth currentMonth)` is called before any update or delete. A policy whose `EffectiveFrom` ≤ the first day of the current month is **in effect or past**, so changing or deleting it throws `DomainException` (→ 409, see §9).
+- **Immutability (D31, refined by D54):** `EnsureModifiable(PayrollMonth currentMonth)` is called before any update or delete. A policy whose `EffectiveFrom` < the first day of the current month covers **closed months**, so changing or deleting it is rejected (→ 409, see §9). The current month stays open for corrections.
 - **Why `UpperBound + Rate` (D27):** each bracket's lower bound is the previous bracket's upper bound, so gaps and overlaps cannot be represented at all.
 
 ### 6.6 Value objects
@@ -456,8 +456,8 @@ All routes are prefixed with `/api`.
 | `DELETE /pay-component-types/{id}` | `Hr` | 409 if any employee record references it, including deleted ones (D7) |
 | `GET /payroll-policies`, `GET /payroll-policies/{id}` | `Hr` | |
 | `GET /payroll-policies/effective?month=yyyy-MM` | `Hr` | 422 if none |
-| `POST /payroll-policies` `{ effectiveFrom, insuranceRatePercent, insuranceCap?, taxBrackets: [ { upperBound?, ratePercent } ] }` | `Hr` | `effectiveFrom` must be the 1st of a month **after** the current month |
-| `PUT /payroll-policies/{id}`, `DELETE /payroll-policies/{id}` | `Hr` | only for future policies, otherwise 409 (D31) |
+| `POST /payroll-policies` `{ taxSchemeId, effectiveFrom, insuranceRatePercent, insuranceCap?, taxBrackets: [ { upperBound?, ratePercent } ] }` | `Hr` | `effectiveFrom` must be the 1st of the **current month or later** (D54) |
+| `PUT /payroll-policies/{id}`, `DELETE /payroll-policies/{id}` | `Hr` | only for policies starting in the current month or later, otherwise 409 (D31/D54) |
 | `GET /health` | anonymous | outside `/api` (§16) |
 
 ---
@@ -1005,3 +1005,4 @@ Each phase ends in a **working, buildable state** that Kamal can commit (D10, D5
 | D51 | TDD inside every phase; the separate backend-tests phase is dissolved (updates D10 / §18) | Active (relaxed by D52) |
 | D52 | Deadline = 2026-11-10. **Fast mode, full scope:** no more per-phase detailed plans; each phase is written in one batch (code + tests together); Kamal runs build + test once per phase; questions only for genuinely undecided points | Active |
 | D53 | **Tax schemes per employee.** `TaxScheme` (Name, `TaxMethod`: Progressive / Flat / Exempt) is seeded master data with `GET /tax-schemes`; every `Employee` has a required `TaxSchemeId`; every `PayrollPolicy` belongs to one scheme (unique `TaxSchemeId + EffectiveFrom`), and the effective policy is chosen per the employee's scheme (refines D29/D30). `ITaxCalculator` exposes `Method`; all implementations (`ProgressiveTaxCalculator`, `FlatTaxCalculator`, `ExemptTaxCalculator`) are registered and `PayrollCalculator` receives `IEnumerable<ITaxCalculator>` and picks by the scheme's method (strategy, refines D38). Bracket shape per method: Progressive ≥ 1, Flat exactly one open bracket (its rate), Exempt none. Payslip and policy responses carry the scheme. Existing employees default to Standard. Seed: Standard (v1/v2), Flat Rate 15 %, Tax Exempt. | Active |
+| D54 | **Past months are closed; the current month stays open** (refines D31, Kamal: a mistake found mid-month must not force wrong salaries). A policy can be created, changed or deleted while its `EffectiveFrom` ≥ the first day of the current month (server local date); a policy that started in an earlier month returns 409 on update/delete. To correct a long-running policy for the current month, create a new policy effective from the 1st of this month. Assumption: payroll is paid at month end, so the current month is not yet final. A manual "close payroll month" is a next step. | Active |

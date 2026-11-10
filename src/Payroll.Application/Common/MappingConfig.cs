@@ -1,9 +1,11 @@
 using Mapster;
 using Payroll.Application.Departments;
 using Payroll.Application.Employees;
+using Payroll.Application.PayComponents;
 using Payroll.Application.Payroll;
 using Payroll.Domain.Departments;
 using Payroll.Domain.Employees;
+using Payroll.Domain.PayComponents;
 using Payroll.Domain.Payroll;
 
 namespace Payroll.Application.Common;
@@ -29,6 +31,7 @@ public static class MappingConfig
             .Map(dest => dest.IsTaxable, src => src.PayComponentType!.IsTaxable);
 
         config.NewConfig<Department, DepartmentResponse>();
+        config.NewConfig<PayComponentType, PayComponentTypeResponse>();
 
         config.NewConfig<PayslipLine, PayslipLineResponse>();
         config.NewConfig<Payslip, PayslipResponse>()

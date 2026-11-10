@@ -2,7 +2,10 @@ using Payroll.Domain.Common;
 
 namespace Payroll.Domain.Payroll;
 
-/// <summary>Effective-dated tax brackets + social insurance settings of one tax scheme (D29/D30/D53). Append-only once in effect (D31).</summary>
+/// <summary>
+/// Effective-dated tax brackets + social insurance settings of one tax scheme (D29/D30/D53).
+/// Past months are closed: a policy can change only while it starts in the current month or later (D31 as refined by D54).
+/// </summary>
 public sealed class PayrollPolicy
 {
     private readonly List<TaxBracket> _taxBrackets = [];
@@ -44,16 +47,26 @@ public sealed class PayrollPolicy
         }
 
         EnsureModifiable(currentMonth);
+        if (effectiveFrom < currentMonth.FirstDay)
+        {
+            throw new DomainException("A payroll policy cannot be moved into a closed (past) month.");
+        }
+
         Apply(taxScheme, effectiveFrom, insuranceRatePercent, insuranceCap, taxBrackets);
     }
 
-    /// <summary>A policy already in effect (or in the past) must not change, so payslips stay reproducible (D31).</summary>
+    /// <summary>
+    /// The current month is still open, so a mistake can be corrected before payroll is paid at month end (D54).
+    /// A policy that started in an earlier month has produced closed payslips and must not change (D31).
+    /// </summary>
+    public bool IsModifiable(PayrollMonth currentMonth) => EffectiveFrom >= currentMonth.FirstDay;
+
     public void EnsureModifiable(PayrollMonth currentMonth)
     {
-        if (EffectiveFrom <= currentMonth.FirstDay)
+        if (!IsModifiable(currentMonth))
         {
             throw new DomainException(
-                $"The payroll policy effective from {EffectiveFrom:yyyy-MM-dd} is already in effect and cannot be changed.");
+                $"The payroll policy effective from {EffectiveFrom:yyyy-MM-dd} covers closed months and cannot be changed.");
         }
     }
 

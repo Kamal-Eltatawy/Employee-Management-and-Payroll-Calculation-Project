@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Payroll.Application.Common;
 using Payroll.Application.Departments;
 using Payroll.Application.Employees;
+using Payroll.Application.PayComponents;
 using Payroll.Application.Payroll;
 using Payroll.Domain.Payroll;
 
@@ -23,6 +24,7 @@ public static class DependencyInjection
         services.AddScoped<IPayslipService, PayslipService>();
         services.AddScoped<IPayrollPolicyService, PayrollPolicyService>();
         services.AddScoped<ITaxSchemeService, TaxSchemeService>();
+        services.AddScoped<IPayComponentTypeService, PayComponentTypeService>();
 
         // Domain calculators: pure and stateless.
         services.AddSingleton<IProrationCalculator, CalendarDayProrationCalculator>();

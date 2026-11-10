@@ -16,8 +16,10 @@ public sealed class ApiExceptionHandler(
         var problem = ToProblem(exception);
         if (problem.Status == StatusCodes.Status500InternalServerError)
         {
-            logger.LogError(exception, "Unhandled exception for {Method} {Path}",
-                httpContext.Request.Method, httpContext.Request.Path);
+            // Logged once, here, with the same traceId the client receives (§16).
+            logger.LogError(exception, "Unhandled exception for {Method} {Path} (traceId {TraceId})",
+                httpContext.Request.Method, httpContext.Request.Path,
+                System.Diagnostics.Activity.Current?.Id ?? httpContext.TraceIdentifier);
         }
 
         httpContext.Response.StatusCode = problem.Status!.Value;

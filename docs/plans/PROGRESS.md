@@ -35,10 +35,10 @@
 |---|---|
 | 1 Setup & skeleton | **done** (waiting for Kamal's last commit) |
 | 2 Employee CRUD backend + tests | **done** (112 tests; Swagger verified). Note: a local Windows SQL Server owns 1433, so compose maps **host 14333** → 1433 and `.env` uses `localhost,14333` |
-| 3 Payroll backend + tests (+ D53 tax schemes) | build OK, migrations `AddPayrollPolicies` + `AddPayrollPoliciesAndTaxSchemes` applied on a fresh DB, API runs; **waiting for test result + Swagger payslip checks + commit** |
-| 4 Angular client + logic tests | todo |
-| 5 Admin APIs (types CRUD + policy writes) + tests | todo |
-| 6 Health + JSON logging | todo |
+| 3 Payroll backend + tests (+ D53 tax schemes) | **done** (Swagger: spec example net 15,950; tax schemes listed) |
+| 4 Angular client + logic tests | **done** (Kamal checked the UI; 23 client tests incl. interceptor) |
+| 5 Admin APIs (types CRUD + policy writes) + tests | code + tests written (+ D54, model-state error shape); **waiting for Kamal's build/test** |
+| 6 Health + JSON logging | code written (`/health` with `AddDbContextCheck<AppDbContext>`, `AddJsonConsole`, 500 logged with traceId); **waiting for Kamal's run check** |
 | 7 Identity + JWT (backend + client) + tests | todo |
 | 8 README + `/ai-usage` | todo |
 | 9–10 *(optional)* integration tests, Docker + CI | only if time remains |
@@ -56,8 +56,8 @@
 
 ## Next action
 
-1. **Kamal** runs the Phase 3 block: `dotnet build`, `dotnet test`, `dotnet ef migrations add AddPayrollPoliciesAndTaxSchemes ...`, `dotnet run`, Swagger: payslip of employee 1 for 2026-03 → net 15950; employee 5 (inactive) → 422; `month=2026-3` → 400; `/api/payroll-policies` → v1 + v2.
-2. **Claude** fixes what the output shows, then Phase 4 (Angular).
+1. **Kamal**: `dotnet build` + `dotnet test` (Phase 5), quick Swagger check (POST a future policy, PUT/DELETE policy 1 → 409, DELETE pay component type 1 → 409), commit Phases 4 + 5.
+2. **Claude**: Phase 6 (health + JSON logging), then Phase 7 (Identity + JWT), Phase 8 (README + ai-usage).
 
 (All previous commits are done. The git history is clean up to `a1284f3`.)
 
@@ -76,4 +76,9 @@
   - Phase 2 verified by Kamal (build, 112 tests, migration, Swagger checks all OK).
   - Phase 3 written: Domain `Payroll/` (`PayrollMonth`, `PayrollPolicy` + `TaxBracket` with in-place bracket replacement, the 4 calculators in `Calculators.cs`, `Payslip`), `Employee.EnsureEligibleForPayslip`; Application `IPayrollPolicyRepository`, `PayslipService` (S11 order, missing month → current month, malformed → 400 on `month`), `PayrollPolicyService` (read side only; writes come in Phase 5, interface extended then), `ClockExtensions.CurrentMonth`, Mapster `Payslip → PayslipResponse`; Infrastructure policy/bracket configurations + `HasData` v1/v2 + `PayrollPolicyRepository`; Api `PayslipController`, `PayrollPoliciesController` (GET). Tests for all of it. Ownership check (S7) is added in Phase 7.
   - **D53 (Kamal): tax schemes per employee + tax method strategies.** `TaxScheme`/`TaxMethod` (Domain), `Employee.TaxSchemeId` (ctor/UpdateDetails take `taxSchemeId` after `departmentId`), `PayrollPolicy(TaxScheme, ...)` + `Replace(TaxScheme, ...)`, `ITaxCalculator.Method` + `FlatTaxCalculator` + `ExemptTaxCalculator`, `PayrollCalculator(IEnumerable<ITaxCalculator>, ...)`; DTOs: requests + `EmployeeResponse` (`TaxSchemeId`, `TaxSchemeName`), `PayslipResponse` (`TaxSchemeName`, `TaxMethod`), policy request/response (`TaxSchemeId`); repo methods take `taxSchemeId`; `GET /api/tax-schemes`; `GET /api/payroll-policies/effective?taxSchemeId=&month=`. Seed: schemes 1 Standard, 2 Flat Rate (15 %), 3 Tax Exempt; demo Omar → Exempt, Mona → Flat. **Phase 4 must add a tax scheme dropdown to the employee form and show the scheme on the payslip.**
+  - Phase 4 written: core (`api-error`, `problemDetailsInterceptor`, `NotificationService` + toasts), shared (`MoneyPipe` halfExpand, `notInFuture`, `maxTwoDecimals`, `noDuplicateType`, `applyServerErrors`, field-errors, pagination, native `<dialog>` confirm), employees (list with URL filters/sort/paging/delete, create/edit form with tax scheme dropdown + pay-components FormArray + rowVersion + server error mapping), payslip page (month in URL, scheme shown, negative-net and 422 banners). `tsconfig` now has `strict` + `strictTemplates`. Backend: read-only `GET /api/pay-component-types` (+ `{id}`) added early for the form; writes stay in Phase 5. Auth parts of the client wait for Phase 7.
+  - Client: a dev-proxy 502/503/504 without a problem body now reads "The server cannot be reached."; interceptor spec added (502 → toast, 4xx → no toast).
+  - Phase 5 written: `PayComponentTypeService` create/update/delete (+ validators; taxable deduction → 400 on `isTaxable`, also on update against the stored kind; duplicate name → 409 `errors.name`; in use incl. deleted employees → 409); `PayrollPolicyService` create/update/delete (`PayrollPolicyRequestValidator`: 1st of a future month, rates 0–100, cap ≥ 0, bracket order/open-last on `taxBrackets[i].upperBound`; service: unknown scheme → 400, bracket shape vs. method → 400 on `taxBrackets` via `TaxScheme.DescribeBracketShapeProblem`, duplicate date in scheme → 409 `errors.effectiveFrom`, in effect → 409, moving scheme → 400); `PayrollPolicy.IsModifiable`; controllers POST/PUT/DELETE.
+  - **D54 (Kamal):** past months closed, current month open. `PayrollPolicy.IsModifiable` = `EffectiveFrom >= currentMonth.FirstDay`; validator allows the current month; `Replace` cannot move into a closed month; 409 message explains the correction path. Tests updated.
+  - Model-binding/JSON errors now use `ModelStateErrors` (`InvalidModelStateResponseFactory`): keys `$.x` → `x` camelCase, `$` → `body`, no internal type names, traceId kept (§9). Found by Kamal posting `"2026-11-1"`.
   - NuGet audit (warnings as errors) flagged transitive `System.Security.Cryptography.Pkcs` 9.0.11 (via Microsoft.Data.SqlClient). Fixed with `CentralPackageTransitivePinningEnabled` + a pin to 10.0.14 in `Directory.Packages.props`.

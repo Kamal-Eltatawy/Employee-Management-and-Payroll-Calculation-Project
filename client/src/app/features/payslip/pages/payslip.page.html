@@ -1,0 +1,91 @@
+<div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
+  <h1 class="h3 mb-0">Payslip</h1>
+  <div class="d-flex align-items-center gap-2">
+    <label class="form-label mb-0" for="month">Month</label>
+    <input id="month" class="form-control" type="month" [value]="selectedMonth()" (change)="changeMonth(monthInput.value)" #monthInput />
+    <a class="btn btn-outline-secondary text-nowrap" routerLink="/employees">Back to list</a>
+  </div>
+</div>
+
+@if (warning()) {
+  <div class="alert alert-warning" role="alert">{{ warning() }}</div>
+}
+@if (error()) {
+  <div class="alert alert-danger" role="alert">{{ error() }}</div>
+}
+@if (loading() && !payslip()) {
+  <p class="text-body-secondary">Loading…</p>
+}
+
+@if (payslip(); as slip) {
+  @if (slip.isNetNegative) {
+    <div class="alert alert-danger" role="alert">
+      Deductions exceed earnings this month: the net pay is negative. Review the deductions before paying.
+    </div>
+  }
+
+  <article class="payslip card shadow-sm">
+    <header class="card-body border-bottom">
+      <div class="d-flex justify-content-between flex-wrap gap-2">
+        <div>
+          <h2 class="h4 mb-1">{{ slip.employeeName }}</h2>
+          <div class="text-body-secondary">Employee #{{ slip.employeeId }} · {{ slip.month }}</div>
+        </div>
+        <div class="text-md-end small text-body-secondary">
+          <div>Tax scheme: <strong class="text-body">{{ slip.taxSchemeName }}</strong> ({{ slip.taxMethod }})</div>
+          <div>Payroll policy effective from {{ slip.policyEffectiveFrom }}</div>
+          @if (slip.prorationFactor < 1) {
+            <div>Hire month: {{ slip.daysPaid }} of {{ slip.daysInMonth }} days paid</div>
+          }
+        </div>
+      </div>
+    </header>
+
+    <div class="card-body">
+      <div class="row g-4">
+        <section class="col-lg-6">
+          <h3 class="h6 text-uppercase text-body-secondary">Earnings</h3>
+          <table class="table table-sm mb-0">
+            <tbody>
+              <tr><td>Base salary</td><td class="amount">{{ slip.baseSalary | money }}</td></tr>
+              @for (line of slip.allowances; track line.name) {
+                <tr>
+                  <td>{{ line.name }} <span class="badge text-bg-light border">{{ line.isTaxable ? 'taxable' : 'non-taxable' }}</span></td>
+                  <td class="amount">{{ line.amount | money }}</td>
+                </tr>
+              }
+              <tr class="total"><td>Gross pay</td><td class="amount">{{ slip.grossPay | money }}</td></tr>
+              <tr class="text-body-secondary"><td>Taxable income</td><td class="amount">{{ slip.taxableIncome | money }}</td></tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section class="col-lg-6">
+          <h3 class="h6 text-uppercase text-body-secondary">Deductions</h3>
+          <table class="table table-sm mb-0">
+            <tbody>
+              <tr><td>Income tax</td><td class="amount">{{ slip.incomeTax | money }}</td></tr>
+              <tr><td>Social insurance</td><td class="amount">{{ slip.socialInsurance | money }}</td></tr>
+              @for (line of slip.deductions; track line.name) {
+                <tr><td>{{ line.name }}</td><td class="amount">{{ line.amount | money }}</td></tr>
+              }
+              <tr class="total">
+                <td>Total deductions</td>
+                <td class="amount">{{ slip.incomeTax + slip.socialInsurance + slip.otherDeductionsTotal | money }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+      </div>
+    </div>
+
+    <footer class="card-footer net d-flex justify-content-between align-items-center" [class.negative]="slip.isNetNegative">
+      <span class="fw-semibold">Net pay</span>
+      <span class="amount fs-4 fw-bold">{{ slip.netPay | money }}</span>
+    </footer>
+  </article>
+
+  <p class="small text-body-secondary mt-2">
+    Amounts are calculated at full precision and rounded to two decimals only for display, so lines may differ from the totals by 0.01.
+  </p>
+}

@@ -1,0 +1,85 @@
+<div class="d-flex align-items-center justify-content-between mb-3">
+  <h1 class="h3 mb-0">{{ isEdit ? 'Edit employee' : 'New employee' }}</h1>
+  <a class="btn btn-outline-secondary" routerLink="/employees">Back to list</a>
+</div>
+
+@if (formError()) {
+  <div class="alert alert-danger" role="alert">{{ formError() }}</div>
+}
+
+@if (loading()) {
+  <p class="text-body-secondary">Loading…</p>
+} @else {
+  <form class="card shadow-sm" [formGroup]="form" (ngSubmit)="save()" novalidate>
+    <div class="card-body">
+      <div class="row g-3">
+        <div class="col-md-6">
+          <label class="form-label" for="fullName">Full name</label>
+          <input id="fullName" class="form-control" formControlName="fullName" maxlength="100"
+                 [class.is-invalid]="form.controls.fullName.invalid && form.controls.fullName.touched" />
+          <app-field-errors [control]="form.controls.fullName" label="Full name" />
+        </div>
+        <div class="col-md-6">
+          <label class="form-label" for="email">Email</label>
+          <input id="email" class="form-control" type="email" formControlName="email"
+                 [class.is-invalid]="form.controls.email.invalid && form.controls.email.touched" />
+          <app-field-errors [control]="form.controls.email" label="Email" />
+        </div>
+        <div class="col-md-6">
+          <label class="form-label" for="jobTitle">Job title</label>
+          <input id="jobTitle" class="form-control" formControlName="jobTitle" maxlength="100"
+                 [class.is-invalid]="form.controls.jobTitle.invalid && form.controls.jobTitle.touched" />
+          <app-field-errors [control]="form.controls.jobTitle" label="Job title" />
+        </div>
+        <div class="col-md-6">
+          <label class="form-label" for="departmentId">Department</label>
+          <select id="departmentId" class="form-select" formControlName="departmentId"
+                  [class.is-invalid]="form.controls.departmentId.invalid && form.controls.departmentId.touched">
+            <option [ngValue]="0" disabled>Select a department…</option>
+            @for (department of departments(); track department.id) {
+              <option [ngValue]="department.id">{{ department.name }}</option>
+            }
+          </select>
+          <app-field-errors [control]="form.controls.departmentId" label="Department" />
+        </div>
+        <div class="col-md-4">
+          <label class="form-label" for="hireDate">Hire date</label>
+          <input id="hireDate" class="form-control" type="date" formControlName="hireDate"
+                 [class.is-invalid]="form.controls.hireDate.invalid && form.controls.hireDate.touched" />
+          <app-field-errors [control]="form.controls.hireDate" label="Hire date" />
+        </div>
+        <div class="col-md-4">
+          <label class="form-label" for="baseMonthlySalary">Base monthly salary</label>
+          <input id="baseMonthlySalary" class="form-control" type="number" min="0.01" step="0.01" formControlName="baseMonthlySalary"
+                 [class.is-invalid]="form.controls.baseMonthlySalary.invalid && form.controls.baseMonthlySalary.touched" />
+          <app-field-errors [control]="form.controls.baseMonthlySalary" label="Base monthly salary" />
+        </div>
+        <div class="col-md-4">
+          <label class="form-label" for="status">Status</label>
+          <select id="status" class="form-select" formControlName="status">
+            <option value="Active">Active</option>
+            <option value="Inactive">Inactive</option>
+          </select>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label" for="taxSchemeId">Tax scheme</label>
+          <select id="taxSchemeId" class="form-select" formControlName="taxSchemeId"
+                  [class.is-invalid]="form.controls.taxSchemeId.invalid && form.controls.taxSchemeId.touched">
+            @for (scheme of taxSchemes(); track scheme.id) {
+              <option [ngValue]="scheme.id">{{ scheme.name }} ({{ scheme.method }})</option>
+            }
+          </select>
+          <app-field-errors [control]="form.controls.taxSchemeId" label="Tax scheme" />
+        </div>
+      </div>
+
+      <hr class="my-4" />
+
+      <app-pay-components-editor [array]="form.controls.payComponents" [types]="payComponentTypes()" />
+    </div>
+    <div class="card-footer bg-white d-flex justify-content-end gap-2">
+      <a class="btn btn-outline-secondary" routerLink="/employees">Cancel</a>
+      <button type="submit" class="btn btn-primary" [disabled]="saving()">{{ saving() ? 'Saving…' : 'Save' }}</button>
+    </div>
+  </form>
+}

@@ -1,0 +1,19 @@
+.payslip .amount {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.payslip .total td {
+  font-weight: 600;
+  border-top: 2px solid var(--bs-border-color);
+}
+
+.payslip .net {
+  background: var(--bs-primary-bg-subtle);
+}
+
+.payslip .net.negative {
+  background: var(--bs-danger-bg-subtle);
+  color: var(--bs-danger-text-emphasis);
+}

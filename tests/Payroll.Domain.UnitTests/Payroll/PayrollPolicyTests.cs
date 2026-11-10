@@ -68,9 +68,9 @@ public sealed class PayrollPolicyTests
     }
 
     [Theory]
-    [InlineData(2026, 6)] // the policy's own month: in effect
-    [InlineData(2026, 7)] // a later month: past
-    public void In_effect_or_past_policy_cannot_be_modified(int year, int month)
+    [InlineData(2026, 7)] // its first month is closed
+    [InlineData(2027, 1)]
+    public void Policy_that_started_before_the_current_month_cannot_be_modified(int year, int month)
     {
         var policy = Create(effectiveFrom: new DateOnly(2026, 6, 1));
         var current = new PayrollMonth(year, month);
@@ -127,4 +127,20 @@ public sealed class PayrollPolicyTests
         Assert.Throws<DomainException>(() =>
             policy.Replace(PolicyBuilder.Flat, new DateOnly(2026, 6, 1), 11m, null, [new(null, 15m)], new PayrollMonth(2026, 5)));
     }
+
+    [Fact]
+    public void Policy_starting_in_the_current_month_can_still_be_corrected()
+    {
+        var policy = Create(effectiveFrom: new DateOnly(2026, 6, 1));
+        var current = new PayrollMonth(2026, 6);
+
+        Assert.True(policy.IsModifiable(current));
+        policy.Replace(PolicyBuilder.Standard, new DateOnly(2026, 6, 1), 10m, null, [new(null, 5m)], current);
+        Assert.Equal(10m, policy.InsuranceRatePercent);
+    }
+
+    [Fact]
+    public void Replace_cannot_move_a_policy_into_a_closed_month() =>
+        Assert.Throws<DomainException>(() => Create(effectiveFrom: new DateOnly(2026, 7, 1))
+            .Replace(PolicyBuilder.Standard, new DateOnly(2026, 5, 1), 10m, null, [new(null, 5m)], new PayrollMonth(2026, 6)));
 }
