@@ -1,9 +1,12 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Payroll.Api.Auth;
 using Payroll.Application.PayComponents;
 
 namespace Payroll.Api.Controllers;
 
 [ApiController]
+[Authorize(Policy = AuthPolicies.HrOnly)]
 [Route("api/pay-component-types")]
 public sealed class PayComponentTypesController(IPayComponentTypeService types) : ControllerBase
 {

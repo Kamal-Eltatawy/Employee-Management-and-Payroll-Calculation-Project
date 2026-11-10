@@ -1,9 +1,12 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Payroll.Api.Auth;
 using Payroll.Application.Payroll;
 
 namespace Payroll.Api.Controllers;
 
 [ApiController]
+[Authorize(Policy = AuthPolicies.HrOnly)]
 [Route("api/payroll-policies")]
 public sealed class PayrollPoliciesController(IPayrollPolicyService policies) : ControllerBase
 {

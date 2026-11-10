@@ -1,7 +1,9 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Payroll.Application.Abstractions;
+using Payroll.Infrastructure.Identity;
 using Payroll.Infrastructure.Persistence;
 using Payroll.Infrastructure.Repositories;
 using Payroll.Infrastructure.Seeding;
@@ -24,6 +26,15 @@ public static class DependencyInjection
         services.AddScoped<IPayrollPolicyRepository, PayrollPolicyRepository>();
         services.AddScoped<ITaxSchemeRepository, TaxSchemeRepository>();
         services.AddScoped<DevelopmentDataSeeder>();
+
+        // Identity (D24): users, roles and password hashing. No cookies: the API authenticates with JWT only.
+        services.AddIdentityCore<ApplicationUser>(options => options.User.RequireUniqueEmail = true)
+            .AddRoles<IdentityRole<int>>()
+            .AddEntityFrameworkStores<AppDbContext>();
+        services.AddOptions<JwtOptions>().Bind(configuration.GetSection(JwtOptions.SectionName));
+        services.AddScoped<IUserCredentialStore, IdentityCredentialStore>();
+        services.AddSingleton<ITokenGenerator, JwtTokenGenerator>();
+        services.AddScoped<IRefreshTokenStore, RefreshTokenStore>();
 
         return services;
     }

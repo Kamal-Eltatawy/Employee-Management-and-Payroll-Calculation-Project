@@ -1,15 +1,86 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Payroll.Application.Common;
 using Payroll.Domain.Employees;
+using Payroll.Infrastructure.Identity;
 using Payroll.Infrastructure.Persistence;
 using static Payroll.Infrastructure.Persistence.ReferenceData;
 
 namespace Payroll.Infrastructure.Seeding;
 
-/// <summary>Demo employees for Development only (S10). Idempotent: does nothing once any employee exists.</summary>
-public sealed class DevelopmentDataSeeder(AppDbContext db, TimeProvider clock)
+/// <summary>
+/// Demo data for Development only (S10), idempotent. Employees are added once; roles and users are added when missing.
+/// Passwords come from configuration (Seed__HrPassword, Seed__EmployeePassword in .env), never from code.
+/// </summary>
+public sealed class DevelopmentDataSeeder(
+    AppDbContext db,
+    TimeProvider clock,
+    UserManager<ApplicationUser> users,
+    RoleManager<IdentityRole<int>> roles,
+    IConfiguration configuration)
 {
+    public const string HrEmail = "hr@payroll.local";
+
     public async Task SeedAsync(CancellationToken ct)
+    {
+        await SeedEmployeesAsync(ct);
+        await SeedUsersAsync(ct);
+    }
+
+    private async Task SeedUsersAsync(CancellationToken ct)
+    {
+        foreach (var role in new[] { Roles.Hr, Roles.Employee })
+        {
+            if (!await roles.RoleExistsAsync(role))
+            {
+                EnsureSucceeded(await roles.CreateAsync(new IdentityRole<int>(role)), $"create role {role}");
+            }
+        }
+
+        var hrPassword = RequiredSetting("Seed:HrPassword");
+        var employeePassword = RequiredSetting("Seed:EmployeePassword");
+
+        await EnsureUserAsync(HrEmail, hrPassword, Roles.Hr, employeeId: null);
+
+        // Ali is Active (can log in); Youssef is Inactive (shows the D25 rule: login refused).
+        foreach (var email in new[] { "ali@demo.local", "youssef@demo.local" })
+        {
+            var employee = await db.Employees.IgnoreQueryFilters().SingleOrDefaultAsync(e => e.Email == email, ct);
+            if (employee is not null)
+            {
+                await EnsureUserAsync(email, employeePassword, Roles.Employee, employee.Id);
+            }
+        }
+    }
+
+    private async Task EnsureUserAsync(string email, string password, string role, int? employeeId)
+    {
+        if (await users.FindByEmailAsync(email) is not null)
+        {
+            return;
+        }
+
+        var user = new ApplicationUser { UserName = email, Email = email, EmailConfirmed = true, EmployeeId = employeeId };
+        EnsureSucceeded(await users.CreateAsync(user, password), $"create user {email}");
+        EnsureSucceeded(await users.AddToRoleAsync(user, role), $"add {email} to {role}");
+    }
+
+    private string RequiredSetting(string key) =>
+        configuration[key] is { Length: > 0 } value
+            ? value
+            : throw new InvalidOperationException($"{key.Replace(":", "__", StringComparison.Ordinal)} is missing. Set it in .env (see .env.example).");
+
+    private static void EnsureSucceeded(IdentityResult result, string action)
+    {
+        if (!result.Succeeded)
+        {
+            throw new InvalidOperationException(
+                $"Could not {action}: {string.Join(" ", result.Errors.Select(e => e.Description))}");
+        }
+    }
+
+    private async Task SeedEmployeesAsync(CancellationToken ct)
     {
         if (await db.Employees.IgnoreQueryFilters().AnyAsync(ct))
         {

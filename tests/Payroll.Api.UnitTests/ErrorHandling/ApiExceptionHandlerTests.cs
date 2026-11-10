@@ -62,6 +62,15 @@ public sealed class ApiExceptionHandlerTests
     }
 
     [Fact]
+    public async Task Unauthorized_exception_returns_401_with_a_generic_detail()
+    {
+        var (status, body) = await HandleAsync(new UnauthorizedException());
+
+        Assert.Equal(StatusCodes.Status401Unauthorized, status);
+        Assert.Equal("Invalid credentials.", body.GetProperty("detail").GetString());
+    }
+
+    [Fact]
     public async Task Forbidden_exception_returns_403()
     {
         var (status, body) = await HandleAsync(new ForbiddenException("You can only view your own payslip."));

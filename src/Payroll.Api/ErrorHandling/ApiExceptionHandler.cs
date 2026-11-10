@@ -47,6 +47,7 @@ public sealed class ApiExceptionHandler(
                 Detail = conflict.Message,
             },
         ConflictException conflict => Problem(StatusCodes.Status409Conflict, "Conflict.", conflict.Message),
+        UnauthorizedException unauthorized => Problem(StatusCodes.Status401Unauthorized, "Unauthorized.", unauthorized.Message),
         ForbiddenException forbidden => Problem(StatusCodes.Status403Forbidden, "Forbidden.", forbidden.Message),
         DomainException domain => Problem(StatusCodes.Status422UnprocessableEntity, "Business rule violated.", domain.Message),
         _ => Problem(StatusCodes.Status500InternalServerError, "An unexpected error occurred.", detail: null),

@@ -1,7 +1,9 @@
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Mvc;
+using Payroll.Api.Auth;
 using Payroll.Api.Configuration;
 using Payroll.Api.ErrorHandling;
+using Payroll.Api.OpenApi;
 using Payroll.Application;
 using Payroll.Infrastructure;
 using Payroll.Infrastructure.Persistence;
@@ -27,29 +29,32 @@ builder.Services.Configure<ApiBehaviorOptions>(options =>
     options.InvalidModelStateResponseFactory = ModelStateErrors.ToProblemResult);
 builder.Services.AddApiProblemDetails();
 builder.Services.AddExceptionHandler<ApiExceptionHandler>();
-builder.Services.AddOpenApi();
+builder.Services.AddOpenApi(options => options.AddDocumentTransformer<BearerSecuritySchemeTransformer>());
 
 builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
+builder.Services.AddApiAuthentication(builder.Configuration);
 builder.Services.AddHealthChecks().AddDbContextCheck<AppDbContext>();
 
 var app = builder.Build();
 
 app.UseExceptionHandler();
-app.UseStatusCodePages();
+app.UseStatusCodePages(); // empty 401/403 from the auth middleware become problem+json too
+app.UseAuthentication();
+app.UseAuthorization();
 
 if (app.Environment.IsDevelopment())
 {
     await app.Services.MigrateAndSeedDevelopmentDataAsync();
-    app.MapOpenApi();
+    app.MapOpenApi().AllowAnonymous();
     app.UseSwaggerUI(options => options.SwaggerEndpoint("/openapi/v1.json", "Payroll API v1"));
 }
 
 app.MapControllers();
 
 // Anonymous; returns only "Healthy" / "Unhealthy", no details (§16).
-app.MapHealthChecks("/health");
+app.MapHealthChecks("/health").AllowAnonymous();
 app.Run();
 
 public partial class Program;

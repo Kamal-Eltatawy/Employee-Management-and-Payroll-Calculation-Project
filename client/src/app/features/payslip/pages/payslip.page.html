@@ -1,9 +1,11 @@
 <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
-  <h1 class="h3 mb-0">Payslip</h1>
+  <h1 class="h3 mb-0">{{ isHr() ? 'Payslip' : 'My payslip' }}</h1>
   <div class="d-flex align-items-center gap-2">
     <label class="form-label mb-0" for="month">Month</label>
     <input id="month" class="form-control" type="month" [value]="selectedMonth()" (change)="changeMonth(monthInput.value)" #monthInput />
-    <a class="btn btn-outline-secondary text-nowrap" routerLink="/employees">Back to list</a>
+    @if (isHr()) {
+      <a class="btn btn-outline-secondary text-nowrap" routerLink="/employees">Back to list</a>
+    }
   </div>
 </div>
 

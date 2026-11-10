@@ -1,4 +1,6 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Payroll.Api.Auth;
 using Payroll.Application.Common;
 using Payroll.Application.Employees;
 using Payroll.Domain.Employees;
@@ -6,6 +8,7 @@ using Payroll.Domain.Employees;
 namespace Payroll.Api.Controllers;
 
 [ApiController]
+[Authorize(Policy = AuthPolicies.HrOnly)]
 [Route("api/employees")]
 public sealed class EmployeesController(IEmployeeService employees) : ControllerBase
 {

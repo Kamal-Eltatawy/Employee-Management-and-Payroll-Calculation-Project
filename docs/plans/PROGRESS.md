@@ -37,10 +37,10 @@
 | 2 Employee CRUD backend + tests | **done** (112 tests; Swagger verified). Note: a local Windows SQL Server owns 1433, so compose maps **host 14333** → 1433 and `.env` uses `localhost,14333` |
 | 3 Payroll backend + tests (+ D53 tax schemes) | **done** (Swagger: spec example net 15,950; tax schemes listed) |
 | 4 Angular client + logic tests | **done** (Kamal checked the UI; 23 client tests incl. interceptor) |
-| 5 Admin APIs (types CRUD + policy writes) + tests | code + tests written (+ D54, model-state error shape); **waiting for Kamal's build/test** |
-| 6 Health + JSON logging | code written (`/health` with `AddDbContextCheck<AppDbContext>`, `AddJsonConsole`, 500 logged with traceId); **waiting for Kamal's run check** |
-| 7 Identity + JWT (backend + client) + tests | todo |
-| 8 README + `/ai-usage` | todo |
+| 5 Admin APIs (types CRUD + policy writes) + tests | **done** |
+| 6 Health + JSON logging | **done** |
+| 7 Identity + JWT + refresh tokens (D55) + tests | done (migration `AddIdentity` created; refresh cookie verified in the browser: HttpOnly, Secure, SameSite=Strict, Path=/api/auth) |
+| 8 README + `/ai-usage` | written; **Kamal to review, export session 2 into `ai-usage/`, commit** |
 | 9–10 *(optional)* integration tests, Docker + CI | only if time remains |
 
 ### Phase 1 detail (plan: `docs/plans/01-setup-and-skeleton.md`; code for Tasks 4–6 is already in that file)
@@ -56,8 +56,8 @@
 
 ## Next action
 
-1. **Kamal**: `dotnet build` + `dotnet test` (Phase 5), quick Swagger check (POST a future policy, PUT/DELETE policy 1 → 409, DELETE pay component type 1 → 409), commit Phases 4 + 5.
-2. **Claude**: Phase 6 (health + JSON logging), then Phase 7 (Identity + JWT), Phase 8 (README + ai-usage).
+1. **Kamal**: run `dotnet test --solution Payroll.slnx` once more (Phase 7 tests), quick checks (Ali sees only his payslip; Youssef 401), review `README.md` + `ai-usage/README.md`, export this chat as `ai-usage/session-02-implementation.*` (and fill the empty `session-01` export), commit.
+2. Optional phases 9–10 only if time remains.
 
 (All previous commits are done. The git history is clean up to `a1284f3`.)
 
@@ -81,4 +81,6 @@
   - Phase 5 written: `PayComponentTypeService` create/update/delete (+ validators; taxable deduction → 400 on `isTaxable`, also on update against the stored kind; duplicate name → 409 `errors.name`; in use incl. deleted employees → 409); `PayrollPolicyService` create/update/delete (`PayrollPolicyRequestValidator`: 1st of a future month, rates 0–100, cap ≥ 0, bracket order/open-last on `taxBrackets[i].upperBound`; service: unknown scheme → 400, bracket shape vs. method → 400 on `taxBrackets` via `TaxScheme.DescribeBracketShapeProblem`, duplicate date in scheme → 409 `errors.effectiveFrom`, in effect → 409, moving scheme → 400); `PayrollPolicy.IsModifiable`; controllers POST/PUT/DELETE.
   - **D54 (Kamal):** past months closed, current month open. `PayrollPolicy.IsModifiable` = `EffectiveFrom >= currentMonth.FirstDay`; validator allows the current month; `Replace` cannot move into a closed month; 409 message explains the correction path. Tests updated.
   - Model-binding/JSON errors now use `ModelStateErrors` (`InvalidModelStateResponseFactory`): keys `$.x` → `x` camelCase, `$` → `body`, no internal type names, traceId kept (§9). Found by Kamal posting `"2026-11-1"`.
+  - Phase 7 written. Backend: `UnauthorizedException` (→ 401 generic "Invalid credentials."), `ICurrentUser`/`ITokenGenerator`/`IUserCredentialStore`, `AuthService` (+ `LoginRequestValidator`, D25), `PayslipService` ownership check after month parse and before existence (S7/S11); Infrastructure `ApplicationUser`, `AppDbContext : IdentityDbContext<ApplicationUser, IdentityRole<int>, int>`, `JwtOptions` (+ `EnsureValid`, key ≥ 32), `JwtTokenGenerator` (HS256, claims sub/email/role/employee_id), `IdentityCredentialStore`, seeder adds roles + `hr@payroll.local`, `ali@demo.local` (Active) and `youssef@demo.local` (Inactive → 401 demo) from `Seed__*`; Api `AuthSetup` (JwtBearer, `MapInboundClaims=false`, fallback policy, `HrOnly` on Employees/PayComponentTypes/PayrollPolicies), `CurrentUser`, `AuthController`, OpenAPI bearer scheme transformer, `/health` + `/openapi` anonymous. Client: `AuthService` (sessionStorage + signal), `authInterceptor`, 401 → logout in `problemDetailsInterceptor`, `authGuard`/`roleGuard`, `LoginPage` (safe returnUrl), role redirect on `/`, `/my-payslip`, shell shows role nav + sign out.
+  - **D55 (Kamal): refresh tokens** before testing Phase 7. Application: `IRefreshTokenStore`, `StoredRefreshToken`, `IssuedRefreshToken`, `IUserCredentialStore.FindByIdAsync`, `AuthService` Login/Refresh/Logout returning `AuthResult` (rotation, reuse → family revoked, D25 re-checked on refresh). Infrastructure: `RefreshToken` entity + config (hash unique, FamilyId index, FK user cascade), `RefreshTokenStore` (SHA-256), `JwtOptions.LifetimeMinutes = 15`, `RefreshTokenDays = 7`. Api: `AuthController` login/refresh/logout with cookie `payroll_refresh` (HttpOnly, Secure, SameSite=Strict, Path=/api/auth). Client: `AuthService.refresh()` single-flight, `endSession()`, `authInterceptor` 401 → refresh → retry once, `authGuard` refreshes an expired session; 29 client tests green. Migration `AddIdentity` (not yet created) will include `RefreshTokens`.
   - NuGet audit (warnings as errors) flagged transitive `System.Security.Cryptography.Pkcs` 9.0.11 (via Microsoft.Data.SqlClient). Fixed with `CentralPackageTransitivePinningEnabled` + a pin to 10.0.14 in `Directory.Packages.props`.

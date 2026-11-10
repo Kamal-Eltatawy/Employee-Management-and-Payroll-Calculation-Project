@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { AuthService } from '../auth/auth.service';
 import { ToastComponent } from '../notifications/toast.component';
 
 @Component({
@@ -8,4 +9,6 @@ import { ToastComponent } from '../notifications/toast.component';
   templateUrl: './shell.component.html',
   styleUrl: './shell.component.scss',
 })
-export class ShellComponent {}
+export class ShellComponent {
+  protected readonly auth = inject(AuthService);
+}

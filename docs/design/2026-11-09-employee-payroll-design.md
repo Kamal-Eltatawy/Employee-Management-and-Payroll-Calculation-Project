@@ -79,9 +79,9 @@ These follow directly from approved decisions but were not individually discusse
   - Social insurance with an optional cap
   - Taxable / non-taxable allowances
   - Hire-month proration
-  - Effective-dated payroll policies with an append-only write API
+  - Effective-dated payroll policies per tax scheme (D53), with a write API where past months are closed (D54)
   - Payslip API and UI
-- **Auth:** ASP.NET Core Identity + JWT, with roles `Hr` and `Employee`, enforced on the server.
+- **Auth:** ASP.NET Core Identity + JWT with rotating refresh tokens (D55), roles `Hr` and `Employee`, enforced on the server.
 - **Health check** (`/health`) and **structured JSON logging**.
 - **Tests:**
   - Backend unit tests (Domain, Application, Api)
@@ -99,7 +99,6 @@ These follow directly from approved decisions but were not individually discusse
 
 - Admin screens for pay component types and payroll policies (API only).
 - Salary history and stored payroll runs.
-- Refresh tokens and token revocation.
 - Restore endpoint for soft-deleted employees.
 - Department CRUD.
 
@@ -385,7 +384,9 @@ All routes are prefixed with `/api`.
 
 | Method & route | Access | Success | Errors |
 |---|---|---|---|
-| `POST /auth/login` `{ email, password }` | anonymous | `200 { accessToken, expiresAtUtc, role, employeeId? }` | 400, 401 (generic "Invalid credentials", also for an Employee user whose employee is Inactive or deleted, D25) |
+| `POST /auth/login` `{ email, password }` | anonymous | `200 { accessToken, expiresAtUtc, role, employeeId? }` + refresh cookie | 400, 401 (generic "Invalid credentials", also for an Employee user whose employee is Inactive or deleted, D25) |
+| `POST /auth/refresh` (refresh cookie) | anonymous | `200` same body + rotated cookie | 401 (missing, unknown, expired, revoked → family revoked, or employee no longer Active) |
+| `POST /auth/logout` (refresh cookie) | anonymous | `204`, family revoked, cookie cleared | — |
 
 ### 8.2 Employees (`Hr`)
 
@@ -617,13 +618,13 @@ The values were verified with arbitrary-precision decimal arithmetic.
 - **JWT (`ITokenGenerator` → `JwtTokenGenerator`):**
   - Algorithm: HS256.
   - Signing key, issuer and audience come from configuration (`.env`); the key is at least 32 bytes.
-  - Lifetime: 60 minutes, no refresh tokens.
+  - Lifetime: 15 minutes; renewed with a rotating refresh token in an HttpOnly cookie (D55).
   - Claims: `sub`, `email`, `role`, and `employee_id` when present.
 - **Server-side enforcement:**
   - A fallback policy requires authentication everywhere except `POST /api/auth/login` and `/health`.
   - The `HrOnly` policy is applied to the Employees, PayComponentTypes and PayrollPolicies controllers.
   - The payslip ownership rule is enforced in `PayslipService` via `ICurrentUser` (S7) and returns 403.
-- **Known limitation:** a token issued before an employee was deactivated stays valid until it expires (at most 60 minutes).
+- **Known limitation:** an access token issued before an employee was deactivated stays valid until it expires (at most 15 minutes); the next refresh is refused (D55).
 - **Client storage (D45):**
   - The token is kept in `sessionStorage` plus an in-memory signal. It survives a refresh and is cleared when the tab closes.
   - Angular's built-in sanitization is relied on, and `innerHTML` is never used.
@@ -940,7 +941,7 @@ Each phase ends in a **working, buildable state** that Kamal can commit (D10, D5
 
 - **No history:** there is no salary history and payroll runs are not stored.
 - **Missing admin screens:** pay component types and payroll policies have an API but no UI. Departments are read-only.
-- **Auth:** there are no refresh tokens, and tokens are not revoked when an employee is deactivated (60-minute window).
+- **Auth:** an access token issued before an employee is deactivated stays valid until it expires (at most 15 minutes); refreshing is refused (D55).
 - **Soft delete:** there is no restore endpoint.
 - **Proration:** only for the hire month (no termination-month proration, because there is no termination date).
 - **Precision in JavaScript clients:** JS clients parse JSON numbers as IEEE-754 doubles. That is irrelevant for 2-decimal display, and other clients receive full precision.
@@ -1006,3 +1007,4 @@ Each phase ends in a **working, buildable state** that Kamal can commit (D10, D5
 | D52 | Deadline = 2026-11-10. **Fast mode, full scope:** no more per-phase detailed plans; each phase is written in one batch (code + tests together); Kamal runs build + test once per phase; questions only for genuinely undecided points | Active |
 | D53 | **Tax schemes per employee.** `TaxScheme` (Name, `TaxMethod`: Progressive / Flat / Exempt) is seeded master data with `GET /tax-schemes`; every `Employee` has a required `TaxSchemeId`; every `PayrollPolicy` belongs to one scheme (unique `TaxSchemeId + EffectiveFrom`), and the effective policy is chosen per the employee's scheme (refines D29/D30). `ITaxCalculator` exposes `Method`; all implementations (`ProgressiveTaxCalculator`, `FlatTaxCalculator`, `ExemptTaxCalculator`) are registered and `PayrollCalculator` receives `IEnumerable<ITaxCalculator>` and picks by the scheme's method (strategy, refines D38). Bracket shape per method: Progressive ≥ 1, Flat exactly one open bracket (its rate), Exempt none. Payslip and policy responses carry the scheme. Existing employees default to Standard. Seed: Standard (v1/v2), Flat Rate 15 %, Tax Exempt. | Active |
 | D54 | **Past months are closed; the current month stays open** (refines D31, Kamal: a mistake found mid-month must not force wrong salaries). A policy can be created, changed or deleted while its `EffectiveFrom` ≥ the first day of the current month (server local date); a policy that started in an earlier month returns 409 on update/delete. To correct a long-running policy for the current month, create a new policy effective from the 1st of this month. Assumption: payroll is paid at month end, so the current month is not yet final. A manual "close payroll month" is a next step. | Active |
+| D55 | **Refresh tokens** (Kamal; was out of scope in §1.3). Access token 15 min (was 60). Refresh token: 256-bit random, only its SHA-256 hash stored (`RefreshTokens` table), 7 days, sent only as an HttpOnly + Secure + SameSite=Strict cookie scoped to `/api/auth` (never in JSON or storage). `POST /api/auth/refresh` rotates it on every use; presenting a revoked token again revokes the whole family (reuse detection); `POST /api/auth/logout` revokes the family; an Employee whose employee became Inactive/deleted cannot refresh (D25 re-checked). Client: `authInterceptor` renews once on 401 and retries (single-flight), `authGuard` renews an expired session before redirecting to login. | Active |

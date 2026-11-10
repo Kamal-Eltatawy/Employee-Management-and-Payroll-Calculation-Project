@@ -15,6 +15,9 @@ public sealed class PayslipServiceTests
     private readonly FakeDatabase _db = new();
     private readonly EmployeeService _employees;
     private readonly PayslipService _payslips;
+    private readonly IPayrollCalculator _calculator =
+        new PayrollCalculator([new ProgressiveTaxCalculator(), new FlatTaxCalculator(), new ExemptTaxCalculator()],
+            new SocialInsuranceCalculator(), new CalendarDayProrationCalculator());
     private readonly int _transportId;
     private readonly int _housingId;
     private readonly int _loanId;
@@ -38,13 +41,13 @@ public sealed class PayslipServiceTests
             _db.Employees, _db.Departments, _db.PayComponentTypes, _db.TaxSchemes, _db.UnitOfWork,
             new CreateEmployeeRequestValidator(clock), new UpdateEmployeeRequestValidator(clock),
             new EmployeeSearchRequestValidator(), clock, mapping);
-        _payslips = new PayslipService(_db.Employees, _db.PayrollPolicies,
-            new PayrollCalculator([new ProgressiveTaxCalculator(), new FlatTaxCalculator(), new ExemptTaxCalculator()],
-                new SocialInsuranceCalculator(), new CalendarDayProrationCalculator()),
-            clock, mapping);
+        _payslips = PayslipsFor(FakeCurrentUser.Hr());
     }
 
     private static CancellationToken Ct => TestContext.Current.CancellationToken;
+
+    private PayslipService PayslipsFor(FakeCurrentUser user) =>
+        new(_db.Employees, _db.PayrollPolicies, _calculator, user, TestData.Clock(), MappingConfig.Create());
 
     private async Task<int> CreateEmployeeAsync(DateOnly? hireDate = null, EmployeeStatus status = EmployeeStatus.Active,
         int taxSchemeId = 1) =>
@@ -183,5 +186,26 @@ public sealed class PayslipServiceTests
         var flat = await CreateEmployeeAsync(taxSchemeId: 2);
 
         await Assert.ThrowsAsync<DomainException>(() => _payslips.GetAsync(flat, "2026-03", Ct));
+    }
+
+    [Fact]
+    public async Task Employee_can_read_their_own_payslip()
+    {
+        _db.PayrollPolicies.Seed(new DateOnly(2025, 1, 1));
+        var id = await CreateEmployeeAsync();
+
+        Assert.Equal(15950m, (await PayslipsFor(FakeCurrentUser.Employee(id)).GetAsync(id, "2026-03", Ct)).NetPay);
+    }
+
+    [Fact]
+    public async Task Employee_requesting_another_employees_payslip_is_forbidden_even_if_it_does_not_exist()
+    {
+        _db.PayrollPolicies.Seed(new DateOnly(2025, 1, 1));
+        var own = await CreateEmployeeAsync();
+        var other = (await _employees.CreateAsync(TestData.CreateRequest(email: "other@demo.local"), Ct)).Id;
+        var payslips = PayslipsFor(FakeCurrentUser.Employee(own));
+
+        await Assert.ThrowsAsync<ForbiddenException>(() => payslips.GetAsync(other, "2026-03", Ct));
+        await Assert.ThrowsAsync<ForbiddenException>(() => payslips.GetAsync(999, "2026-03", Ct));
     }
 }

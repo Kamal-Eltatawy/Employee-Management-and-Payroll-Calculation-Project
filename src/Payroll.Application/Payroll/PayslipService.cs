@@ -15,6 +15,7 @@ public sealed class PayslipService(
     IEmployeeRepository employees,
     IPayrollPolicyRepository policies,
     IPayrollCalculator calculator,
+    ICurrentUser currentUser,
     TimeProvider clock,
     TypeAdapterConfig mapping) : IPayslipService
 {
@@ -22,6 +23,12 @@ public sealed class PayslipService(
     public async Task<PayslipResponse> GetAsync(int employeeId, string? month, CancellationToken ct)
     {
         var payrollMonth = MonthParameter.ParseOrCurrent(month, clock);
+
+        // S7: Hr sees any payslip; an Employee only their own. Checked before existence, so ids cannot be probed.
+        if (!currentUser.IsInRole(Roles.Hr) && currentUser.EmployeeId != employeeId)
+        {
+            throw new ForbiddenException("You can only view your own payslip.");
+        }
 
         var employee = await employees.GetByIdAsync(employeeId, ct) ?? throw new NotFoundException("Employee", employeeId);
         employee.EnsureEligibleForPayslip(payrollMonth);

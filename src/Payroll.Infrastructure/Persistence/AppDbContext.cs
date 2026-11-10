@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Payroll.Application.Abstractions;
@@ -6,10 +8,12 @@ using Payroll.Domain.Departments;
 using Payroll.Domain.Employees;
 using Payroll.Domain.PayComponents;
 using Payroll.Domain.Payroll;
+using Payroll.Infrastructure.Identity;
 
 namespace Payroll.Infrastructure.Persistence;
 
-public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options), IUnitOfWork
+public sealed class AppDbContext(DbContextOptions<AppDbContext> options)
+    : IdentityDbContext<ApplicationUser, IdentityRole<int>, int>(options), IUnitOfWork
 {
     private const int UniqueIndexViolation = 2601;
     private const int UniqueConstraintViolation = 2627;
@@ -25,6 +29,8 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
     public DbSet<PayrollPolicy> PayrollPolicies => Set<PayrollPolicy>();
 
     public DbSet<TaxScheme> TaxSchemes => Set<TaxScheme>();
+
+    public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
 
     /// <summary>The single place where database failures become application exceptions (S6).</summary>
     async Task IUnitOfWork.SaveChangesAsync(CancellationToken ct)
@@ -46,6 +52,9 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
         }
     }
 
-    protected override void OnModelCreating(ModelBuilder modelBuilder) =>
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        base.OnModelCreating(modelBuilder); // Identity tables first
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
+    }
 }
