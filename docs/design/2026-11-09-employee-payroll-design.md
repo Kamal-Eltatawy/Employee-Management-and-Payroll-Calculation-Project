@@ -1000,4 +1000,5 @@ Each phase ends in a **working, buildable state** that Kamal can commit (D10, D5
 | D48 | Frontend logic tests only (no DOM) | Active |
 | D49 | Accept about 12.25 h committed scope; document it transparently in the README | Active |
 | D50 | Claude never commits or pushes; Kamal owns Git; Claude only ran `git init` | Active |
-| D51 | TDD inside every phase; the separate backend-tests phase is dissolved (updates D10 / §18) | Active |
+| D51 | TDD inside every phase; the separate backend-tests phase is dissolved (updates D10 / §18) | Active (relaxed by D52) |
+| D52 | Deadline = 2026-11-10. **Fast mode, full scope:** no more per-phase detailed plans; each phase is written in one batch (code + tests together); Kamal runs build + test once per phase; questions only for genuinely undecided points | Active |

@@ -14,7 +14,12 @@ Before doing anything, read `docs/plans/PROGRESS.md`. It says exactly where the 
 1. **Language:** talk to Kamal in Arabic. Write every file in English.
 2. **Decisions:** ask about any undecided point as one question with options and a recommendation, then record it in the spec's decision log. Never silently change an agreed decision. If something conflicts with an earlier decision, say so.
 3. **Git:** never run `git commit` or `git push`. Kamal owns Git and commits at each checkpoint.
-4. **TDD in every phase.** The spec wins over the plans; the plans win over assumptions.
+4. **Fast mode (D52, deadline 2026-11-10), full scope:**
+   - Do not write per-phase detailed plans. Use the spec and `00-master-plan.md` (Shared contracts) directly.
+   - Write each phase in one batch, with code and tests together.
+   - Give Kamal one command block per phase (build + test), then fix whatever the output shows.
+   - Ask questions only for genuinely undecided points, and keep replies short to save tokens.
+   - The spec wins over the plans; the plans win over assumptions.
 5. **Execution split:**
    - No .NET SDK, NuGet or Docker in the Claude sandbox. Kamal runs `dotnet` / `docker` commands and pastes the output.
    - Never run `npm install` inside the repo from Linux. Verify Angular in a `/tmp` copy instead.
