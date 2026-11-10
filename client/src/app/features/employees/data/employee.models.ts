@@ -84,9 +84,12 @@ export interface Department {
 
 export interface PayComponentType {
   id: number;
+  /** In the request language (D58). */
   name: string;
   kind: PayComponentKind;
   isTaxable: boolean;
+  nameEn: string;
+  nameAr: string | null;
 }
 
 export interface TaxScheme {

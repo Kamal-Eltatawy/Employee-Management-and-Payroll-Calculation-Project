@@ -1,0 +1,35 @@
+// Bootstrap's SCSS build is left-to-right. Our own styles use logical properties (margin-inline-start, inset-inline-end, …);
+// these overrides flip the few Bootstrap pieces the app uses when the Arabic build sets dir="rtl" (D56).
+[dir='rtl'] {
+  .text-end { text-align: left !important; }
+  .text-start { text-align: right !important; }
+
+  .form-select {
+    background-position: left 0.75rem center;
+    padding-right: 0.75rem;
+    padding-left: 2.25rem;
+  }
+
+  .input-group > :not(:first-child) {
+    margin-left: 0;
+    margin-right: calc(var(--bs-border-width) * -1);
+    border-radius: var(--bs-border-radius) 0 0 var(--bs-border-radius);
+  }
+
+  .input-group > :not(:last-child) {
+    border-radius: 0 var(--bs-border-radius) var(--bs-border-radius) 0;
+  }
+
+  .pagination .page-item:first-child .page-link {
+    border-radius: 0 var(--bs-pagination-border-radius) var(--bs-pagination-border-radius) 0;
+  }
+
+  .pagination .page-item:last-child .page-link {
+    border-radius: var(--bs-pagination-border-radius) 0 0 var(--bs-pagination-border-radius);
+  }
+
+  .pagination .page-item:not(:first-child) .page-link {
+    margin-left: 0;
+    margin-right: calc(var(--bs-border-width) * -1);
+  }
+}

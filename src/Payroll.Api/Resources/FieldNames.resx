@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="FullName" xml:space="preserve"><value>Full name</value></data>
+  <data name="Email" xml:space="preserve"><value>Email</value></data>
+  <data name="JobTitle" xml:space="preserve"><value>Job title</value></data>
+  <data name="DepartmentId" xml:space="preserve"><value>Department</value></data>
+  <data name="TaxSchemeId" xml:space="preserve"><value>Tax scheme</value></data>
+  <data name="HireDate" xml:space="preserve"><value>Hire date</value></data>
+  <data name="BaseMonthlySalary" xml:space="preserve"><value>Base monthly salary</value></data>
+  <data name="Status" xml:space="preserve"><value>Status</value></data>
+  <data name="PayComponents" xml:space="preserve"><value>Allowances and deductions</value></data>
+  <data name="PayComponentTypeId" xml:space="preserve"><value>Type</value></data>
+  <data name="Amount" xml:space="preserve"><value>Amount</value></data>
+  <data name="RowVersion" xml:space="preserve"><value>Row version</value></data>
+  <data name="Search" xml:space="preserve"><value>Search</value></data>
+  <data name="Page" xml:space="preserve"><value>Page</value></data>
+  <data name="PageSize" xml:space="preserve"><value>Page size</value></data>
+  <data name="Name" xml:space="preserve"><value>Name</value></data>
+  <data name="Kind" xml:space="preserve"><value>Kind</value></data>
+  <data name="IsTaxable" xml:space="preserve"><value>Taxable</value></data>
+  <data name="EffectiveFrom" xml:space="preserve"><value>Effective from</value></data>
+  <data name="InsuranceRatePercent" xml:space="preserve"><value>Insurance rate</value></data>
+  <data name="InsuranceCap" xml:space="preserve"><value>Insurance cap</value></data>
+  <data name="TaxBrackets" xml:space="preserve"><value>Tax brackets</value></data>
+  <data name="UpperBound" xml:space="preserve"><value>Upper bound</value></data>
+  <data name="RatePercent" xml:space="preserve"><value>Rate</value></data>
+  <data name="Password" xml:space="preserve"><value>Password</value></data>
+</root>

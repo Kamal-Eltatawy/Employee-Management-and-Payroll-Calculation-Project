@@ -7,13 +7,17 @@ public sealed class Department
 {
     public const int NameMaxLength = 100;
 
-    public Department(int id, string name)
+    public Department(int id, string name, string? nameAr = null)
     {
         Id = id;
         Name = Guard.RequiredText(name, NameMaxLength, nameof(Name));
+        NameAr = Guard.OptionalText(nameAr, NameMaxLength, nameof(NameAr));
     }
 
     public int Id { get; private set; }
 
     public string Name { get; private set; }
+
+    /// <summary>Optional Arabic name; the API falls back to <see cref="Name"/> (D58).</summary>
+    public string? NameAr { get; private set; }
 }

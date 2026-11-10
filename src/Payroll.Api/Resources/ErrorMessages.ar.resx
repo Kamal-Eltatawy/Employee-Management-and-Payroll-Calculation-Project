@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="Title.Validation" xml:space="preserve"><value>توجد أخطاء في البيانات المدخلة.</value></data>
+  <data name="Title.NotFound" xml:space="preserve"><value>العنصر غير موجود.</value></data>
+  <data name="Title.Conflict" xml:space="preserve"><value>تعارض مع بيانات موجودة.</value></data>
+  <data name="Title.Unauthorized" xml:space="preserve"><value>غير مصرح.</value></data>
+  <data name="Title.Forbidden" xml:space="preserve"><value>غير مسموح.</value></data>
+  <data name="Title.BusinessRule" xml:space="preserve"><value>مخالفة لقاعدة عمل.</value></data>
+  <data name="Title.Unexpected" xml:space="preserve"><value>حدث خطأ غير متوقع.</value></data>
+  <data name="Model.InvalidFormat" xml:space="preserve"><value>صيغة القيمة غير صحيحة (التاريخ yyyy-MM-dd، والكسور العشرية بنقطة).</value></data>
+  <data name="Model.InvalidJson" xml:space="preserve"><value>محتوى الطلب ليس JSON صالحاً.</value></data>
+  <data name="Model.Invalid" xml:space="preserve"><value>القيمة غير صالحة.</value></data>
+  <data name="NotFound.Employee" xml:space="preserve"><value>الموظف رقم {0} غير موجود.</value></data>
+  <data name="NotFound.PayComponentType" xml:space="preserve"><value>نوع البند رقم {0} غير موجود.</value></data>
+  <data name="NotFound.PayrollPolicy" xml:space="preserve"><value>سياسة الرواتب رقم {0} غير موجودة.</value></data>
+  <data name="Auth.InvalidCredentials" xml:space="preserve"><value>بيانات الدخول غير صحيحة.</value></data>
+  <data name="Auth.OwnPayslipOnly" xml:space="preserve"><value>يمكنك عرض راتبك فقط.</value></data>
+  <data name="Employee.EmailInUse" xml:space="preserve"><value>البريد الإلكتروني مستخدم بالفعل.</value></data>
+  <data name="Employee.Inactive" xml:space="preserve"><value>الموظف غير نشط.</value></data>
+  <data name="Employee.HiredAfterMonth" xml:space="preserve"><value>تم تعيين الموظف في {0}.</value></data>
+  <data name="Conflict.Concurrency" xml:space="preserve"><value>عدّل مستخدم آخر هذا السجل. أعد تحميل الصفحة ثم حاول مرة أخرى.</value></data>
+  <data name="Conflict.Unique" xml:space="preserve"><value>السجل يتعارض مع سجل موجود.</value></data>
+  <data name="Validation.DepartmentNotFound" xml:space="preserve"><value>القسم غير موجود.</value></data>
+  <data name="Validation.TaxSchemeNotFound" xml:space="preserve"><value>النظام الضريبي غير موجود.</value></data>
+  <data name="Validation.PayComponentTypeNotFound" xml:space="preserve"><value>نوع البند غير موجود.</value></data>
+  <data name="Validation.DepartmentRequired" xml:space="preserve"><value>القسم مطلوب.</value></data>
+  <data name="Validation.TaxSchemeRequired" xml:space="preserve"><value>النظام الضريبي مطلوب.</value></data>
+  <data name="Validation.PayComponentTypeRequired" xml:space="preserve"><value>نوع البند مطلوب.</value></data>
+  <data name="Validation.DuplicatePayComponentType" xml:space="preserve"><value>هذا النوع مضاف بالفعل.</value></data>
+  <data name="Validation.HireDateInFuture" xml:space="preserve"><value>تاريخ التعيين لا يمكن أن يكون في المستقبل.</value></data>
+  <data name="Validation.RowVersionInvalid" xml:space="preserve"><value>إصدار السجل غير صالح.</value></data>
+  <data name="Validation.SortByInvalid" xml:space="preserve"><value>الترتيب يجب أن يكون: name أو hireDate أو salary.</value></data>
+  <data name="Validation.SortDirInvalid" xml:space="preserve"><value>اتجاه الترتيب يجب أن يكون asc أو desc.</value></data>
+  <data name="Validation.MonthFormat" xml:space="preserve"><value>الشهر يجب أن يكون بالصيغة yyyy-MM.</value></data>
+  <data name="PayComponentType.DeductionNotTaxable" xml:space="preserve"><value>الاستقطاع لا يمكن أن يكون خاضعاً للضريبة.</value></data>
+  <data name="PayComponentType.NameTaken" xml:space="preserve"><value>يوجد نوع بند بالاسم '{0}' بالفعل.</value></data>
+  <data name="PayComponentType.InUse" xml:space="preserve"><value>نوع البند '{0}' مستخدم لدى موظف واحد على الأقل (بما في ذلك الموظفون المحذوفون) ولا يمكن حذفه.</value></data>
+  <data name="Policy.NoneForMonth" xml:space="preserve"><value>لا توجد سياسة رواتب سارية لشهر {0}.</value></data>
+  <data name="Policy.FirstDayOfMonth" xml:space="preserve"><value>يجب أن تبدأ سياسة الرواتب في أول يوم من الشهر.</value></data>
+  <data name="Policy.ClosedMonth" xml:space="preserve"><value>لا تبدأ سياسة الرواتب إلا من الشهر الحالي أو بعده، فالشهور السابقة مغلقة.</value></data>
+  <data name="Policy.CoversClosedMonths" xml:space="preserve"><value>سياسة الرواتب السارية من {0} تغطي شهوراً مغلقة ولا يمكن تعديلها أو حذفها. لتصحيح الشهر الحالي أنشئ سياسة تبدأ من أول هذا الشهر.</value></data>
+  <data name="Policy.DateTaken" xml:space="preserve"><value>النظام {0} لديه سياسة تبدأ في {1} بالفعل.</value></data>
+  <data name="Policy.CannotMoveScheme" xml:space="preserve"><value>لا يمكن نقل سياسة الرواتب إلى نظام ضريبي آخر. أنشئ سياسة في ذلك النظام.</value></data>
+  <data name="Policy.BracketShape.Progressive" xml:space="preserve"><value>الضريبة التصاعدية تحتاج شريحة واحدة على الأقل.</value></data>
+  <data name="Policy.BracketShape.Flat" xml:space="preserve"><value>الضريبة الثابتة تحتاج شريحة واحدة مفتوحة تحمل النسبة.</value></data>
+  <data name="Policy.BracketShape.Exempt" xml:space="preserve"><value>النظام المعفى لا يحتوي على شرائح ضريبية.</value></data>
+  <data name="Policy.BracketLastOpen" xml:space="preserve"><value>آخر شريحة يجب أن تكون مفتوحة (بدون حد أعلى).</value></data>
+  <data name="Policy.BracketOnlyLastOpen" xml:space="preserve"><value>آخر شريحة فقط يمكن أن تكون مفتوحة.</value></data>
+  <data name="Policy.BracketAscending" xml:space="preserve"><value>يجب أن تكون الحدود العليا تصاعدية.</value></data>
+  <data name="Title.TooManyRequests" xml:space="preserve"><value>طلبات كثيرة.</value></data>
+  <data name="Auth.TooManyAttempts" xml:space="preserve"><value>محاولات كثيرة. انتظر دقيقة ثم حاول مرة أخرى.</value></data>
+</root>

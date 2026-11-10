@@ -1,6 +1,7 @@
 namespace Payroll.Domain.Payroll;
 
-public sealed record PayslipLine(string Name, decimal Amount, bool IsTaxable);
+/// <summary>One allowance or deduction line; the type id lets callers translate or link the line without matching names.</summary>
+public sealed record PayslipLine(int PayComponentTypeId, string Name, decimal Amount, bool IsTaxable);
 
 /// <summary>The calculation result. Every amount is at full precision (D32).</summary>
 public sealed record Payslip(

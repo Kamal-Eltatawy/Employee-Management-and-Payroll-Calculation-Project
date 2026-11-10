@@ -7,6 +7,11 @@ export const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: () => inject(AuthService).homeUrl() },
   { path: 'login', loadComponent: () => import('./core/auth/login.page').then((m) => m.LoginPage) },
   {
+    path: 'home',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/home/pages/home.page').then((m) => m.HomePage),
+  },
+  {
     path: 'employees',
     canActivate: [authGuard, roleGuard('Hr')],
     loadChildren: () => import('./features/employees/employees.routes').then((m) => m.EMPLOYEE_ROUTES),

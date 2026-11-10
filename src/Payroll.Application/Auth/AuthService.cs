@@ -7,8 +7,20 @@ namespace Payroll.Application.Auth;
 
 public sealed record LoginRequest(string Email, string Password);
 
-/// <summary>The JSON body. The refresh token is not here: it travels only in an HttpOnly cookie (D55).</summary>
-public sealed record LoginResponse(string AccessToken, DateTime ExpiresAtUtc, string Role, int? EmployeeId);
+/// <summary>
+/// The JSON body. The refresh token is not here: it travels only in an HttpOnly cookie (D55).
+/// It carries the user's email so a client can restore its session from the cookie alone (D61).
+/// </summary>
+public sealed record LoginResponse(string AccessToken, DateTime ExpiresAtUtc, string Role, int? EmployeeId, string Email);
+
+/// <summary>
+/// Several app instances (tabs, the English and Arabic builds) share one refresh cookie and may refresh at the same moment.
+/// A token rotated within this window is accepted once more instead of being treated as theft (D61).
+/// </summary>
+public sealed class RefreshTokenOptions
+{
+    public int RefreshReuseGraceSeconds { get; set; } = 30;
+}
 
 /// <summary>What the controller needs: the body plus the refresh token to put in the cookie.</summary>
 public sealed record AuthResult(LoginResponse Response, IssuedRefreshToken RefreshToken);
@@ -35,8 +47,8 @@ public interface IAuthService
 
 /// <summary>
 /// D25: a wrong password, an unknown email, and an Employee user whose employee is inactive or deleted
-/// all get the same 401. D55: refresh tokens rotate on every use; presenting a revoked one again
-/// (a sign of theft) revokes the whole family, which ends the session everywhere.
+/// all get the same 401. D55: refresh tokens rotate on every use; presenting a rotated one again after the
+/// short grace window of D61 (a sign of theft) revokes the whole family, which ends the session everywhere.
 /// </summary>
 public sealed class AuthService(
     IUserCredentialStore credentials,
@@ -45,6 +57,7 @@ public sealed class AuthService(
     IRefreshTokenStore refreshTokens,
     IUnitOfWork unitOfWork,
     IValidator<LoginRequest> validator,
+    RefreshTokenOptions refreshOptions,
     TimeProvider clock) : IAuthService
 {
     public async Task<AuthResult> LoginAsync(LoginRequest request, CancellationToken ct)
@@ -62,28 +75,30 @@ public sealed class AuthService(
     {
         var utcNow = clock.UtcNow();
         var stored = string.IsNullOrWhiteSpace(refreshToken) ? null : await refreshTokens.FindAsync(refreshToken, ct);
-        if (stored is null)
+        if (stored is null || stored.RevokedAtUtc is not null)
         {
             throw new UnauthorizedException();
         }
 
-        if (stored.RevokedAtUtc is not null)
+        if (stored.RotatedAtUtc is { } rotatedAt && !WithinReuseGrace(rotatedAt, utcNow))
         {
-            // Reuse of a rotated token: someone else may hold the family. End it.
-            await refreshTokens.RevokeFamilyAsync(stored.FamilyId, utcNow, ct);
-            await unitOfWork.SaveChangesAsync(ct);
+            // A rotated token presented again after the grace window: someone else may hold the family. End the session.
+            await EndSessionAsync(stored.FamilyId, utcNow, ct);
             throw new UnauthorizedException();
         }
 
         var user = stored.ExpiresAtUtc > utcNow ? await credentials.FindByIdAsync(stored.UserId, ct) : null;
         if (user is null || !await MayHaveSessionAsync(user, ct))
         {
-            await refreshTokens.RevokeFamilyAsync(stored.FamilyId, utcNow, ct);
-            await unitOfWork.SaveChangesAsync(ct);
+            await EndSessionAsync(stored.FamilyId, utcNow, ct);
             throw new UnauthorizedException();
         }
 
-        await refreshTokens.RevokeAsync(stored.Id, utcNow, ct);
+        if (stored.RotatedAtUtc is null)
+        {
+            await refreshTokens.RotateAsync(stored.Id, utcNow, ct);
+        }
+
         return await IssueAsync(user, stored.FamilyId, ct);
     }
 
@@ -97,13 +112,22 @@ public sealed class AuthService(
         }
     }
 
+    private bool WithinReuseGrace(DateTime rotatedAtUtc, DateTime utcNow) =>
+        refreshOptions.RefreshReuseGraceSeconds > 0 && utcNow - rotatedAtUtc <= TimeSpan.FromSeconds(refreshOptions.RefreshReuseGraceSeconds);
+
+    private async Task EndSessionAsync(Guid familyId, DateTime utcNow, CancellationToken ct)
+    {
+        await refreshTokens.RevokeFamilyAsync(familyId, utcNow, ct);
+        await unitOfWork.SaveChangesAsync(ct);
+    }
+
     private async Task<AuthResult> IssueAsync(UserCredentials user, Guid familyId, CancellationToken ct)
     {
         var refresh = refreshTokens.Issue(user.UserId, familyId, clock.UtcNow());
         await unitOfWork.SaveChangesAsync(ct);
 
         var access = tokens.Generate(user.UserId, user.Email, user.Role, user.EmployeeId);
-        return new AuthResult(new LoginResponse(access.Value, access.ExpiresAtUtc, user.Role, user.EmployeeId), refresh);
+        return new AuthResult(new LoginResponse(access.Value, access.ExpiresAtUtc, user.Role, user.EmployeeId, user.Email), refresh);
     }
 
     private async Task EnsureMayHaveSessionAsync(UserCredentials user, CancellationToken ct)

@@ -35,27 +35,27 @@ public static class ReferenceData
 
     internal static object[] DepartmentRows() =>
     [
-        new { Id = Departments.Engineering, Name = "Engineering" },
-        new { Id = Departments.Finance, Name = "Finance" },
-        new { Id = Departments.HumanResources, Name = "Human Resources" },
-        new { Id = Departments.Operations, Name = "Operations" },
-        new { Id = Departments.Sales, Name = "Sales" },
+        new { Id = Departments.Engineering, Name = "Engineering", NameAr = "الهندسة" },
+        new { Id = Departments.Finance, Name = "Finance", NameAr = "المالية" },
+        new { Id = Departments.HumanResources, Name = "Human Resources", NameAr = "الموارد البشرية" },
+        new { Id = Departments.Operations, Name = "Operations", NameAr = "العمليات" },
+        new { Id = Departments.Sales, Name = "Sales", NameAr = "المبيعات" },
     ];
 
     internal static object[] PayComponentTypeRows() =>
     [
-        PayComponentTypeRow(PayComponentTypes.Transport, "Transport", PayComponentKind.Allowance, isTaxable: false),
-        PayComponentTypeRow(PayComponentTypes.Housing, "Housing", PayComponentKind.Allowance, isTaxable: true),
-        PayComponentTypeRow(PayComponentTypes.Meal, "Meal", PayComponentKind.Allowance, isTaxable: true),
-        PayComponentTypeRow(PayComponentTypes.LoanRepayment, "Loan Repayment", PayComponentKind.Deduction, isTaxable: false),
-        PayComponentTypeRow(PayComponentTypes.MedicalPlan, "Medical Plan", PayComponentKind.Deduction, isTaxable: false),
+        PayComponentTypeRow(PayComponentTypes.Transport, "Transport", "بدل انتقال", PayComponentKind.Allowance, isTaxable: false),
+        PayComponentTypeRow(PayComponentTypes.Housing, "Housing", "بدل سكن", PayComponentKind.Allowance, isTaxable: true),
+        PayComponentTypeRow(PayComponentTypes.Meal, "Meal", "بدل وجبات", PayComponentKind.Allowance, isTaxable: true),
+        PayComponentTypeRow(PayComponentTypes.LoanRepayment, "Loan Repayment", "سداد قرض", PayComponentKind.Deduction, isTaxable: false),
+        PayComponentTypeRow(PayComponentTypes.MedicalPlan, "Medical Plan", "التأمين الطبي", PayComponentKind.Deduction, isTaxable: false),
     ];
 
     internal static object[] TaxSchemeRows() =>
     [
-        new { Id = TaxSchemes.Standard, Name = "Standard", Method = TaxMethod.Progressive },
-        new { Id = TaxSchemes.Flat, Name = "Flat Rate", Method = TaxMethod.Flat },
-        new { Id = TaxSchemes.Exempt, Name = "Tax Exempt", Method = TaxMethod.Exempt },
+        new { Id = TaxSchemes.Standard, Name = "Standard", NameAr = "النظام القياسي", Method = TaxMethod.Progressive },
+        new { Id = TaxSchemes.Flat, Name = "Flat Rate", NameAr = "النسبة الثابتة", Method = TaxMethod.Flat },
+        new { Id = TaxSchemes.Exempt, Name = "Tax Exempt", NameAr = "معفى من الضريبة", Method = TaxMethod.Exempt },
     ];
 
     /// <summary>
@@ -84,6 +84,6 @@ public static class ReferenceData
         new { Id = 7, PayrollPolicyId = 3, SortOrder = 1, UpperBound = (decimal?)null, RatePercent = 15m },
     ];
 
-    private static object PayComponentTypeRow(int id, string name, PayComponentKind kind, bool isTaxable) =>
-        new { Id = id, Name = name, Kind = kind, IsTaxable = isTaxable, CreatedAtUtc = SeededAtUtc, UpdatedAtUtc = SeededAtUtc };
+    private static object PayComponentTypeRow(int id, string name, string nameAr, PayComponentKind kind, bool isTaxable) =>
+        new { Id = id, Name = name, NameAr = nameAr, Kind = kind, IsTaxable = isTaxable, CreatedAtUtc = SeededAtUtc, UpdatedAtUtc = SeededAtUtc };
 }

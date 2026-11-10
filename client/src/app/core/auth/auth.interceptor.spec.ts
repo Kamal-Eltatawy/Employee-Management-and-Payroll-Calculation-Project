@@ -1,3 +1,4 @@
+import '@angular/localize/init';
 import { HttpClient, provideHttpClient, withInterceptors } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
@@ -11,11 +12,7 @@ describe('authInterceptor', () => {
   let backend: HttpTestingController;
   let auth: AuthService;
 
-  const session = (accessToken: string, expiresAtUtc: string) =>
-    JSON.stringify({ email: 'hr@payroll.local', role: 'Hr', employeeId: null, accessToken, expiresAtUtc });
-
   beforeEach(() => {
-    sessionStorage.setItem('payroll.session', session('old-token', '2999-01-01T00:00:00Z'));
     TestBed.configureTestingModule({
       providers: [
         provideRouter([{ path: 'login', children: [] }]),
@@ -26,9 +23,8 @@ describe('authInterceptor', () => {
     http = TestBed.inject(HttpClient);
     backend = TestBed.inject(HttpTestingController);
     auth = TestBed.inject(AuthService);
+    auth.startSession({ email: 'hr@payroll.local', role: 'Hr', employeeId: null, accessToken: 'old-token', expiresAtUtc: '2999-01-01T00:00:00Z' });
   });
-
-  afterEach(() => sessionStorage.clear());
 
   it('sends the bearer token to the API', () => {
     http.get('/api/employees').subscribe();
@@ -42,7 +38,7 @@ describe('authInterceptor', () => {
 
     backend.expectOne('/api/employees').flush({ title: 'Unauthorized.' }, { status: 401, statusText: 'Unauthorized' });
     backend.expectOne('/api/auth/refresh').flush({
-      accessToken: 'new-token', expiresAtUtc: '2999-01-01T00:00:00Z', role: 'Hr', employeeId: null,
+      accessToken: 'new-token', expiresAtUtc: '2999-01-01T00:00:00Z', role: 'Hr', employeeId: null, email: 'hr@payroll.local',
     });
     const retry = backend.expectOne('/api/employees');
     retry.flush({ ok: true });

@@ -15,7 +15,7 @@ public sealed class AdminControllersTests
     public async Task Creating_a_pay_component_type_returns_201()
     {
         var request = new CreatePayComponentTypeRequest("Phone", PayComponentKind.Allowance, true);
-        var created = new PayComponentTypeResponse(6, "Phone", PayComponentKind.Allowance, true);
+        var created = new PayComponentTypeResponse(6, "Phone", PayComponentKind.Allowance, true, "Phone", null);
         var service = Substitute.For<IPayComponentTypeService>();
         service.CreateAsync(request, Arg.Any<CancellationToken>()).Returns(created);
 

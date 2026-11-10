@@ -20,8 +20,9 @@ public sealed class TaxScheme
 {
     public const int NameMaxLength = 100;
 
-    public TaxScheme(int id, string name, TaxMethod method)
+    public TaxScheme(int id, string name, TaxMethod method, string? nameAr = null)
     {
+        NameAr = Guard.OptionalText(nameAr, NameMaxLength, nameof(NameAr));
         Id = id;
         Name = Guard.RequiredText(name, NameMaxLength, nameof(Name));
         Method = Guard.Defined(method, nameof(Method));
@@ -30,6 +31,9 @@ public sealed class TaxScheme
     public int Id { get; private set; }
 
     public string Name { get; private set; }
+
+    /// <summary>Optional Arabic name; the API falls back to <see cref="Name"/> (D58).</summary>
+    public string? NameAr { get; private set; }
 
     public TaxMethod Method { get; private set; }
 

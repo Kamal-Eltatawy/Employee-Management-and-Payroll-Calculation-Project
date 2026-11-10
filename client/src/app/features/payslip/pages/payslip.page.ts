@@ -1,10 +1,13 @@
-import { Component, DestroyRef, computed, inject, input, signal } from '@angular/core';
+import { Component, DestroyRef, LOCALE_ID, computed, inject, input, signal } from '@angular/core';
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { Router, RouterLink } from '@angular/router';
 import { EMPTY, catchError, switchMap, tap } from 'rxjs';
 import { AuthService } from '../../../core/auth/auth.service';
 import { ApiError } from '../../../core/http/api-error';
 import { MoneyPipe } from '../../../shared/pipes/money.pipe';
+import { IconComponent } from '../../../shared/ui/icon.component';
+import { MonthPickerComponent } from '../../../shared/ui/month-picker.component';
+import { formatMonth } from '../../../shared/util/months';
 import { toIsoMonth } from '../../../shared/util/dates';
 import { PayslipApiService } from '../data/payslip-api.service';
 import { Payslip } from '../data/payslip.models';
@@ -17,7 +20,7 @@ const MONTH_PATTERN = /^\d{4}-(0[1-9]|1[0-2])$/;
  */
 @Component({
   selector: 'app-payslip-page',
-  imports: [RouterLink, MoneyPipe],
+  imports: [RouterLink, MoneyPipe, IconComponent, MonthPickerComponent],
   templateUrl: './payslip.page.html',
   styleUrl: './payslip.page.scss',
 })
@@ -31,6 +34,7 @@ export class PayslipPage {
   private readonly auth = inject(AuthService);
 
   protected readonly isHr = this.auth.isHr;
+  private readonly locale = inject(LOCALE_ID);
   private readonly employeeId = computed(() => Number(this.id() ?? this.auth.currentUser()?.employeeId ?? 0));
 
   protected readonly selectedMonth = computed(() => {
@@ -67,6 +71,29 @@ export class PayslipPage {
         this.payslip.set(payslip);
         this.loading.set(false);
       });
+  }
+
+  /** "2026-11" → "November 2026" / "نوفمبر 2026", Latin digits in every language. */
+  protected readonly monthLabel = computed(() => formatMonth(this.selectedMonth(), this.locale));
+
+  protected readonly totalDeductions = computed(() => {
+    const slip = this.payslip();
+    return slip ? slip.incomeTax + slip.socialInsurance + slip.otherDeductionsTotal : 0;
+  });
+
+  protected methodLabel(method: string): string {
+    switch (method) {
+      case 'Progressive':
+        return $localize`:@@taxMethod.progressive:Progressive brackets`;
+      case 'Flat':
+        return $localize`:@@taxMethod.flat:Flat rate`;
+      default:
+        return $localize`:@@taxMethod.exempt:Tax exempt`;
+    }
+  }
+
+  protected print(): void {
+    window.print();
   }
 
   protected changeMonth(month: string): void {

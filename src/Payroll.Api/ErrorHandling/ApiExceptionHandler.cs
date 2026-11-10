@@ -1,19 +1,25 @@
-using FluentValidation;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
-using Payroll.Application.Common;
-using Payroll.Domain.Common;
+using Payroll.Api.Localization;
 
 namespace Payroll.Api.ErrorHandling;
 
+/// <summary>
+/// The single exception → RFC 7807 entry point (§9, D17). It picks the mapper registered for the exception's type
+/// (or its closest base type); anything unmapped is a 500 that is logged with its traceId and leaks no details.
+/// </summary>
 public sealed class ApiExceptionHandler(
     IProblemDetailsService problemDetailsService,
+    IEnumerable<IProblemMapper> mappers,
+    IApiText text,
     ILogger<ApiExceptionHandler> logger) : IExceptionHandler
 {
+    private readonly Dictionary<Type, IProblemMapper> _mappers = mappers.ToDictionary(mapper => mapper.ExceptionType);
+
     public async ValueTask<bool> TryHandleAsync(
         HttpContext httpContext, Exception exception, CancellationToken cancellationToken)
     {
-        var problem = ToProblem(exception);
+        var problem = FindMapper(exception.GetType())?.Map(exception) ?? Unexpected();
         if (problem.Status == StatusCodes.Status500InternalServerError)
         {
             // Logged once, here, with the same traceId the client receives (§16).
@@ -31,33 +37,22 @@ public sealed class ApiExceptionHandler(
         });
     }
 
-    private static ProblemDetails ToProblem(Exception exception) => exception switch
+    private IProblemMapper? FindMapper(Type? type)
     {
-        ValidationException validation => new HttpValidationProblemDetails(ToFieldErrors(validation))
+        for (; type is not null; type = type.BaseType)
         {
-            Status = StatusCodes.Status400BadRequest,
-            Title = "One or more validation errors occurred.",
-        },
-        NotFoundException notFound => Problem(StatusCodes.Status404NotFound, "Resource not found.", notFound.Message),
-        ConflictException { Errors.Count: > 0 } conflict =>
-            new HttpValidationProblemDetails(conflict.Errors.ToDictionary(e => e.Key, e => e.Value))
+            if (_mappers.TryGetValue(type, out var mapper))
             {
-                Status = StatusCodes.Status409Conflict,
-                Title = "Conflict.",
-                Detail = conflict.Message,
-            },
-        ConflictException conflict => Problem(StatusCodes.Status409Conflict, "Conflict.", conflict.Message),
-        UnauthorizedException unauthorized => Problem(StatusCodes.Status401Unauthorized, "Unauthorized.", unauthorized.Message),
-        ForbiddenException forbidden => Problem(StatusCodes.Status403Forbidden, "Forbidden.", forbidden.Message),
-        DomainException domain => Problem(StatusCodes.Status422UnprocessableEntity, "Business rule violated.", domain.Message),
-        _ => Problem(StatusCodes.Status500InternalServerError, "An unexpected error occurred.", detail: null),
+                return mapper;
+            }
+        }
+
+        return null;
+    }
+
+    private ProblemDetails Unexpected() => new()
+    {
+        Status = StatusCodes.Status500InternalServerError,
+        Title = text.Error("Title.Unexpected", "An unexpected error occurred."),
     };
-
-    private static ProblemDetails Problem(int status, string title, string? detail) =>
-        new() { Status = status, Title = title, Detail = detail };
-
-    private static Dictionary<string, string[]> ToFieldErrors(ValidationException exception) =>
-        exception.Errors
-            .GroupBy(failure => JsonPath.ToCamelCase(failure.PropertyName))
-            .ToDictionary(group => group.Key, group => group.Select(failure => failure.ErrorMessage).ToArray());
 }

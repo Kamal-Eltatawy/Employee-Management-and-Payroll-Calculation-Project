@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="Title.Validation" xml:space="preserve"><value>One or more validation errors occurred.</value></data>
+  <data name="Title.NotFound" xml:space="preserve"><value>Resource not found.</value></data>
+  <data name="Title.Conflict" xml:space="preserve"><value>Conflict.</value></data>
+  <data name="Title.Unauthorized" xml:space="preserve"><value>Unauthorized.</value></data>
+  <data name="Title.Forbidden" xml:space="preserve"><value>Forbidden.</value></data>
+  <data name="Title.BusinessRule" xml:space="preserve"><value>Business rule violated.</value></data>
+  <data name="Title.Unexpected" xml:space="preserve"><value>An unexpected error occurred.</value></data>
+  <data name="Model.InvalidFormat" xml:space="preserve"><value>The value is not in a valid format (dates are yyyy-MM-dd, numbers use a dot for decimals).</value></data>
+  <data name="Model.InvalidJson" xml:space="preserve"><value>The request body is not valid JSON.</value></data>
+  <data name="Model.Invalid" xml:space="preserve"><value>The value is not valid.</value></data>
+  <data name="NotFound.Employee" xml:space="preserve"><value>Employee {0} was not found.</value></data>
+  <data name="NotFound.PayComponentType" xml:space="preserve"><value>Pay component type {0} was not found.</value></data>
+  <data name="NotFound.PayrollPolicy" xml:space="preserve"><value>Payroll policy {0} was not found.</value></data>
+  <data name="Auth.InvalidCredentials" xml:space="preserve"><value>Invalid credentials.</value></data>
+  <data name="Auth.OwnPayslipOnly" xml:space="preserve"><value>You can only view your own payslip.</value></data>
+  <data name="Employee.EmailInUse" xml:space="preserve"><value>Email is already in use.</value></data>
+  <data name="Employee.Inactive" xml:space="preserve"><value>Employee is inactive.</value></data>
+  <data name="Employee.HiredAfterMonth" xml:space="preserve"><value>Employee was hired in {0}.</value></data>
+  <data name="Conflict.Concurrency" xml:space="preserve"><value>The record was modified by another user.</value></data>
+  <data name="Conflict.Unique" xml:space="preserve"><value>The record conflicts with an existing record.</value></data>
+  <data name="Validation.DepartmentNotFound" xml:space="preserve"><value>Department does not exist.</value></data>
+  <data name="Validation.TaxSchemeNotFound" xml:space="preserve"><value>Tax scheme does not exist.</value></data>
+  <data name="Validation.PayComponentTypeNotFound" xml:space="preserve"><value>Pay component type does not exist.</value></data>
+  <data name="Validation.DepartmentRequired" xml:space="preserve"><value>Department is required.</value></data>
+  <data name="Validation.TaxSchemeRequired" xml:space="preserve"><value>Tax scheme is required.</value></data>
+  <data name="Validation.PayComponentTypeRequired" xml:space="preserve"><value>Pay component type is required.</value></data>
+  <data name="Validation.DuplicatePayComponentType" xml:space="preserve"><value>This pay component type is already assigned.</value></data>
+  <data name="Validation.HireDateInFuture" xml:space="preserve"><value>Hire date cannot be in the future.</value></data>
+  <data name="Validation.RowVersionInvalid" xml:space="preserve"><value>Row version is not valid.</value></data>
+  <data name="Validation.SortByInvalid" xml:space="preserve"><value>Sort by must be one of: name, hireDate, salary.</value></data>
+  <data name="Validation.SortDirInvalid" xml:space="preserve"><value>Sort direction must be asc or desc.</value></data>
+  <data name="Validation.MonthFormat" xml:space="preserve"><value>Month must be in the format yyyy-MM.</value></data>
+  <data name="PayComponentType.DeductionNotTaxable" xml:space="preserve"><value>A deduction cannot be taxable.</value></data>
+  <data name="PayComponentType.NameTaken" xml:space="preserve"><value>A pay component type named '{0}' already exists.</value></data>
+  <data name="PayComponentType.InUse" xml:space="preserve"><value>Pay component type '{0}' is assigned to at least one employee (including deleted employees) and cannot be deleted.</value></data>
+  <data name="Policy.NoneForMonth" xml:space="preserve"><value>No payroll policy is effective for {0}.</value></data>
+  <data name="Policy.FirstDayOfMonth" xml:space="preserve"><value>A payroll policy must take effect on the first day of a month.</value></data>
+  <data name="Policy.ClosedMonth" xml:space="preserve"><value>A payroll policy can only take effect from the current month or later; past months are closed.</value></data>
+  <data name="Policy.CoversClosedMonths" xml:space="preserve"><value>The payroll policy effective from {0} covers closed months and cannot be changed or deleted. To correct the current month, create a policy effective from the first day of this month.</value></data>
+  <data name="Policy.DateTaken" xml:space="preserve"><value>The {0} scheme already has a policy effective from {1}.</value></data>
+  <data name="Policy.CannotMoveScheme" xml:space="preserve"><value>A payroll policy cannot move to another tax scheme. Create a policy in that scheme instead.</value></data>
+  <data name="Policy.BracketShape.Progressive" xml:space="preserve"><value>A progressive tax needs at least one tax bracket.</value></data>
+  <data name="Policy.BracketShape.Flat" xml:space="preserve"><value>A flat tax needs exactly one open-ended tax bracket holding its rate.</value></data>
+  <data name="Policy.BracketShape.Exempt" xml:space="preserve"><value>A tax-exempt scheme has no tax brackets.</value></data>
+  <data name="Policy.BracketLastOpen" xml:space="preserve"><value>The last tax bracket must be open-ended (no upper bound).</value></data>
+  <data name="Policy.BracketOnlyLastOpen" xml:space="preserve"><value>Only the last tax bracket can be open-ended.</value></data>
+  <data name="Policy.BracketAscending" xml:space="preserve"><value>Upper bounds must be strictly ascending.</value></data>
+  <data name="Title.TooManyRequests" xml:space="preserve"><value>Too many requests.</value></data>
+  <data name="Auth.TooManyAttempts" xml:space="preserve"><value>Too many attempts. Wait a minute and try again.</value></data>
+</root>

@@ -2,6 +2,7 @@ using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 using Payroll.Application.Auth;
 using Payroll.Application.Common;
+using Payroll.Application.Dashboard;
 using Payroll.Application.Departments;
 using Payroll.Application.Employees;
 using Payroll.Application.PayComponents;
@@ -21,12 +22,15 @@ public static class DependencyInjection
         services.AddValidatorsFromAssembly(typeof(DependencyInjection).Assembly);
 
         services.AddScoped<IEmployeeService, EmployeeService>();
+        services.AddScoped<IEmployeeReferenceChecker, EmployeeReferenceChecker>();
         services.AddScoped<IDepartmentService, DepartmentService>();
         services.AddScoped<IPayslipService, PayslipService>();
         services.AddScoped<IPayrollPolicyService, PayrollPolicyService>();
         services.AddScoped<ITaxSchemeService, TaxSchemeService>();
         services.AddScoped<IPayComponentTypeService, PayComponentTypeService>();
         services.AddScoped<IAuthService, AuthService>();
+        services.AddSingleton(new RefreshTokenOptions()); // the Api replaces it with the configured values
+        services.AddScoped<IDashboardService, DashboardService>();
 
         // Domain calculators: pure and stateless.
         services.AddSingleton<IProrationCalculator, CalendarDayProrationCalculator>();

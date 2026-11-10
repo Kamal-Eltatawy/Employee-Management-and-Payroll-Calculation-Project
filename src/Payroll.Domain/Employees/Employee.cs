@@ -123,13 +123,13 @@ public sealed class Employee
     {
         if (Status != EmployeeStatus.Active)
         {
-            throw new DomainException("Employee is inactive.");
+            throw new DomainException(DomainErrorCodes.EmployeeInactive, "Employee is inactive.");
         }
 
         var hireMonth = PayrollMonth.From(HireDate);
         if (month < hireMonth)
         {
-            throw new DomainException($"Employee was hired in {hireMonth}.");
+            throw new DomainException(DomainErrorCodes.HiredAfterMonth, $"Employee was hired in {hireMonth}.", hireMonth.ToString());
         }
     }
 

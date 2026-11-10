@@ -27,8 +27,12 @@ public interface IUserCredentialStore
     Task<UserCredentials?> FindByIdAsync(int userId, CancellationToken ct);
 }
 
-/// <summary>A refresh token as stored (only its hash is persisted). Tokens issued from one login share a family (D55).</summary>
-public sealed record StoredRefreshToken(Guid Id, int UserId, Guid FamilyId, DateTime ExpiresAtUtc, DateTime? RevokedAtUtc);
+/// <summary>
+/// A refresh token as stored (only its hash is persisted). Tokens issued from one login share a family (D55).
+/// <c>RotatedAtUtc</c>: replaced by a newer token. <c>RevokedAtUtc</c>: the whole session was ended (logout, reuse, inactive).
+/// </summary>
+public sealed record StoredRefreshToken(
+    Guid Id, int UserId, Guid FamilyId, DateTime ExpiresAtUtc, DateTime? RotatedAtUtc, DateTime? RevokedAtUtc);
 
 /// <summary>The raw token is returned once, to be put in the HttpOnly cookie; it is never stored.</summary>
 public sealed record IssuedRefreshToken(string Value, DateTime ExpiresAtUtc);
@@ -40,7 +44,7 @@ public interface IRefreshTokenStore
 
     Task<StoredRefreshToken?> FindAsync(string rawToken, CancellationToken ct);
 
-    Task RevokeAsync(Guid tokenId, DateTime utcNow, CancellationToken ct);
+    Task RotateAsync(Guid tokenId, DateTime utcNow, CancellationToken ct);
 
     Task RevokeFamilyAsync(Guid familyId, DateTime utcNow, CancellationToken ct);
 }

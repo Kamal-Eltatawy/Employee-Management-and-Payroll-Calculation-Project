@@ -1,13 +1,29 @@
-<div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
-  <h1 class="h3 mb-0">{{ isHr() ? 'Payslip' : 'My payslip' }}</h1>
-  <div class="d-flex align-items-center gap-2">
-    <label class="form-label mb-0" for="month">Month</label>
-    <input id="month" class="form-control" type="month" [value]="selectedMonth()" (change)="changeMonth(monthInput.value)" #monthInput />
+<header class="page-header no-print">
+  <div>
     @if (isHr()) {
-      <a class="btn btn-outline-secondary text-nowrap" routerLink="/employees">Back to list</a>
+      <a class="back-link" routerLink="/employees">
+        <app-icon name="back" [size]="16" [flip]="true" />
+        <span i18n="@@employees.backToList">Employees</span>
+      </a>
+    }
+    <h1>
+      @if (isHr()) {
+        <ng-container i18n="@@payslip.title">Payslip</ng-container>
+      } @else {
+        <ng-container i18n="@@payslip.myTitle">My payslip</ng-container>
+      }
+    </h1>
+  </div>
+  <div class="actions">
+    <app-month-picker [value]="selectedMonth()" (valueChange)="changeMonth($event)" />
+    @if (payslip()) {
+      <button type="button" class="btn btn-outline-secondary d-inline-flex align-items-center gap-2" (click)="print()">
+        <app-icon name="print" />
+        <span i18n="@@payslip.print">Print</span>
+      </button>
     }
   </div>
-</div>
+</header>
 
 @if (warning()) {
   <div class="alert alert-warning" role="alert">{{ warning() }}</div>
@@ -16,78 +32,115 @@
   <div class="alert alert-danger" role="alert">{{ error() }}</div>
 }
 @if (loading() && !payslip()) {
-  <p class="text-body-secondary">Loading…</p>
+  <p class="text-body-secondary" i18n="@@common.loading">Loading…</p>
 }
 
 @if (payslip(); as slip) {
   @if (slip.isNetNegative) {
-    <div class="alert alert-danger" role="alert">
+    <div class="alert alert-danger no-print" role="alert" i18n="@@payslip.negativeNet">
       Deductions exceed earnings this month: the net pay is negative. Review the deductions before paying.
     </div>
   }
 
-  <article class="payslip card shadow-sm">
-    <header class="card-body border-bottom">
-      <div class="d-flex justify-content-between flex-wrap gap-2">
+  <article class="payslip surface">
+    <header class="doc-head">
+      <div class="doc-brand">
+        <span class="brand-mark">P</span>
         <div>
-          <h2 class="h4 mb-1">{{ slip.employeeName }}</h2>
-          <div class="text-body-secondary">Employee #{{ slip.employeeId }} · {{ slip.month }}</div>
+          <strong i18n="@@app.name">Payroll</strong>
+          <span class="doc-kind" i18n="@@payslip.document">Payslip</span>
         </div>
-        <div class="text-md-end small text-body-secondary">
-          <div>Tax scheme: <strong class="text-body">{{ slip.taxSchemeName }}</strong> ({{ slip.taxMethod }})</div>
-          <div>Payroll policy effective from {{ slip.policyEffectiveFrom }}</div>
-          @if (slip.prorationFactor < 1) {
-            <div>Hire month: {{ slip.daysPaid }} of {{ slip.daysInMonth }} days paid</div>
-          }
-        </div>
+      </div>
+      <div class="doc-period">
+        <span i18n="@@payslip.period">Pay period</span>
+        <strong>{{ monthLabel() }}</strong>
       </div>
     </header>
 
-    <div class="card-body">
-      <div class="row g-4">
-        <section class="col-lg-6">
-          <h3 class="h6 text-uppercase text-body-secondary">Earnings</h3>
-          <table class="table table-sm mb-0">
-            <tbody>
-              <tr><td>Base salary</td><td class="amount">{{ slip.baseSalary | money }}</td></tr>
-              @for (line of slip.allowances; track line.name) {
-                <tr>
-                  <td>{{ line.name }} <span class="badge text-bg-light border">{{ line.isTaxable ? 'taxable' : 'non-taxable' }}</span></td>
-                  <td class="amount">{{ line.amount | money }}</td>
-                </tr>
-              }
-              <tr class="total"><td>Gross pay</td><td class="amount">{{ slip.grossPay | money }}</td></tr>
-              <tr class="text-body-secondary"><td>Taxable income</td><td class="amount">{{ slip.taxableIncome | money }}</td></tr>
-            </tbody>
-          </table>
-        </section>
-
-        <section class="col-lg-6">
-          <h3 class="h6 text-uppercase text-body-secondary">Deductions</h3>
-          <table class="table table-sm mb-0">
-            <tbody>
-              <tr><td>Income tax</td><td class="amount">{{ slip.incomeTax | money }}</td></tr>
-              <tr><td>Social insurance</td><td class="amount">{{ slip.socialInsurance | money }}</td></tr>
-              @for (line of slip.deductions; track line.name) {
-                <tr><td>{{ line.name }}</td><td class="amount">{{ line.amount | money }}</td></tr>
-              }
-              <tr class="total">
-                <td>Total deductions</td>
-                <td class="amount">{{ slip.incomeTax + slip.socialInsurance + slip.otherDeductionsTotal | money }}</td>
-              </tr>
-            </tbody>
-          </table>
-        </section>
+    <dl class="meta">
+      <div>
+        <dt i18n="@@payslip.employee">Employee</dt>
+        <dd>{{ slip.employeeName }}</dd>
       </div>
-    </div>
+      <div>
+        <dt i18n="@@payslip.employeeNo">Employee no.</dt>
+        <dd><bdi>#{{ slip.employeeId }}</bdi></dd>
+      </div>
+      <div>
+        <dt i18n="@@field.taxScheme">Tax scheme</dt>
+        <dd>{{ slip.taxSchemeName }} <span class="muted">· {{ methodLabel(slip.taxMethod) }}</span></dd>
+      </div>
+      <div>
+        <dt i18n="@@payslip.policy">Payroll policy from</dt>
+        <dd><bdi>{{ slip.policyEffectiveFrom }}</bdi></dd>
+      </div>
+      <div>
+        <dt i18n="@@payslip.daysPaid">Days paid</dt>
+        <dd>
+          <ng-container i18n="@@payslip.daysOf">{{ slip.daysPaid }} of {{ slip.daysInMonth }}</ng-container>
+          @if (slip.prorationFactor < 1) {
+            <span class="pill pill-info pill-gap" i18n="@@payslip.hireMonth">Hire month</span>
+          }
+        </dd>
+      </div>
+    </dl>
 
-    <footer class="card-footer net d-flex justify-content-between align-items-center" [class.negative]="slip.isNetNegative">
-      <span class="fw-semibold">Net pay</span>
-      <span class="amount fs-4 fw-bold">{{ slip.netPay | money }}</span>
+    <section class="summary">
+      <div class="tile">
+        <span i18n="@@payslip.gross">Gross pay</span>
+        <strong class="amount">{{ slip.grossPay | money }}</strong>
+      </div>
+      <div class="tile">
+        <span i18n="@@payslip.totalDeductions">Total deductions</span>
+        <strong class="amount">{{ totalDeductions() | money }}</strong>
+      </div>
+      <div class="tile net" [class.negative]="slip.isNetNegative">
+        <span i18n="@@payslip.net">Net pay</span>
+        <strong class="amount">{{ slip.netPay | money }}</strong>
+      </div>
+    </section>
+
+    <section class="lines">
+      <div>
+        <h2 class="section-title" i18n="@@payslip.earnings">Earnings</h2>
+        <table class="table table-sm mb-0">
+          <tbody>
+            <tr><td i18n="@@payslip.baseSalary">Base salary</td><td class="amount">{{ slip.baseSalary | money }}</td></tr>
+            @for (line of slip.allowances; track line.name) {
+              <tr>
+                <td>
+                  {{ line.name }}
+                  @if (line.isTaxable) {
+                    <span class="pill pill-warning pill-gap" i18n="@@payslip.taxable">Taxable</span>
+                  } @else {
+                    <span class="pill pill-muted pill-gap" i18n="@@payslip.nonTaxable">Non-taxable</span>
+                  }
+                </td>
+                <td class="amount">{{ line.amount | money }}</td>
+              </tr>
+            }
+            <tr class="total"><td i18n="@@payslip.gross">Gross pay</td><td class="amount">{{ slip.grossPay | money }}</td></tr>
+            <tr class="muted"><td i18n="@@payslip.taxableIncome">Taxable income</td><td class="amount">{{ slip.taxableIncome | money }}</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div>
+        <h2 class="section-title" i18n="@@payslip.deductions">Deductions</h2>
+        <table class="table table-sm mb-0">
+          <tbody>
+            <tr><td i18n="@@payslip.incomeTax">Income tax</td><td class="amount">{{ slip.incomeTax | money }}</td></tr>
+            <tr><td i18n="@@payslip.socialInsurance">Social insurance</td><td class="amount">{{ slip.socialInsurance | money }}</td></tr>
+            @for (line of slip.deductions; track line.name) {
+              <tr><td>{{ line.name }}</td><td class="amount">{{ line.amount | money }}</td></tr>
+            }
+            <tr class="total"><td i18n="@@payslip.totalDeductions">Total deductions</td><td class="amount">{{ totalDeductions() | money }}</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <footer class="doc-foot" i18n="@@payslip.roundingNote">
+      Amounts are calculated at full precision and rounded to two decimals only for display, so lines may differ from the totals by 0.01.
     </footer>
   </article>
-
-  <p class="small text-body-secondary mt-2">
-    Amounts are calculated at full precision and rounded to two decimals only for display, so lines may differ from the totals by 0.01.
-  </p>
 }

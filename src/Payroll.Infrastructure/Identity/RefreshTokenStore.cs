@@ -34,13 +34,13 @@ public sealed class RefreshTokenStore(AppDbContext db, IOptions<JwtOptions> opti
         var token = await db.RefreshTokens.AsNoTracking().SingleOrDefaultAsync(t => t.TokenHash == hash, ct);
         return token is null
             ? null
-            : new StoredRefreshToken(token.Id, token.UserId, token.FamilyId, token.ExpiresAtUtc, token.RevokedAtUtc);
+            : new StoredRefreshToken(token.Id, token.UserId, token.FamilyId, token.ExpiresAtUtc, token.RotatedAtUtc, token.RevokedAtUtc);
     }
 
-    public async Task RevokeAsync(Guid tokenId, DateTime utcNow, CancellationToken ct)
+    public async Task RotateAsync(Guid tokenId, DateTime utcNow, CancellationToken ct)
     {
         var token = await db.RefreshTokens.SingleAsync(t => t.Id == tokenId, ct);
-        token.RevokedAtUtc ??= utcNow;
+        token.RotatedAtUtc ??= utcNow;
     }
 
     public async Task RevokeFamilyAsync(Guid familyId, DateTime utcNow, CancellationToken ct)

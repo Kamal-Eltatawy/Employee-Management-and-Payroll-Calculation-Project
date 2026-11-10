@@ -38,6 +38,8 @@ public sealed class ApiFixture : IAsyncLifetime
         Environment.SetEnvironmentVariable("Jwt__SigningKey", "integration-tests-signing-key-at-least-32-characters");
         Environment.SetEnvironmentVariable("Seed__HrPassword", HrPassword);
         Environment.SetEnvironmentVariable("Seed__EmployeePassword", EmployeePassword);
+        Environment.SetEnvironmentVariable("Auth__RefreshReuseGraceSeconds", "0"); // so the reuse test sees reuse immediately
+        Environment.SetEnvironmentVariable("RateLimiting__AuthPermitLimit", "1000"); // many logins from one test client
 
         Factory = new WebApplicationFactory<Program>().WithWebHostBuilder(builder => builder.UseEnvironment("Development"));
         _ = Factory.Server; // starts the host: migrations + seed
@@ -70,4 +72,4 @@ public sealed class ApiFixture : IAsyncLifetime
     public Task<(HttpClient Client, LoginBody Login)> SignInAsHrAsync(CancellationToken ct) => SignInAsync(HrEmail, HrPassword, ct);
 }
 
-public sealed record LoginBody(string AccessToken, DateTime ExpiresAtUtc, string Role, int? EmployeeId);
+public sealed record LoginBody(string AccessToken, DateTime ExpiresAtUtc, string Role, int? EmployeeId, string Email);

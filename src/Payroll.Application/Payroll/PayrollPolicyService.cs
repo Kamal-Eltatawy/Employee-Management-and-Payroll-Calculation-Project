@@ -43,7 +43,7 @@ public sealed class PayrollPolicyService(
     {
         var payrollMonth = MonthParameter.ParseOrCurrent(month, clock);
         var policy = await policies.GetEffectiveForAsync(taxSchemeId, payrollMonth, ct)
-            ?? throw new DomainException($"No payroll policy is effective for {payrollMonth}.");
+            ?? throw new DomainException(ErrorCodes.NoPolicyForMonth, $"No payroll policy is effective for {payrollMonth}.", payrollMonth.ToString());
         return ToResponse(policy, clock.CurrentMonth());
     }
 
@@ -65,7 +65,8 @@ public sealed class PayrollPolicyService(
         if (request.TaxSchemeId != policy.TaxSchemeId)
         {
             throw new ValidationException([new ValidationFailure(nameof(request.TaxSchemeId),
-                "A payroll policy cannot move to another tax scheme. Create a policy in that scheme instead.")]);
+                "A payroll policy cannot move to another tax scheme. Create a policy in that scheme instead.")
+            { ErrorCode = ErrorCodes.PolicyCannotMoveScheme }]);
         }
 
         var scheme = await ValidateAsync(request, excludeId: id, ct);
@@ -92,9 +93,10 @@ public sealed class PayrollPolicyService(
         var policy = await LoadAsync(id, ct);
         if (!policy.IsModifiable(clock.CurrentMonth()))
         {
-            throw new ConflictException(
+            throw ConflictException.Coded(ErrorCodes.PolicyCoversClosedMonths,
                 $"The payroll policy effective from {policy.EffectiveFrom:yyyy-MM-dd} covers closed months and cannot be changed or deleted. " +
-                "To correct the current month, create a policy effective from the first day of this month.");
+                "To correct the current month, create a policy effective from the first day of this month.",
+                field: null, policy.EffectiveFrom.ToString("yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture));
         }
 
         return policy;
@@ -106,16 +108,19 @@ public sealed class PayrollPolicyService(
         await validator.ValidateAndThrowAsync(request, ct);
 
         var scheme = await taxSchemes.GetByIdAsync(request.TaxSchemeId, ct)
-            ?? throw new ValidationException([new ValidationFailure(nameof(request.TaxSchemeId), "Tax scheme does not exist.")]);
+            ?? throw new ValidationException([new ValidationFailure(nameof(request.TaxSchemeId), "Tax scheme does not exist.")
+            { ErrorCode = ErrorCodes.TaxSchemeNotFound }]);
         if (scheme.DescribeBracketShapeProblem(request.TaxBrackets.Count) is { } problem)
         {
-            throw new ValidationException([new ValidationFailure(nameof(request.TaxBrackets), problem)]);
+            throw new ValidationException([new ValidationFailure(nameof(request.TaxBrackets), problem)
+            { ErrorCode = $"{ErrorCodes.BracketShape}.{scheme.Method}" }]);
         }
 
         if (await policies.EffectiveFromExistsAsync(request.TaxSchemeId, request.EffectiveFrom, excludeId, ct))
         {
-            throw ConflictException.ForField("effectiveFrom",
-                $"The {scheme.Name} scheme already has a policy effective from {request.EffectiveFrom:yyyy-MM-dd}.");
+            throw ConflictException.Coded(ErrorCodes.PolicyDateTaken,
+                $"The {scheme.Name} scheme already has a policy effective from {request.EffectiveFrom:yyyy-MM-dd}.", "effectiveFrom",
+                scheme.Name, request.EffectiveFrom.ToString("yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture));
         }
 
         return scheme;

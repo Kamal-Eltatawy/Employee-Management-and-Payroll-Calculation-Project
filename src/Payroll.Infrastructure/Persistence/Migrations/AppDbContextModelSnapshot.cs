@@ -168,6 +168,10 @@ namespace Payroll.Infrastructure.Persistence.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<string>("NameAr")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("Name")
@@ -179,27 +183,32 @@ namespace Payroll.Infrastructure.Persistence.Migrations
                         new
                         {
                             Id = 1,
-                            Name = "Engineering"
+                            Name = "Engineering",
+                            NameAr = "الهندسة"
                         },
                         new
                         {
                             Id = 2,
-                            Name = "Finance"
+                            Name = "Finance",
+                            NameAr = "المالية"
                         },
                         new
                         {
                             Id = 3,
-                            Name = "Human Resources"
+                            Name = "Human Resources",
+                            NameAr = "الموارد البشرية"
                         },
                         new
                         {
                             Id = 4,
-                            Name = "Operations"
+                            Name = "Operations",
+                            NameAr = "العمليات"
                         },
                         new
                         {
                             Id = 5,
-                            Name = "Sales"
+                            Name = "Sales",
+                            NameAr = "المبيعات"
                         });
                 });
 
@@ -326,6 +335,10 @@ namespace Payroll.Infrastructure.Persistence.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<string>("NameAr")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
                     b.Property<DateTime>("UpdatedAtUtc")
                         .HasColumnType("datetime2");
 
@@ -344,6 +357,7 @@ namespace Payroll.Infrastructure.Persistence.Migrations
                             IsTaxable = false,
                             Kind = 1,
                             Name = "Transport",
+                            NameAr = "بدل انتقال",
                             UpdatedAtUtc = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
@@ -353,6 +367,7 @@ namespace Payroll.Infrastructure.Persistence.Migrations
                             IsTaxable = true,
                             Kind = 1,
                             Name = "Housing",
+                            NameAr = "بدل سكن",
                             UpdatedAtUtc = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
@@ -362,6 +377,7 @@ namespace Payroll.Infrastructure.Persistence.Migrations
                             IsTaxable = true,
                             Kind = 1,
                             Name = "Meal",
+                            NameAr = "بدل وجبات",
                             UpdatedAtUtc = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
@@ -371,6 +387,7 @@ namespace Payroll.Infrastructure.Persistence.Migrations
                             IsTaxable = false,
                             Kind = 2,
                             Name = "Loan Repayment",
+                            NameAr = "سداد قرض",
                             UpdatedAtUtc = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
@@ -380,6 +397,7 @@ namespace Payroll.Infrastructure.Persistence.Migrations
                             IsTaxable = false,
                             Kind = 2,
                             Name = "Medical Plan",
+                            NameAr = "التأمين الطبي",
                             UpdatedAtUtc = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
                         });
                 });
@@ -556,6 +574,10 @@ namespace Payroll.Infrastructure.Persistence.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<string>("NameAr")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("Name")
@@ -568,19 +590,22 @@ namespace Payroll.Infrastructure.Persistence.Migrations
                         {
                             Id = 1,
                             Method = 1,
-                            Name = "Standard"
+                            Name = "Standard",
+                            NameAr = "النظام القياسي"
                         },
                         new
                         {
                             Id = 2,
                             Method = 2,
-                            Name = "Flat Rate"
+                            Name = "Flat Rate",
+                            NameAr = "النسبة الثابتة"
                         },
                         new
                         {
                             Id = 3,
                             Method = 3,
-                            Name = "Tax Exempt"
+                            Name = "Tax Exempt",
+                            NameAr = "معفى من الضريبة"
                         });
                 });
 
@@ -673,6 +698,9 @@ namespace Payroll.Infrastructure.Persistence.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime?>("RevokedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("RotatedAtUtc")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("TokenHash")

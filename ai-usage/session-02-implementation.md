@@ -1,0 +1,256 @@
+# Session 2: Implementation (Claude, Cowork mode)
+
+> **About this file.** Like session 1, this transcript was reconstructed by the assistant from its own session context, at the author's request, because the desktop app offers no usable export.
+>
+> - **Kamal's messages and answers are reproduced verbatim** (Egyptian Arabic with English technical terms). Pasted console output and screenshots are summarised in square brackets.
+> - **The assistant's replies are condensed and written in English** (they were originally in Arabic): same content, decisions and recommendations.
+> - Tool calls (file writes, shell commands in the sandbox) are summarised in square brackets. No secrets appear: `.env` values were only ever checked for presence and consistency, never printed.
+> - Nothing was omitted on purpose.
+>
+> Date: 2026-11-10. Working mode: D52 "fast mode" (one batch of code + tests per phase, one build/test run by Kamal per phase).
+
+---
+
+## 1. Phase 1, Task 6: Angular scaffold
+
+**Kamal:**
+
+> كمل
+
+**Assistant:** [Read `CLAUDE.md`, `PROGRESS.md` and the Task 6 plan. Scaffolded Angular 22.2.6 in `/tmp`, `npm install` + `bootstrap@5.3.8`, copied the app into `client/` without `node_modules`, configured the dev proxy and Sass deprecations, wrote `_tokens.scss`, `styles.scss` and the shell layout, deleted the unused scaffold files (asked for delete permission), verified `ng build` in a sandbox copy.] Two deviations from the plan, recorded in PROGRESS: Bootstrap's partial is `alert` (not `alerts`), and `mixed-decls` is obsolete in current Sass. Gave Kamal the run + commit commands.
+
+**Kamal:** [pasted `npm install` / `npm start` output: Node v22.22.0 is rejected by Angular CLI 22, which needs ≥ 22.22.3.]
+
+**Assistant:** Upgrade Node (winget LTS or nvm), reopen the terminal, reinstall, `npm start`.
+
+**Kamal:** [pasted output: Node v26.13.0, `npm install` OK with npm 11 install-scripts warnings, `ng serve` running.]
+
+**Assistant:** It runs; the npm 11 warnings are harmless. Updated PROGRESS. Commit commands.
+
+**Kamal:**
+
+> cd ..
+> git status --short client   # node_modules و .angular ممنوع يظهروا هنا
+> git add client docs/plans/PROGRESS.md
+> git commit -m "feat(client): scaffold Angular 22 client with Bootstrap SCSS, shell layout and dev proxy"
+> ارن دي في انهي باص
+
+**Assistant:** From the repository root, in a new PowerShell window (the first one is busy with `npm start`).
+
+**Kamal:** [screenshot: Visual Studio Git Changes, commit `a07590e4` with 26 client files; error list shows "The SDK 'Microsoft.NET.Sdk' specified could not be found".]
+
+**Assistant:** The commit is clean (no `node_modules`). The VS error comes from an IDE that does not support .NET 10, not from the code (CLI builds are green); use VS 2026 or the CLI. Remaining: the Task 5 run checks.
+
+**Kamal:** [screenshot: `http://localhost:5080` returns a 404 problem+json with `traceId`; `docker compose up -d db` running; `dotnet run` listening on 5080.]
+
+**Assistant:** Task 5 is verified. Asked for the Swagger check.
+
+**Kamal:** [screenshot: Swagger UI "Payroll API v1", "No operations defined in spec!".]
+
+**Assistant:** Expected: no endpoints yet. Phase 1 done. Started Phase 2.
+
+---
+
+## 2. Phase 2: Employee CRUD backend
+
+**Assistant:** [Read the master plan and spec sections. Wrote in one batch: Domain (`Guard`, `Department`, `PayComponentKind`, `PayComponentType`, `EmployeeStatus`, `PayComponentAssignment`, `EmployeePayComponent`, `Employee` with guards, email normalisation, in-place pay component replacement, soft delete); Application (contracts, `IEmployeeWriteRequest`, validators, search whitelist, `EmployeeService`, `DepartmentService`, Mapster config, repository abstractions); Infrastructure (`AppDbContext` with the single place for DB-error translation, configurations, `HasData`, repositories, `DevelopmentDataSeeder`, migrate-and-seed in Development); Api (controllers, Program wiring); tests (new Domain and Application test projects with a hand-written `FakeDatabase`, controller tests).] Deviations noted: EF Design package in the Api project (the EF startup project needs it); implicit required attributes suppressed so FluentValidation produces all field errors with camelCase keys.
+
+**Kamal:**
+
+> Warning As Error: Package 'System.Security.Cryptography.Pkcs' 9.0.11 has a known moderate severity vulnerability, https://github.com/advisories/GHSA-2fmv-rv2c-59x7
+> Warning As Error: Package 'System.Security.Cryptography.Pkcs' 9.0.11 has a known high severity vulnerability, https://github.com/advisories/GHSA-846f-f764-76mx
+> […repeated]
+
+**Assistant:** [Checked the NuGet catalogue.] Transitive package from Microsoft.Data.SqlClient; enabled central transitive pinning and pinned 10.0.14.
+
+**Kamal:**
+
+> The type 'PayComponentAssignment[]' may not be used as the target type of new()
+> The type 'PayComponentAssignment[]' may not be used as the target type of new()
+> The type or namespace name 'Infrastructure' does not exist in the namespace 'Payroll' (are you missing an assembly reference?)
+> The type or namespace name 'Controllers' does not exist in the namespace 'Payroll.Api' (are you missing an assembly reference?)
+> The type or namespace name 'EmployeesController' could not be found (are you missing a using directive or an assembly reference?)
+
+**Assistant:** A single-element `params` call with target-typed `new()` is read as the array; made the type explicit in the seeder. The other errors cascade from it.
+
+**Kamal:** [pasted output: the build cannot copy `Payroll.Api.exe` because the running API (PID 260100) locks it; the `Controllers` errors repeat.]
+
+**Assistant:** Not a code error: stop the running API, then rebuild.
+
+**Kamal:**
+
+> The type or namespace name 'Controllers' does not exist in the namespace 'Payroll.Api' (are you missing an assembly reference?)
+> The type or namespace name 'EmployeesController' could not be found (are you missing a using directive or an assembly reference?)
+
+**Assistant:** [Checked file timestamps: `Payroll.Api.dll` was older than the controllers.] The Api project itself still did not build; probably stale IDE errors. Asked for the CLI output of the Api project alone.
+
+**Kamal:** [pasted output: build succeeded for all 7 projects; `dotnet test` 112/112 passed; `dotnet ef migrations add InitialCreate` succeeded; `dotnet run` failed with `SqlException: Login failed for user 'sa'` (18456).]
+
+**Assistant:** [Checked `.env` without printing values: both passwords match.] Two possibilities: a local SQL Server on 1433, or a Docker volume created with another password. Gave diagnostic commands.
+
+**Kamal:** [pasted output: port 1433 is held by both `com.docker.backend` and `sqlservr`; the container is healthy.]
+
+**Assistant:** A local Windows SQL Server answers on 1433. Moved the container to host port 14333 in `docker-compose.yml`, `.env.example` and Kamal's `.env` (port only).
+
+**Kamal:**
+
+> تمام كله شغال كمل
+
+---
+
+## 3. Phase 3: payroll, and decision D53 (tax schemes)
+
+**Assistant:** [Wrote `PayrollMonth`, `PayrollPolicy` + `TaxBracket`, the proration, progressive tax and social insurance calculators, `PayrollCalculator`, `Payslip`, `Employee.EnsureEligibleForPayslip`, `PayslipService` (S11 order), `PayrollPolicyService` (read side), policy configuration + v1/v2 seed, `PayslipController`, `PayrollPoliciesController` and the tests, including both worked examples from spec §11.5.]
+
+**Kamal:**
+
+> هو اي paycomponetne  قصد علي ال allowances ?
+
+**Assistant:** No. A pay component covers both allowances and deductions (D2). `PayComponentType` is the master table (Name, Kind = Allowance/Deduction, IsTaxable), and `EmployeePayComponent` assigns a type to an employee with an amount. The calculator splits by `Kind`: allowances are prorated and taxable when `IsTaxable`; deductions are taken in full. New items are data, not code.
+
+**Kamal:**
+
+> وكمان عايز يبقي فيه باز انترفيس لكل حاجة عشا نلو ينفع يبقي عنج اكتر من تاككس واكتر من اي حاجة
+
+**Assistant:** Asked (one question, three options): a shared `IStatutoryDeduction` interface (recommended), a fully data-driven model, or leave as is.
+
+**Kamal's answer:**
+
+> نفس الكشف بمعني يعين انا مقلا عندي موظفين مختلفين كل واحد ليه نوع ضريبه مختلف نهاءي هل الابلكيشن بيسابورت د ه
+
+**Assistant:** Not supported yet: the effective policy is chosen by date only and applies to everyone. Asked again: tax schemes as data (recommended), schemes plus calculation methods (strategies), or document it as a next step.
+
+**Kamal's answer:**
+
+> أنظمة + طرق حساب
+
+**Assistant:** Implemented **D53**: `TaxScheme` (Standard / Flat Rate / Tax Exempt) with a `TaxMethod`; every employee has a `TaxSchemeId`; policies belong to a scheme (unique scheme + effective date); `ITaxCalculator.Method` with Progressive, Flat and Exempt implementations, all registered, and `PayrollCalculator` receives all of them and picks by the scheme's method; per-method bracket shapes; `GET /api/tax-schemes`; payslip and policy responses carry the scheme. Updated every test and added new ones. Recorded D53 in the spec.
+
+**Kamal:**
+
+> الاستندر اقدر اضيف شرايح علي زي م انا عايز ؟
+
+**Assistant:** Yes, any number of brackets: upper bounds strictly ascending, only the last open-ended, rates 0–100. The write API comes in Phase 5 (example JSON with 5 bands). A policy in effect is not edited; a new one is added from a future month.
+
+**Kamal:** [pasted output: `dotnet run` applies `InitialCreate`, `AddPayrollPolicies` and `AddPayrollPoliciesAndTaxSchemes` on a fresh database; the API is listening.]
+
+**Assistant:** OK. Two migrations for Phase 3 are fine. Asked for the test result and Swagger checks.
+
+**Kamal:** [pasted JSON: payslip of Ali Hassan for 2026-03 and 2026-04: Standard / Progressive, gross 20,000, taxable 19,000, tax 1,800, insurance 1,500, net 15,950; `GET /api/tax-schemes` returns the three schemes.]
+
+---
+
+## 4. Phase 4: Angular client
+
+**Assistant:** Matches the spec example exactly. [Added read-only `GET /api/pay-component-types` (needed by the form). Wrote the client: `ApiError` + `toApiError`, `problemDetailsInterceptor`, notifications/toasts, `MoneyPipe` (half away from zero), validators (`notInFuture`, `maxTwoDecimals`, `noDuplicateType`), `applyServerErrors`, field errors, pagination, native `<dialog>` confirm, employees list (filters/sort/paging in the URL, delete), create/edit form (tax scheme dropdown, pay-components FormArray, rowVersion, server error mapping), payslip page. Enabled `strict` + `strictTemplates`. Verified `ng build` and 20 logic tests in the sandbox.]
+
+**Kamal:** [pasted `npm start` output: the dev proxy gets `ECONNREFUSED` for `/api/...`.]
+
+**Assistant:** The API is not running; start `dotnet run` in a second terminal. A red "server cannot be reached" toast should have appeared.
+
+**Kamal:**
+
+> لا مظهرش عملت القولت عليه وكله تمام وضفت موظف وظبط الدنيتا
+
+**Assistant:** [Reproduced in the sandbox: the dev proxy answers 502. Added an interceptor test proving a 502 produces an error toast and 4xx does not; changed the 502–504 message to "The server cannot be reached." 23 client tests green.] Probably the toast appeared and auto-dismissed after 5 seconds.
+
+---
+
+## 5. Phase 5: admin APIs, and decision D54 (current month open)
+
+**Assistant:** [Wrote pay component type create/update/delete (taxable deduction → 400, duplicate name → 409, in use including deleted employees → 409) and payroll policy create/update/delete (validator, scheme-specific bracket shape → 400, duplicate date in the scheme → 409, in effect → 409, moving scheme → 400) with tests.]
+
+**Kamal:**
+
+> مش فكره سياسو سارية بس ولكن تكون مستخدمه كمان
+
+**Assistant:** Asked: payslips are computed, not stored, so "used" can only mean a preview. Options: in effect = used (recommended), lock on first payslip, or lock only through stored payroll runs.
+
+**Kamal's answer:**
+
+> اصل تخيل اان عملت سياسية وحيت اتلغبطت وعايز اعدلها هترفض
+
+**Assistant:** No: a policy that has not started yet can be edited or deleted freely; only once its month starts is it locked (D31), with the correction path being a new policy.
+
+**Kamal:**
+
+> تخيل انا طلعت مثلا حاجاة ولقيت السياسة فيها مشكلة  كده بقي انا هطر اطلع كل المرتبات علط
+
+**Assistant:** Agreed, this is a real gap. Asked: keep the current month open (recommended), a manual "close payroll month", or keep D31.
+
+**Kamal's answer:**
+
+> الشهر الحالي مفتوح (Recommended)
+
+**Assistant:** Implemented **D54**: a policy is modifiable while it starts in the current month or later; past months are closed; a long-running policy is corrected by a new policy from the 1st of this month. Updated domain, validator, service messages, tests and the spec.
+
+**Kamal:**
+
+> {
+>   "taxSchemeId": 1,
+>   "effectiveFrom": "2026-11-1",
+>   "insuranceRatePercent": 0.1,
+>   "insuranceCap": 0.1,
+>   "taxBrackets": [ { "upperBound": 0.1, "ratePercent": 0.1 } ]
+> }
+> [response: 400 with error key `$.effectiveFrom` and a message naming an internal type]
+
+**Assistant:** The 400 is correct (`DateOnly` needs `2026-11-01`), but the error shape broke §9. Added `ModelStateErrors` (`InvalidModelStateResponseFactory`): camelCase JSON-path keys, `$` → `body`, no internal type names, `traceId` kept, with tests. Also pointed out that a single bracket with an upper bound is invalid for a progressive scheme.
+
+**Kamal:**
+
+> تمام اعمل ايه
+
+**Assistant:** [Phase 6 in the same batch: `/health` with a DbContext check, JSON console logging, a 500 logged with its `traceId`.] One build + test run, Swagger checks, then commit Phases 4–6.
+
+**Kamal:**
+
+> تمام
+
+---
+
+## 6. Phase 7: Identity + JWT, and decision D55 (refresh tokens)
+
+**Assistant:** [Wrote `UnauthorizedException` (generic 401), `ICurrentUser`, `ITokenGenerator`, `IUserCredentialStore`, `AuthService` (D25), the ownership check in `PayslipService`, `ApplicationUser`, `IdentityDbContext`, `JwtOptions`, `JwtTokenGenerator`, `IdentityCredentialStore`, seeded roles and users from `Seed__*`, JWT bearer + fallback policy + `HrOnly`, `CurrentUser`, `AuthController`, an OpenAPI bearer scheme, and in Angular `AuthService`, the auth interceptor, guards, the login page, `/my-payslip` and the shell. Checked that `.env` has every Jwt/Seed key without printing values.]
+
+**Kamal:**
+
+> قل م اجرب زود ريفرش توكن وظبط الدنيا كده
+
+**Assistant:** Asked where the refresh token should live: HttpOnly cookie (recommended) or JSON body + sessionStorage. Common to both: hashed in the database, rotation, reuse detection, revoked on logout, refused for inactive employees, 15-minute access token.
+
+**Kamal's answer:**
+
+> HttpOnly cookie (Recommended)
+
+**Assistant:** Implemented **D55**: `RefreshTokens` table (SHA-256 hash, family id), `RefreshTokenStore`, `AuthService` login/refresh/logout with rotation and reuse → family revoked, cookie `payroll_refresh` (HttpOnly, Secure, SameSite=Strict, Path=/api/auth), and in the client single-flight refresh, retry once on 401, and the guard refreshing an expired session. 29 client tests green. Updated the spec.
+
+**Kamal:** [screenshot: DevTools → Application → Cookies for localhost:4200 shows no `payroll_refresh`.]
+
+**Assistant:** Check the Network tab on the login response instead; the cookie's path is `/api/auth`, not `/`.
+
+**Kamal:** [screenshot: login response `Set-Cookie: payroll_refresh=…; expires=…; path=/api/auth; secure; samesite=strict; httponly`.]
+
+---
+
+## 7. Phase 8 (docs), Phase 9 (integration tests), Phase 10 (Docker)
+
+**Assistant:** The cookie is exactly as designed. [Wrote `README.md` (run, accounts, tests, architecture, formula, API, assumptions, limitations, next steps, scope & time, AI usage) and completed `ai-usage/README.md`, keeping Kamal's author's note.]
+
+**Kamal:**
+
+> تمام كمل
+
+**Assistant:** [Optional Phase 9: `tests/Payroll.Api.IntegrationTests` with a Testcontainers SQL Server (checked the 4.16 source: the parameterless `MsSqlBuilder` constructor is obsolete) and `WebApplicationFactory`: auth end to end, refresh rotation and reuse, unique index, rowversion, concurrent save, soft-delete filter.]
+
+**Kamal:**
+
+> تمام انا عملت كومت شوف كده هنعمل ايه سيبك من نقطة ci عي  جت هب اكشن
+
+**Assistant:** [Phase 10 without CI: API Dockerfile, client Dockerfile + nginx (same origin, `/api` proxied), `.dockerignore` files, compose services `api` (5081) and `web` (8080).]
+
+**Kamal:** [screenshot: "My payslip" for Ali, November 2026, using a test policy with very small rates; the taxable/non-taxable badges are empty.]
+
+> في حاجات غلط في الاوت وكمان عايز لوكلايزيشن وكمان اللاوت مش عاجبني  وقبل ده كله صدر الشت واعمل الحاجات القولي عليها واتش الاول ان session 1 فاضي
+
+**Assistant:** [Found that `session-01-design-and-setup.md` is no longer empty: it was filled at the end of session 1 and committed in `1c20b44`. Wrote this file.] *(The session continues with the payslip fixes, localization and the layout.)*

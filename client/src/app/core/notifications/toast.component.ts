@@ -6,20 +6,23 @@ import { NotificationService } from './notification.service';
   template: `
     <div class="toast-stack" aria-live="polite">
       @for (toast of notifications.toasts(); track toast.id) {
-        <div class="alert d-flex align-items-start gap-2 shadow-sm mb-2"
-             [class.alert-success]="toast.kind === 'success'"
-             [class.alert-danger]="toast.kind === 'error'"
-             role="status">
+        <div class="toast-item" [class.error]="toast.kind === 'error'" role="status">
           <span class="flex-grow-1">{{ toast.message }}</span>
-          <button type="button" class="btn-close-text" (click)="notifications.dismiss(toast.id)" aria-label="Dismiss">×</button>
+          <button type="button" class="close" (click)="notifications.dismiss(toast.id)"
+                  aria-label="Dismiss" i18n-aria-label="@@toast.dismiss">×</button>
         </div>
       }
     </div>
   `,
   styles: `
-    .toast-stack { position: fixed; right: 1rem; bottom: 1rem; z-index: 1080; width: min(24rem, calc(100vw - 2rem)); }
-    .btn-close-text { border: 0; background: none; font-size: 1.25rem; line-height: 1; opacity: .6; }
-    .btn-close-text:hover { opacity: 1; }
+    .toast-stack { position: fixed; inset-inline-end: 1.25rem; inset-block-end: 1.25rem; z-index: 1080;
+      width: min(24rem, calc(100vw - 2rem)); display: flex; flex-direction: column; gap: .5rem; }
+    .toast-item { display: flex; align-items: flex-start; gap: .75rem; padding: .85rem 1rem; border-radius: .6rem;
+      background: #ecfdf3; color: #054f31; border: 1px solid #abefc6; box-shadow: var(--app-card-shadow); }
+    .toast-item.error { background: #fef3f2; color: #7a271a; border-color: #fecdca; }
+    .close { border: 0; background: none; font-size: 1.25rem; line-height: 1; opacity: .6; color: inherit; }
+    .close:hover { opacity: 1; }
+    @media print { .toast-stack { display: none; } }
   `,
 })
 export class ToastComponent {

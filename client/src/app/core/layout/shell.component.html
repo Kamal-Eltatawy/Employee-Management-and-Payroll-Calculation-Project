@@ -1,24 +1,73 @@
-<header class="app-header navbar navbar-expand navbar-dark bg-primary">
-  <div class="container">
-    <a class="navbar-brand fw-semibold" routerLink="/">Payroll</a>
-    @if (auth.currentUser(); as user) {
-      <nav class="navbar-nav me-auto">
-        @if (user.role === 'Hr') {
-          <a class="nav-link" routerLink="/employees" routerLinkActive="active">Employees</a>
-        } @else {
-          <a class="nav-link" routerLink="/my-payslip" routerLinkActive="active">My payslip</a>
-        }
-      </nav>
-      <div class="d-flex align-items-center gap-3 text-white">
-        <span class="small opacity-75">{{ user.email }} · {{ user.role }}</span>
-        <button type="button" class="btn btn-sm btn-outline-light" (click)="auth.logout()">Sign out</button>
+@if (auth.currentUser(); as user) {
+  <div class="app" [class.menu-open]="menuOpen()">
+    <aside class="sidebar">
+      <div class="sidebar-top">
+        <a class="brand" routerLink="/home">
+          <span class="brand-mark">P</span>
+          <span class="brand-text">
+            <strong i18n="@@app.name">Payroll</strong>
+            <small i18n="@@app.tagline">Employees &amp; payslips</small>
+          </span>
+        </a>
+        <button type="button" class="menu-button" (click)="menuOpen.set(!menuOpen())" [attr.aria-expanded]="menuOpen()"
+                aria-controls="main-nav" aria-label="Menu" i18n-aria-label="@@nav.menu">
+          <app-icon [name]="menuOpen() ? 'close' : 'menu'" [size]="22" />
+        </button>
       </div>
-    }
-  </div>
-</header>
 
-<main class="container py-4">
-  <router-outlet />
-</main>
+      <div class="sidebar-body" id="main-nav">
+        <nav class="nav-list" aria-label="Main" i18n-aria-label="@@nav.label">
+          <a routerLink="/home" routerLinkActive="active">
+            <app-icon name="home" />
+            <span i18n="@@nav.home">Home</span>
+          </a>
+          @if (user.role === 'Hr') {
+            <a routerLink="/employees" routerLinkActive="active">
+              <app-icon name="users" />
+              <span i18n="@@nav.employees">Employees</span>
+            </a>
+          } @else {
+            <a routerLink="/my-payslip" routerLinkActive="active">
+              <app-icon name="receipt" />
+              <span i18n="@@nav.myPayslip">My payslip</span>
+            </a>
+          }
+        </nav>
+
+        <div class="sidebar-footer">
+          <a class="nav-button" [href]="language.otherLanguageUrl()" [attr.hreflang]="language.other">
+            <app-icon name="globe" />
+            <span>{{ language.otherLabel }}</span>
+          </a>
+          <div class="user">
+            <span class="avatar">{{ initials() }}</span>
+            <span class="user-text">
+              <span class="email"><bdi>{{ user.email }}</bdi></span>
+              <small>
+                @if (user.role === 'Hr') {
+                  <ng-container i18n="@@role.hr">HR</ng-container>
+                } @else {
+                  <ng-container i18n="@@role.employee">Employee</ng-container>
+                }
+              </small>
+            </span>
+          </div>
+          <button type="button" class="nav-button" (click)="auth.logout()">
+            <app-icon name="logout" [flip]="true" />
+            <span i18n="@@nav.signOut">Sign out</span>
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <main class="content">
+      <router-outlet />
+    </main>
+  </div>
+} @else {
+  <main class="content content-public">
+    <router-outlet />
+  </main>
+}
 
 <app-toasts />

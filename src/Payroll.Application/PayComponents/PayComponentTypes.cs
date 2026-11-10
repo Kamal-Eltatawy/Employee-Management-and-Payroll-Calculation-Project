@@ -7,29 +7,34 @@ using Payroll.Domain.PayComponents;
 
 namespace Payroll.Application.PayComponents;
 
-public sealed record PayComponentTypeResponse(int Id, string Name, PayComponentKind Kind, bool IsTaxable);
+/// <summary><c>Name</c> is in the request language (D58); <c>NameEn</c> / <c>NameAr</c> are the stored values, for editing.</summary>
+public sealed record PayComponentTypeResponse(int Id, string Name, PayComponentKind Kind, bool IsTaxable, string NameEn, string? NameAr);
 
 /// <summary>Kind is set once on create (D2/S5).</summary>
-public sealed record CreatePayComponentTypeRequest(string Name, PayComponentKind Kind, bool IsTaxable);
+public sealed record CreatePayComponentTypeRequest(string Name, PayComponentKind Kind, bool IsTaxable, string? NameAr = null);
 
 /// <summary>No Kind field: the kind cannot change (S5).</summary>
-public sealed record UpdatePayComponentTypeRequest(string Name, bool IsTaxable);
+public sealed record UpdatePayComponentTypeRequest(string Name, bool IsTaxable, string? NameAr = null);
 
 public sealed class CreatePayComponentTypeRequestValidator : AbstractValidator<CreatePayComponentTypeRequest>
 {
     public CreatePayComponentTypeRequestValidator()
     {
         RuleFor(x => x.Name).NotEmpty().MaximumLength(PayComponentType.NameMaxLength);
+        RuleFor(x => x.NameAr).MaximumLength(PayComponentType.NameMaxLength);
         RuleFor(x => x.Kind).IsInEnum();
         RuleFor(x => x.IsTaxable).Equal(false).When(x => x.Kind == PayComponentKind.Deduction)
-            .WithMessage(PayComponentTypeService.DeductionNotTaxable);
+            .WithMessage(PayComponentTypeService.DeductionNotTaxable).WithErrorCode(ErrorCodes.DeductionNotTaxable);
     }
 }
 
 public sealed class UpdatePayComponentTypeRequestValidator : AbstractValidator<UpdatePayComponentTypeRequest>
 {
-    public UpdatePayComponentTypeRequestValidator() =>
+    public UpdatePayComponentTypeRequestValidator()
+    {
         RuleFor(x => x.Name).NotEmpty().MaximumLength(PayComponentType.NameMaxLength);
+        RuleFor(x => x.NameAr).MaximumLength(PayComponentType.NameMaxLength);
+    }
 }
 
 public interface IPayComponentTypeService
@@ -66,7 +71,7 @@ public sealed class PayComponentTypeService(
         await createValidator.ValidateAndThrowAsync(request, ct);
         await EnsureNameAvailableAsync(request.Name, excludeId: null, ct);
 
-        var type = new PayComponentType(request.Name, request.Kind, request.IsTaxable, clock.UtcNow());
+        var type = new PayComponentType(request.Name, request.Kind, request.IsTaxable, clock.UtcNow(), request.NameAr);
         types.Add(type);
         await unitOfWork.SaveChangesAsync(ct);
 
@@ -81,11 +86,11 @@ public sealed class PayComponentTypeService(
         // The kind is stored, not sent, so this rule can only be checked against the loaded type.
         if (type.Kind == PayComponentKind.Deduction && request.IsTaxable)
         {
-            throw new ValidationException([new ValidationFailure(nameof(request.IsTaxable), DeductionNotTaxable)]);
+            throw new ValidationException([new ValidationFailure(nameof(request.IsTaxable), DeductionNotTaxable) { ErrorCode = ErrorCodes.DeductionNotTaxable }]);
         }
 
         await EnsureNameAvailableAsync(request.Name, excludeId: id, ct);
-        type.Update(request.Name, request.IsTaxable, clock.UtcNow());
+        type.Update(request.Name, request.IsTaxable, clock.UtcNow(), request.NameAr);
         await unitOfWork.SaveChangesAsync(ct);
 
         return type.Adapt<PayComponentTypeResponse>(mapping);
@@ -96,8 +101,9 @@ public sealed class PayComponentTypeService(
         var type = await LoadAsync(id, ct);
         if (await types.IsInUseAsync(id, ct))
         {
-            throw new ConflictException(
-                $"Pay component type '{type.Name}' is assigned to at least one employee (including deleted employees) and cannot be deleted.");
+            throw ConflictException.Coded(ErrorCodes.PayComponentTypeInUse,
+                $"Pay component type '{type.Name}' is assigned to at least one employee (including deleted employees) and cannot be deleted.",
+                field: null, type.Name);
         }
 
         types.Remove(type);
@@ -111,7 +117,8 @@ public sealed class PayComponentTypeService(
     {
         if (await types.NameExistsAsync(name.Trim(), excludeId, ct))
         {
-            throw ConflictException.ForField("name", $"A pay component type named '{name.Trim()}' already exists.");
+            throw ConflictException.Coded(ErrorCodes.PayComponentTypeNameTaken,
+                $"A pay component type named '{name.Trim()}' already exists.", "name", name.Trim());
         }
     }
 }

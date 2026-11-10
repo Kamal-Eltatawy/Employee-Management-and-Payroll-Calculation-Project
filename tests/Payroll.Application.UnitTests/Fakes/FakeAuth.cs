@@ -42,31 +42,35 @@ public sealed class FakeRefreshTokenStore : IRefreshTokenStore
     {
         var raw = $"refresh-{_next++}";
         var expires = utcNow.AddDays(7);
-        _tokens[raw] = new StoredRefreshToken(Guid.NewGuid(), userId, familyId, expires, null);
+        _tokens[raw] = new StoredRefreshToken(Guid.NewGuid(), userId, familyId, expires, null, null);
         return new IssuedRefreshToken(raw, expires);
     }
 
     public Task<StoredRefreshToken?> FindAsync(string rawToken, CancellationToken ct) =>
         Task.FromResult(_tokens.GetValueOrDefault(rawToken));
 
-    public Task RevokeAsync(Guid tokenId, DateTime utcNow, CancellationToken ct)
+    /// <summary>Usable: neither rotated nor revoked.</summary>
+    public IEnumerable<StoredRefreshToken> Active => _tokens.Values.Where(t => t.RotatedAtUtc is null && t.RevokedAtUtc is null);
+
+    public Task RotateAsync(Guid tokenId, DateTime utcNow, CancellationToken ct)
     {
-        Update(t => t.Id == tokenId, utcNow);
+        foreach (var key in _tokens.Where(pair => pair.Value.Id == tokenId).Select(pair => pair.Key).ToList())
+        {
+            _tokens[key] = _tokens[key] with { RotatedAtUtc = _tokens[key].RotatedAtUtc ?? utcNow };
+        }
+
         return Task.CompletedTask;
     }
 
     public Task RevokeFamilyAsync(Guid familyId, DateTime utcNow, CancellationToken ct)
     {
-        Update(t => t.FamilyId == familyId, utcNow);
-        return Task.CompletedTask;
-    }
-
-    private void Update(Func<StoredRefreshToken, bool> match, DateTime utcNow)
-    {
-        foreach (var key in _tokens.Where(pair => match(pair.Value) && pair.Value.RevokedAtUtc is null).Select(pair => pair.Key).ToList())
+        foreach (var key in _tokens.Where(pair => pair.Value.FamilyId == familyId && pair.Value.RevokedAtUtc is null)
+                     .Select(pair => pair.Key).ToList())
         {
             _tokens[key] = _tokens[key] with { RevokedAtUtc = utcNow };
         }
+
+        return Task.CompletedTask;
     }
 }
 

@@ -1,5 +1,4 @@
 using FluentValidation;
-using FluentValidation.Results;
 using Mapster;
 using Payroll.Application.Abstractions;
 using Payroll.Application.Common;
@@ -9,9 +8,7 @@ namespace Payroll.Application.Employees;
 
 public sealed class EmployeeService(
     IEmployeeRepository employees,
-    IDepartmentRepository departments,
-    IPayComponentTypeRepository payComponentTypes,
-    ITaxSchemeRepository taxSchemes,
+    IEmployeeReferenceChecker references,
     IUnitOfWork unitOfWork,
     IValidator<CreateEmployeeRequest> createValidator,
     IValidator<UpdateEmployeeRequest> updateValidator,
@@ -34,7 +31,7 @@ public sealed class EmployeeService(
     public async Task<EmployeeResponse> CreateAsync(CreateEmployeeRequest request, CancellationToken ct)
     {
         await createValidator.ValidateAndThrowAsync(request, ct);
-        await EnsureReferencesExistAsync(request, ct);
+        await references.EnsureExistAsync(request, ct);
         await EnsureEmailAvailableAsync(request.Email, excludeEmployeeId: null, ct);
 
         var utcNow = clock.UtcNow();
@@ -56,10 +53,10 @@ public sealed class EmployeeService(
         var employee = await LoadAsync(id, ct);
         if (Convert.ToBase64String(employee.RowVersion) != request.RowVersion)
         {
-            throw new ConflictException(ConflictMessages.Concurrency);
+            throw ConflictException.Coded(ErrorCodes.Concurrency, ConflictMessages.Concurrency);
         }
 
-        await EnsureReferencesExistAsync(request, ct);
+        await references.EnsureExistAsync(request, ct);
         await EnsureEmailAvailableAsync(request.Email, excludeEmployeeId: id, ct);
 
         var utcNow = clock.UtcNow();
@@ -87,40 +84,7 @@ public sealed class EmployeeService(
     {
         if (await employees.EmailExistsAsync(Employee.NormalizeEmail(email), excludeEmployeeId, ct))
         {
-            throw ConflictException.ForField("email", ConflictMessages.EmailInUse);
-        }
-    }
-
-    /// <summary>Unknown references are input errors (400 with a field key), not conflicts.</summary>
-    private async Task EnsureReferencesExistAsync(IEmployeeWriteRequest request, CancellationToken ct)
-    {
-        var failures = new List<ValidationFailure>();
-
-        if (!await departments.ExistsAsync(request.DepartmentId, ct))
-        {
-            failures.Add(new ValidationFailure(nameof(request.DepartmentId), "Department does not exist."));
-        }
-
-        if (!await taxSchemes.ExistsAsync(request.TaxSchemeId, ct))
-        {
-            failures.Add(new ValidationFailure(nameof(request.TaxSchemeId), "Tax scheme does not exist."));
-        }
-
-        var requestedIds = request.PayComponents.Select(c => c.PayComponentTypeId).Distinct().ToList();
-        var knownIds = (await payComponentTypes.GetByIdsAsync(requestedIds, ct)).Select(t => t.Id).ToHashSet();
-        for (var i = 0; i < request.PayComponents.Count; i++)
-        {
-            if (!knownIds.Contains(request.PayComponents[i].PayComponentTypeId))
-            {
-                failures.Add(new ValidationFailure(
-                    $"{nameof(request.PayComponents)}[{i}].{nameof(PayComponentAssignmentDto.PayComponentTypeId)}",
-                    "Pay component type does not exist."));
-            }
-        }
-
-        if (failures.Count > 0)
-        {
-            throw new ValidationException(failures);
+            throw ConflictException.Coded(ErrorCodes.EmailInUse, ConflictMessages.EmailInUse, "email");
         }
     }
 

@@ -17,6 +17,6 @@ internal static class MonthParameter
 
         return PayrollMonth.TryParse(month, out var parsed)
             ? parsed
-            : throw new ValidationException([new ValidationFailure("month", "Month must be in the format yyyy-MM.")]);
+            : throw new ValidationException([new ValidationFailure("month", "Month must be in the format yyyy-MM.") { ErrorCode = ErrorCodes.MonthFormat }]);
     }
 }

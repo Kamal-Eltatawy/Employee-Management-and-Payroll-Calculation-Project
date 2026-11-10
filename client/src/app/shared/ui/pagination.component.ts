@@ -3,25 +3,22 @@ import { Component, computed, input, output } from '@angular/core';
 @Component({
   selector: 'app-pagination',
   template: `
-    <nav class="d-flex align-items-center justify-content-between flex-wrap gap-2" aria-label="Pagination">
+    <nav class="d-flex align-items-center justify-content-between flex-wrap gap-2" aria-label="Pagination"
+         i18n-aria-label="@@pagination.label">
       <span class="text-body-secondary small">
         @if (totalCount() === 0) {
-          No results
+          <ng-container i18n="@@pagination.none">No results</ng-container>
         } @else {
-          {{ firstItem() }}–{{ lastItem() }} of {{ totalCount() }}
+          <ng-container i18n="@@pagination.range">{{ firstItem() }}–{{ lastItem() }} of {{ totalCount() }}</ng-container>
         }
       </span>
-      <ul class="pagination pagination-sm mb-0">
-        <li class="page-item" [class.disabled]="page() <= 1">
-          <button type="button" class="page-link" (click)="go(page() - 1)" [disabled]="page() <= 1">Previous</button>
-        </li>
-        <li class="page-item active" aria-current="page">
-          <span class="page-link">{{ page() }} / {{ pageCount() }}</span>
-        </li>
-        <li class="page-item" [class.disabled]="page() >= pageCount()">
-          <button type="button" class="page-link" (click)="go(page() + 1)" [disabled]="page() >= pageCount()">Next</button>
-        </li>
-      </ul>
+      <div class="d-flex align-items-center gap-2">
+        <button type="button" class="btn btn-sm btn-outline-secondary" (click)="go(page() - 1)" [disabled]="page() <= 1"
+                i18n="@@pagination.previous">Previous</button>
+        <span class="small text-body-secondary" i18n="@@pagination.page">Page {{ page() }} of {{ pageCount() }}</span>
+        <button type="button" class="btn btn-sm btn-outline-secondary" (click)="go(page() + 1)" [disabled]="page() >= pageCount()"
+                i18n="@@pagination.next">Next</button>
+      </div>
     </nav>
   `,
 })

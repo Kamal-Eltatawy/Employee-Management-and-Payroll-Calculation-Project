@@ -80,9 +80,7 @@ public sealed class PayComponentTypeServiceTests
         _db.Departments.Seed(1, "Engineering");
         _db.TaxSchemes.Seed(1, "Standard", TaxMethod.Progressive);
         var clock = TestData.Clock();
-        var employees = new EmployeeService(_db.Employees, _db.Departments, _db.PayComponentTypes, _db.TaxSchemes, _db.UnitOfWork,
-            new CreateEmployeeRequestValidator(clock), new UpdateEmployeeRequestValidator(clock), new EmployeeSearchRequestValidator(),
-            clock, MappingConfig.Create());
+        var employees = TestData.EmployeeService(_db, clock);
         var employee = await employees.CreateAsync(TestData.CreateRequest(components: [new(type.Id, 500m)]), Ct);
         await employees.DeleteAsync(employee.Id, Ct);
 

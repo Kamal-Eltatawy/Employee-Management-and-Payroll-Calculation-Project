@@ -1,8 +1,12 @@
 using System.Text.Json.Serialization;
+using System.Globalization;
+using FluentValidation;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
 using Payroll.Api.Auth;
 using Payroll.Api.Configuration;
 using Payroll.Api.ErrorHandling;
+using Payroll.Api.Localization;
 using Payroll.Api.OpenApi;
 using Payroll.Application;
 using Payroll.Infrastructure;
@@ -33,16 +37,33 @@ builder.Services.AddOpenApi(options => options.AddDocumentTransformer<BearerSecu
 
 builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddApplication();
+builder.Services.AddSingleton(builder.Configuration.GetSection("Auth").Get<Payroll.Application.Auth.RefreshTokenOptions>()
+    ?? new Payroll.Application.Auth.RefreshTokenOptions());
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddApiAuthentication(builder.Configuration);
+builder.Services.AddAuthRateLimiting(builder.Configuration);
 builder.Services.AddHealthChecks().AddDbContextCheck<AppDbContext>();
+
+// FluentValidation's built-in messages ("'X' must not be empty.") use translated field names (D56).
+var apiText = new ResxApiText();
+ValidatorOptions.Global.DisplayNameResolver = (_, member, _) => apiText.FieldName(member?.Name);
 
 var app = builder.Build();
 
+// First, so error responses (written by the exception handler below) are translated too.
+// Only the UI culture follows Accept-Language: formatting stays invariant-like ("en"), e.g. no Hijri calendar for "ar".
+app.UseRequestLocalization(new RequestLocalizationOptions
+{
+    DefaultRequestCulture = new RequestCulture("en"),
+    SupportedCultures = [new CultureInfo("en")],
+    SupportedUICultures = ResxApiText.SupportedLanguages.Select(language => new CultureInfo(language)).ToList(),
+    ApplyCurrentCultureToResponseHeaders = true,
+});
 app.UseExceptionHandler();
 app.UseStatusCodePages(); // empty 401/403 from the auth middleware become problem+json too
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseRateLimiter();
 
 if (app.Environment.IsDevelopment())
 {

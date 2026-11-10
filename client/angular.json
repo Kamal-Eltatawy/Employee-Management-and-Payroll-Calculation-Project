@@ -40,7 +40,10 @@
                   "color-functions"
                 ]
               }
-            }
+            },
+            "polyfills": [
+              "@angular/localize/init"
+            ]
           },
           "configurations": {
             "production": {
@@ -56,12 +59,18 @@
                   "maximumError": "8kB"
                 }
               ],
-              "outputHashing": "all"
+              "outputHashing": "all",
+              "localize": true
             },
             "development": {
               "optimization": false,
               "extractLicenses": false,
               "sourceMap": true
+            },
+            "ar": {
+              "localize": [
+                "ar"
+              ]
             }
           },
           "defaultConfiguration": "production"
@@ -74,6 +83,9 @@
             },
             "development": {
               "buildTarget": "client:build:development"
+            },
+            "ar": {
+              "buildTarget": "client:build:development,ar"
             }
           },
           "defaultConfiguration": "development",
@@ -83,6 +95,20 @@
         },
         "test": {
           "builder": "@angular/build:unit-test"
+        },
+        "extract-i18n": {
+          "builder": "@angular/build:extract-i18n",
+          "options": {
+            "buildTarget": "client:build"
+          }
+        }
+      },
+      "i18n": {
+        "sourceLocale": "en",
+        "locales": {
+          "ar": {
+            "translation": "src/locale/messages.ar.xlf"
+          }
         }
       }
     }

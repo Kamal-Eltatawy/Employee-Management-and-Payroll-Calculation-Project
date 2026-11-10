@@ -71,6 +71,49 @@ public sealed class ApiExceptionHandlerTests
     }
 
     [Fact]
+    public async Task Coded_errors_are_translated_to_the_request_language()
+    {
+        var previous = System.Globalization.CultureInfo.CurrentUICulture;
+        System.Globalization.CultureInfo.CurrentUICulture = new System.Globalization.CultureInfo("ar");
+        try
+        {
+            var (status, body) = await HandleAsync(ConflictException.Coded(ErrorCodes.EmailInUse, "Email is already in use.", "email"));
+
+            Assert.Equal(StatusCodes.Status409Conflict, status);
+            Assert.Equal("البريد الإلكتروني مستخدم بالفعل.", body.GetProperty("detail").GetString());
+            Assert.Equal("البريد الإلكتروني مستخدم بالفعل.", body.GetProperty("errors").GetProperty("email")[0].GetString());
+            Assert.Equal("تعارض مع بيانات موجودة.", body.GetProperty("title").GetString());
+        }
+        finally
+        {
+            System.Globalization.CultureInfo.CurrentUICulture = previous;
+        }
+    }
+
+    [Fact]
+    public async Task Coded_validation_failures_are_translated_and_others_kept()
+    {
+        var previous = System.Globalization.CultureInfo.CurrentUICulture;
+        System.Globalization.CultureInfo.CurrentUICulture = new System.Globalization.CultureInfo("ar");
+        try
+        {
+            var (_, body) = await HandleAsync(new ValidationException(
+            [
+                new ValidationFailure("HireDate", "Hire date cannot be in the future.") { ErrorCode = ErrorCodes.HireDateInFuture },
+                new ValidationFailure("FullName", "already localized by FluentValidation"),
+            ]));
+
+            var errors = body.GetProperty("errors");
+            Assert.Equal("تاريخ التعيين لا يمكن أن يكون في المستقبل.", errors.GetProperty("hireDate")[0].GetString());
+            Assert.Equal("already localized by FluentValidation", errors.GetProperty("fullName")[0].GetString());
+        }
+        finally
+        {
+            System.Globalization.CultureInfo.CurrentUICulture = previous;
+        }
+    }
+
+    [Fact]
     public async Task Forbidden_exception_returns_403()
     {
         var (status, body) = await HandleAsync(new ForbiddenException("You can only view your own payslip."));
@@ -98,6 +141,16 @@ public sealed class ApiExceptionHandlerTests
         Assert.False(body.TryGetProperty("detail", out _));
         Assert.DoesNotContain("secret-123", body.GetRawText());
     }
+
+    [Fact]
+    public async Task A_derived_exception_uses_the_mapper_of_its_base_type()
+    {
+        var (status, _) = await HandleAsync(new SpecificRuleViolation());
+
+        Assert.Equal(StatusCodes.Status422UnprocessableEntity, status);
+    }
+
+    private sealed class SpecificRuleViolation() : DomainException("A more specific business rule.");
 
     [Fact]
     public async Task Every_problem_has_a_trace_id_and_problem_json_content_type()
@@ -134,6 +187,8 @@ public sealed class ApiExceptionHandlerTests
 
     private static ApiExceptionHandler CreateHandler(HttpContext context) =>
         new(context.RequestServices.GetRequiredService<IProblemDetailsService>(),
+            context.RequestServices.GetServices<IProblemMapper>(),
+            context.RequestServices.GetRequiredService<Payroll.Api.Localization.IApiText>(),
             NullLogger<ApiExceptionHandler>.Instance);
 
     private static async Task<JsonElement> ReadBodyAsync(HttpContext context)

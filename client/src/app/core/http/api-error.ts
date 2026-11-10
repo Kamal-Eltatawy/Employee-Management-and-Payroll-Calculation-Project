@@ -40,12 +40,14 @@ export function toApiError(error: unknown): ApiError {
     const unreachable = error.status === 0 || (error.status >= 502 && error.status <= 504);
     return {
       status: error.status,
-      title: unreachable ? 'The server cannot be reached.' : error.statusText || 'The request failed.',
+      title: unreachable
+        ? $localize`:@@error.unreachable:The server cannot be reached.`
+        : error.statusText || $localize`:@@error.requestFailed:The request failed.`,
       fieldErrors: {},
     };
   }
 
-  return { status: 0, title: 'An unexpected error occurred.', fieldErrors: {} };
+  return { status: 0, title: $localize`:@@error.unexpected:An unexpected error occurred.`, fieldErrors: {} };
 }
 
 function isFieldErrors(value: unknown): value is Record<string, string[]> {

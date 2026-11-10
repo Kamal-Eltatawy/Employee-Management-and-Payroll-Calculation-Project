@@ -6,11 +6,11 @@ public sealed class PayComponentType
 {
     public const int NameMaxLength = 100;
 
-    public PayComponentType(string name, PayComponentKind kind, bool isTaxable, DateTime utcNow)
+    public PayComponentType(string name, PayComponentKind kind, bool isTaxable, DateTime utcNow, string? nameAr = null)
     {
         Kind = Guard.Defined(kind, nameof(Kind));
         Name = string.Empty;
-        Apply(name, isTaxable);
+        Apply(name, isTaxable, nameAr);
         CreatedAtUtc = utcNow;
         UpdatedAtUtc = utcNow;
     }
@@ -24,6 +24,9 @@ public sealed class PayComponentType
 
     public string Name { get; private set; }
 
+    /// <summary>Optional Arabic name; the API falls back to <see cref="Name"/> (D58).</summary>
+    public string? NameAr { get; private set; }
+
     /// <summary>Immutable after creation (D2).</summary>
     public PayComponentKind Kind { get; private set; }
 
@@ -34,13 +37,13 @@ public sealed class PayComponentType
 
     public DateTime UpdatedAtUtc { get; private set; }
 
-    public void Update(string name, bool isTaxable, DateTime utcNow)
+    public void Update(string name, bool isTaxable, DateTime utcNow, string? nameAr = null)
     {
-        Apply(name, isTaxable);
+        Apply(name, isTaxable, nameAr);
         UpdatedAtUtc = utcNow;
     }
 
-    private void Apply(string name, bool isTaxable)
+    private void Apply(string name, bool isTaxable, string? nameAr)
     {
         if (Kind == PayComponentKind.Deduction && isTaxable)
         {
@@ -49,5 +52,6 @@ public sealed class PayComponentType
 
         Name = Guard.RequiredText(name, NameMaxLength, nameof(Name));
         IsTaxable = isTaxable;
+        NameAr = Guard.OptionalText(nameAr, NameMaxLength, nameof(NameAr));
     }
 }

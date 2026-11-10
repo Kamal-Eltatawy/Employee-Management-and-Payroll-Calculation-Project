@@ -10,7 +10,7 @@ namespace Payroll.Api.UnitTests.Controllers;
 public sealed class AuthControllerTests
 {
     private static readonly AuthResult Result = new(
-        new LoginResponse("access", new DateTime(2026, 3, 15, 9, 15, 0, DateTimeKind.Utc), "Hr", null),
+        new LoginResponse("access", new DateTime(2026, 3, 15, 9, 15, 0, DateTimeKind.Utc), "Hr", null, "hr@payroll.local"),
         new IssuedRefreshToken("refresh-value", new DateTime(2026, 3, 22, 9, 0, 0, DateTimeKind.Utc)));
 
     private static (AuthController Controller, IAuthService Service, DefaultHttpContext Http) Create()

@@ -65,8 +65,9 @@ public sealed class PayrollPolicy
     {
         if (!IsModifiable(currentMonth))
         {
-            throw new DomainException(
-                $"The payroll policy effective from {EffectiveFrom:yyyy-MM-dd} covers closed months and cannot be changed.");
+            throw new DomainException(DomainErrorCodes.PolicyCoversClosedMonths,
+                $"The payroll policy effective from {EffectiveFrom:yyyy-MM-dd} covers closed months and cannot be changed.",
+                EffectiveFrom.ToString("yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture));
         }
     }
 

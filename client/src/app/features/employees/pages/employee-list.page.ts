@@ -6,6 +6,7 @@ import { ApiError } from '../../../core/http/api-error';
 import { NotificationService } from '../../../core/notifications/notification.service';
 import { MoneyPipe } from '../../../shared/pipes/money.pipe';
 import { ConfirmDialogComponent } from '../../../shared/ui/confirm-dialog.component';
+import { IconComponent } from '../../../shared/ui/icon.component';
 import { PaginationComponent } from '../../../shared/ui/pagination.component';
 import { EmployeesApiService } from '../data/employees-api.service';
 import {
@@ -41,8 +42,9 @@ export function queryFromParams(params: ParamMap): EmployeeQuery {
 
 @Component({
   selector: 'app-employee-list-page',
-  imports: [RouterLink, MoneyPipe, PaginationComponent, ConfirmDialogComponent],
+  imports: [RouterLink, MoneyPipe, PaginationComponent, ConfirmDialogComponent, IconComponent],
   templateUrl: './employee-list.page.html',
+  styleUrl: './employee-list.page.scss',
 })
 export class EmployeeListPage {
   private readonly api = inject(EmployeesApiService);
@@ -101,6 +103,16 @@ export class EmployeeListPage {
     this.navigate({ sortBy: column, sortDir, page: 1 });
   }
 
+  protected initials(name: string): string {
+    return name
+      .split(/\s+/)
+      .filter(Boolean)
+      .slice(0, 2)
+      .map((part) => part[0])
+      .join('')
+      .toUpperCase();
+  }
+
   protected sortIndicator(column: EmployeeSortBy): string {
     const current = this.query();
     return current.sortBy !== column ? '' : current.sortDir === 'asc' ? '▲' : '▼';
@@ -111,14 +123,16 @@ export class EmployeeListPage {
   }
 
   protected async confirmDelete(employee: EmployeeListItem): Promise<void> {
-    const confirmed = await this.confirmDialog().open(`Delete ${employee.fullName}? The employee will no longer appear in lists.`);
+    const confirmed = await this.confirmDialog().open(
+      $localize`:@@employees.deleteConfirm:Delete ${employee.fullName}:name:? The employee will no longer appear in lists.`,
+    );
     if (!confirmed) {
       return;
     }
 
     this.api.delete(employee.id).subscribe({
       next: () => {
-        this.notifications.success(`${employee.fullName} was deleted.`);
+        this.notifications.success($localize`:@@employees.deleted:${employee.fullName}:name: was deleted.`);
         this.reload$.next();
       },
       error: (error: ApiError) => this.notifications.error(error.detail ?? error.title),

@@ -1,3 +1,4 @@
+import '@angular/localize/init';
 import { HttpErrorResponse } from '@angular/common/http';
 import { toApiError } from './api-error';
 

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="FullName" xml:space="preserve"><value>الاسم الكامل</value></data>
+  <data name="Email" xml:space="preserve"><value>البريد الإلكتروني</value></data>
+  <data name="JobTitle" xml:space="preserve"><value>المسمى الوظيفي</value></data>
+  <data name="DepartmentId" xml:space="preserve"><value>القسم</value></data>
+  <data name="TaxSchemeId" xml:space="preserve"><value>النظام الضريبي</value></data>
+  <data name="HireDate" xml:space="preserve"><value>تاريخ التعيين</value></data>
+  <data name="BaseMonthlySalary" xml:space="preserve"><value>الراتب الأساسي الشهري</value></data>
+  <data name="Status" xml:space="preserve"><value>الحالة</value></data>
+  <data name="PayComponents" xml:space="preserve"><value>البدلات والاستقطاعات</value></data>
+  <data name="PayComponentTypeId" xml:space="preserve"><value>النوع</value></data>
+  <data name="Amount" xml:space="preserve"><value>المبلغ</value></data>
+  <data name="RowVersion" xml:space="preserve"><value>إصدار السجل</value></data>
+  <data name="Search" xml:space="preserve"><value>البحث</value></data>
+  <data name="Page" xml:space="preserve"><value>الصفحة</value></data>
+  <data name="PageSize" xml:space="preserve"><value>حجم الصفحة</value></data>
+  <data name="Name" xml:space="preserve"><value>الاسم</value></data>
+  <data name="Kind" xml:space="preserve"><value>النوع</value></data>
+  <data name="IsTaxable" xml:space="preserve"><value>خاضع للضريبة</value></data>
+  <data name="EffectiveFrom" xml:space="preserve"><value>تاريخ السريان</value></data>
+  <data name="InsuranceRatePercent" xml:space="preserve"><value>نسبة التأمينات</value></data>
+  <data name="InsuranceCap" xml:space="preserve"><value>الحد الأقصى للتأمينات</value></data>
+  <data name="TaxBrackets" xml:space="preserve"><value>شرائح الضريبة</value></data>
+  <data name="UpperBound" xml:space="preserve"><value>الحد الأعلى</value></data>
+  <data name="RatePercent" xml:space="preserve"><value>النسبة</value></data>
+  <data name="Password" xml:space="preserve"><value>كلمة المرور</value></data>
+</root>

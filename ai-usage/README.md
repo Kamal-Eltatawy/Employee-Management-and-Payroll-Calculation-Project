@@ -1,13 +1,13 @@
 # AI Usage
 
-This folder contains the full, unedited AI chat sessions used to build this project, plus notes on how AI was used.
+This folder contains the AI chat sessions used to build this project, plus notes on how AI was used. The desktop app offers no usable export, so each session was reconstructed by the assistant at the end of the session: Kamal's messages verbatim, the assistant's replies condensed (see the note at the top of each file).
 
 ## Sessions
 
 | # | File | Scope |
 |---|---|---|
-| 1 | `session-01-design-and-setup.*` (exported from the Claude desktop app, Cowork mode) | Requirements analysis, architecture discussion (decisions D1–D52), design spec, implementation plans, Phase 1 (solution skeleton, error handling, API host) |
-| 2 | `session-02-implementation.*` (exported from the Claude desktop app, Cowork mode) | Phases 1 (Angular scaffold) to 8: employee CRUD, payroll engine, Angular client, admin APIs, health + logging, Identity + JWT + refresh tokens, README. Decisions D53–D55 |
+| 1 | [`session-01-design-and-setup.md`](session-01-design-and-setup.md) (reconstructed by the assistant: no usable app export) | Requirements analysis, architecture discussion (decisions D1–D52), design spec, implementation plans, Phase 1 (solution skeleton, error handling, API host) |
+| 2 | [`session-02-implementation.md`](session-02-implementation.md) (reconstructed the same way) | Phases 1 (Angular scaffold) to 8: employee CRUD, payroll engine, Angular client, admin APIs, health + logging, Identity + JWT + refresh tokens, README. Decisions D53–D55 |
 
 ## Tools
 

@@ -40,7 +40,34 @@ services:
     depends_on:
       - api
     ports:
-      - "8080:80"      # the app: http://localhost:8080
+      - "8080:80"      # the app: http://localhost:8080 (redirects to /en/ or /ar/)
+    healthcheck:
+      # /health goes through nginx to the API, so "healthy" means the app, the API and the database all answer.
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://127.0.0.1/health || exit 1"]
+      interval: 5s
+      timeout: 3s
+      retries: 60
+      start_period: 10s
+
+  # Prints every address once everything is ready (visible in `docker compose up`; start.ps1 prints them too).
+  urls:
+    image: busybox:1.37
+    depends_on:
+      web:
+        condition: service_healthy
+    restart: "no"
+    command:
+      - sh
+      - -c
+      - |
+        echo ''
+        echo '================ Payroll is ready ================'
+        echo '  App (English)  http://localhost:8080/en/'
+        echo '  App (Arabic)   http://localhost:8080/ar/'
+        echo '  Swagger UI     http://localhost:5081/swagger'
+        echo '  Health         http://localhost:8080/health'
+        echo '  SQL Server     localhost,14333 (user sa, password from .env)'
+        echo '=================================================='
 
 volumes:
   sqldata:

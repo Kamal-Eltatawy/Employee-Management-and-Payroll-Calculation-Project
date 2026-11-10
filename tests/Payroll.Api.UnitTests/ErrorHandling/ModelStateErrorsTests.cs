@@ -20,7 +20,7 @@ public sealed class ModelStateErrorsTests
     {
         var error = new ModelError(new JsonException("The JSON value could not be converted to Payroll.Application.Payroll.PayrollPolicyRequest."), "");
 
-        var message = ModelStateErrors.Describe("effectiveFrom", error);
+        var message = ModelStateErrors.Describe(new Payroll.Api.Localization.ResxApiText(), "effectiveFrom", error);
 
         Assert.DoesNotContain("Payroll.", message);
         Assert.Contains("yyyy-MM-dd", message);
@@ -28,9 +28,9 @@ public sealed class ModelStateErrorsTests
 
     [Fact]
     public void Invalid_json_body_has_its_own_message() =>
-        Assert.Equal("The request body is not valid JSON.", ModelStateErrors.Describe("body", new ModelError(new JsonException("bad"), "")));
+        Assert.Equal("The request body is not valid JSON.", ModelStateErrors.Describe(new Payroll.Api.Localization.ResxApiText(), "body", new ModelError(new JsonException("bad"), "")));
 
     [Fact]
     public void Other_messages_are_kept() =>
-        Assert.Equal("The value 'abc' is not valid.", ModelStateErrors.Describe("page", new ModelError("The value 'abc' is not valid.")));
+        Assert.Equal("The value 'abc' is not valid.", ModelStateErrors.Describe(new Payroll.Api.Localization.ResxApiText(), "page", new ModelError("The value 'abc' is not valid.")));
 }

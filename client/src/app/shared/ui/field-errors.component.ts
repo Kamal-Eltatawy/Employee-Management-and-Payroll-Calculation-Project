@@ -14,7 +14,7 @@ import { AbstractControl } from '@angular/forms';
 })
 export class FieldErrorsComponent {
   readonly control = input.required<AbstractControl>();
-  readonly label = input('This field');
+  readonly label = input($localize`:@@field.default:This field`);
 
   protected messages(): string[] {
     const errors = this.control().errors ?? {};
@@ -22,21 +22,23 @@ export class FieldErrorsComponent {
     return Object.entries(errors).map(([key, value]) => {
       switch (key) {
         case 'required':
-          return `${label} is required.`;
-        case 'maxlength':
-          return `${label} must be at most ${(value as { requiredLength: number }).requiredLength} characters.`;
+          return $localize`:@@validation.required:${label}:label: is required.`;
+        case 'maxlength': {
+          const max = (value as { requiredLength: number }).requiredLength;
+          return $localize`:@@validation.maxLength:${label}:label: must be at most ${max}:max: characters.`;
+        }
         case 'email':
-          return 'Enter a valid email address.';
+          return $localize`:@@validation.email:Enter a valid email address.`;
         case 'min':
-          return `${label} must be greater than zero.`;
+          return $localize`:@@validation.positive:${label}:label: must be greater than zero.`;
         case 'notInFuture':
-          return `${label} cannot be in the future.`;
+          return $localize`:@@validation.notInFuture:${label}:label: cannot be in the future.`;
         case 'maxTwoDecimals':
-          return `${label} can have at most two decimal places.`;
+          return $localize`:@@validation.twoDecimals:${label}:label: can have at most two decimal places.`;
         case 'server':
           return String(value);
         default:
-          return `${label} is not valid.`;
+          return $localize`:@@validation.invalid:${label}:label: is not valid.`;
       }
     });
   }

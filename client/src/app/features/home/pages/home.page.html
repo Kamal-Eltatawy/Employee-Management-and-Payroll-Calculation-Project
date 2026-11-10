@@ -1,0 +1,149 @@
+<header class="page-header">
+  <div>
+    <h1 i18n="@@home.welcome">Welcome back</h1>
+    <p class="subtitle">
+      <bdi>{{ user()?.email }}</bdi> · {{ monthLabel }}
+    </p>
+  </div>
+  @if (isHr()) {
+    <div class="actions">
+      <a class="btn btn-outline-secondary" routerLink="/employees" i18n="@@home.allEmployees">All employees</a>
+      <a class="btn btn-primary d-inline-flex align-items-center gap-2" routerLink="/employees/new">
+        <app-icon name="plus" />
+        <span i18n="@@employees.new">New employee</span>
+      </a>
+    </div>
+  }
+</header>
+
+@if (message()) {
+  <div class="alert alert-warning" role="alert">{{ message() }}</div>
+}
+@if (loading() && !message()) {
+  <p class="text-body-secondary" i18n="@@common.loading">Loading…</p>
+}
+
+@if (dashboard(); as d) {
+  <section class="stats">
+    <div class="surface stat">
+      <span class="stat-label" i18n="@@home.activeEmployees">Active employees</span>
+      <strong>{{ d.activeEmployees }}</strong>
+      <span class="stat-note" i18n="@@home.ofTotal">of {{ d.totalEmployees }} employees</span>
+    </div>
+    <div class="surface stat">
+      <span class="stat-label" i18n="@@home.hiredThisMonth">Hired this month</span>
+      <strong>{{ d.hiredThisMonth }}</strong>
+      <span class="stat-note" i18n="@@home.prorated">Paid by calendar days</span>
+    </div>
+    <div class="surface stat">
+      <span class="stat-label" i18n="@@home.inactive">Inactive</span>
+      <strong>{{ d.inactiveEmployees }}</strong>
+      <span class="stat-note" i18n="@@home.notPaid">Not included in payroll</span>
+    </div>
+    <div class="surface stat accent">
+      <span class="stat-label" i18n="@@home.netPayroll">Net payroll this month</span>
+      <strong class="amount">{{ d.payroll.netPay | money }}</strong>
+      <span class="stat-note" i18n="@@home.paidCount">{{ d.payroll.employeesPaid }} payslips</span>
+    </div>
+  </section>
+
+  @if (d.payroll.negativeNetCount > 0) {
+    <div class="alert alert-danger" role="alert" i18n="@@home.negativeAlert">
+      {{ d.payroll.negativeNetCount }} employee(s) have a negative net pay this month. Review their deductions.
+    </div>
+  }
+  @if (d.payroll.withoutPolicy > 0) {
+    <div class="alert alert-warning" role="alert" i18n="@@home.noPolicyAlert">
+      {{ d.payroll.withoutPolicy }} employee(s) have no payroll policy in force for their tax scheme this month.
+    </div>
+  }
+
+  <section class="grid">
+    <div class="surface surface-body payroll">
+      <h2 class="section-title" i18n="@@home.payrollTitle">Payroll this month</h2>
+      <div class="gross">
+        <span i18n="@@payslip.gross">Gross pay</span>
+        <strong class="amount">{{ d.payroll.grossPay | money }}</strong>
+      </div>
+      @if (breakdown().length) {
+        <div class="stacked" role="img" aria-label="Gross pay breakdown" i18n-aria-label="@@home.breakdownLabel">
+          @for (part of breakdown(); track part.key) {
+            <span [class]="'seg ' + part.key" [style.width.%]="part.share" [title]="part.label"></span>
+          }
+        </div>
+        <ul class="legend">
+          @for (part of breakdown(); track part.key) {
+            <li>
+              <span [class]="'dot ' + part.key"></span>
+              <span class="flex-grow-1">{{ part.label }}</span>
+              <span class="amount">{{ part.value | money }}</span>
+            </li>
+          }
+        </ul>
+      }
+    </div>
+
+    <div class="surface surface-body">
+      <h2 class="section-title" i18n="@@home.byDepartment">Active employees by department</h2>
+      <ul class="bars">
+        @for (item of d.byDepartment; track item.name) {
+          <li>
+            <span class="bar-label">{{ item.name }}</span>
+            <span class="bar"><span [style.width.%]="barWidth(item, d.byDepartment)"></span></span>
+            <span class="bar-value">{{ item.count }}</span>
+          </li>
+        } @empty {
+          <li class="text-body-secondary" i18n="@@pagination.none">No results</li>
+        }
+      </ul>
+
+      <h2 class="section-title mt-4" i18n="@@home.byTaxScheme">By tax scheme</h2>
+      <ul class="bars">
+        @for (item of d.byTaxScheme; track item.name) {
+          <li>
+            <span class="bar-label">{{ item.name }}</span>
+            <span class="bar scheme"><span [style.width.%]="barWidth(item, d.byTaxScheme)"></span></span>
+            <span class="bar-value">{{ item.count }}</span>
+          </li>
+        }
+      </ul>
+    </div>
+  </section>
+}
+
+@if (payslip(); as slip) {
+  <section class="employee-home">
+    <div class="surface hero">
+      <div>
+        <span class="stat-label" i18n="@@home.yourNet">Your net pay for {{ monthLabel }}</span>
+        <strong class="amount hero-amount" [class.negative]="slip.isNetNegative">{{ slip.netPay | money }}</strong>
+        <span class="stat-note">
+          <ng-container i18n="@@payslip.gross">Gross pay</ng-container>: <bdi>{{ slip.grossPay | money }}</bdi>
+        </span>
+      </div>
+      <a class="btn btn-light btn-lg d-inline-flex align-items-center gap-2" routerLink="/my-payslip">
+        <app-icon name="receipt" />
+        <span i18n="@@home.viewPayslip">View my payslip</span>
+      </a>
+    </div>
+
+    <div class="stats compact">
+      <div class="surface stat">
+        <span class="stat-label" i18n="@@payslip.incomeTax">Income tax</span>
+        <strong class="amount">{{ slip.incomeTax | money }}</strong>
+      </div>
+      <div class="surface stat">
+        <span class="stat-label" i18n="@@payslip.socialInsurance">Social insurance</span>
+        <strong class="amount">{{ slip.socialInsurance | money }}</strong>
+      </div>
+      <div class="surface stat">
+        <span class="stat-label" i18n="@@field.taxScheme">Tax scheme</span>
+        <strong class="scheme-name">{{ slip.taxSchemeName }}</strong>
+      </div>
+    </div>
+  </section>
+}
+
+@if (!isHr() && message()) {
+  <a class="btn btn-primary" routerLink="/my-payslip" i18n="@@home.viewPayslip">View my payslip</a>
+}

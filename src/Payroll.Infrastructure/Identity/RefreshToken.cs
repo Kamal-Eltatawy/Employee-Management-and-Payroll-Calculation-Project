@@ -16,5 +16,9 @@ public sealed class RefreshToken
 
     public DateTime ExpiresAtUtc { get; set; }
 
+    /// <summary>Replaced by a newer token of the same family.</summary>
+    public DateTime? RotatedAtUtc { get; set; }
+
+    /// <summary>The session was ended (logout, reuse, user no longer allowed).</summary>
     public DateTime? RevokedAtUtc { get; set; }
 }

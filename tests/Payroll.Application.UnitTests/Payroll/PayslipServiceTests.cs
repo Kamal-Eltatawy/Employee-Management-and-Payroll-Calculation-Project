@@ -37,10 +37,7 @@ public sealed class PayslipServiceTests
 
         var clock = TestData.Clock();
         var mapping = MappingConfig.Create();
-        _employees = new EmployeeService(
-            _db.Employees, _db.Departments, _db.PayComponentTypes, _db.TaxSchemes, _db.UnitOfWork,
-            new CreateEmployeeRequestValidator(clock), new UpdateEmployeeRequestValidator(clock),
-            new EmployeeSearchRequestValidator(), clock, mapping);
+        _employees = TestData.EmployeeService(_db, clock);
         _payslips = PayslipsFor(FakeCurrentUser.Hr());
     }
 

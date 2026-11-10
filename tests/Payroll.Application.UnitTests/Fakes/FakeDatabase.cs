@@ -184,8 +184,8 @@ public sealed class InMemoryEmployeeRepository(FakeDatabase db) : IEmployeeRepos
         if (query.Search is { } search)
         {
             employees = employees.Where(e =>
-                e.FullName.Contains(search, StringComparison.OrdinalIgnoreCase) ||
-                e.Email.Contains(search, StringComparison.OrdinalIgnoreCase));
+                e.FullName.StartsWith(search, StringComparison.OrdinalIgnoreCase) ||
+                e.Email.StartsWith(search, StringComparison.OrdinalIgnoreCase));
         }
 
         if (query.DepartmentId is { } departmentId)
@@ -215,6 +215,28 @@ public sealed class InMemoryEmployeeRepository(FakeDatabase db) : IEmployeeRepos
 
     public Task<bool> EmailExistsAsync(string normalizedEmail, int? excludeEmployeeId, CancellationToken ct) =>
         Task.FromResult(_employees.Any(e => e.Email == normalizedEmail && e.Id != excludeEmployeeId));
+
+    public Task<EmployeeHeadcount> GetHeadcountAsync(PayrollMonth month, CancellationToken ct)
+    {
+        var all = Active().ToList();
+        var active = all.Where(e => e.Status == EmployeeStatus.Active).ToList();
+        List<NamedCount> CountBy(Func<Employee, (string Name, string? NameAr)> key) =>
+            active.GroupBy(key).Select(g => new NamedCount(g.Key.Name, g.Key.NameAr, g.Count())).ToList();
+
+        return Task.FromResult(new EmployeeHeadcount(
+            all.Count,
+            active.Count,
+            all.Count(e => PayrollMonth.From(e.HireDate) == month),
+            CountBy(e => (e.Department!.Name, e.Department.NameAr)),
+            CountBy(e => (e.TaxScheme!.Name, e.TaxScheme.NameAr))));
+    }
+
+    public Task<IReadOnlyList<Employee>> ListPayableBatchAsync(PayrollMonth month, int afterId, int batchSize, CancellationToken ct) =>
+        Task.FromResult<IReadOnlyList<Employee>>(Active()
+            .Where(e => e.Status == EmployeeStatus.Active && PayrollMonth.From(e.HireDate) <= month && e.Id > afterId)
+            .OrderBy(e => e.Id)
+            .Take(batchSize)
+            .ToList());
 
     public void Add(Employee employee)
     {

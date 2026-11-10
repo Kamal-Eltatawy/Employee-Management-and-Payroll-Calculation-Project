@@ -1,90 +1,129 @@
-<div class="d-flex align-items-center justify-content-between mb-3">
-  <h1 class="h3 mb-0">Employees</h1>
-  <a class="btn btn-primary" routerLink="/employees/new">New employee</a>
-</div>
-
-<form class="row g-2 mb-3" (submit)="$event.preventDefault(); applySearch(searchInput.value)">
-  <div class="col-md-5">
-    <label class="visually-hidden" for="search">Search</label>
-    <div class="input-group">
-      <input #searchInput id="search" class="form-control" type="search" placeholder="Search by name or email"
-             [value]="query().search ?? ''" />
-      <button class="btn btn-outline-secondary" type="submit">Search</button>
-    </div>
+<header class="page-header">
+  <div>
+    <h1 i18n="@@employees.title">Employees</h1>
+    <p class="subtitle" i18n="@@employees.subtitle">Manage employees, their pay and their payslips.</p>
   </div>
-  <div class="col-md-4">
-    <label class="visually-hidden" for="department">Department</label>
+  <div class="actions">
+    <a class="btn btn-primary d-inline-flex align-items-center gap-2" routerLink="/employees/new">
+      <app-icon name="plus" />
+      <span i18n="@@employees.new">New employee</span>
+    </a>
+  </div>
+</header>
+
+<section class="surface">
+  <form class="toolbar" (submit)="$event.preventDefault(); applySearch(searchInput.value)">
+    <div class="search">
+      <label class="visually-hidden" for="search" i18n="@@employees.searchLabel">Search</label>
+      <app-icon name="search" class="search-icon" />
+      <input #searchInput id="search" class="form-control" type="search" placeholder="Name or email starts with…"
+             i18n-placeholder="@@employees.searchPlaceholder" [value]="query().search ?? ''" />
+    </div>
+    <label class="visually-hidden" for="department" i18n="@@field.department">Department</label>
     <select id="department" class="form-select" (change)="filterByDepartment(department.value)" #department>
-      <option value="" [selected]="!query().departmentId">All departments</option>
+      <option value="" [selected]="!query().departmentId" i18n="@@employees.allDepartments">All departments</option>
       @for (item of departments(); track item.id) {
         <option [value]="item.id" [selected]="query().departmentId === item.id">{{ item.name }}</option>
       }
     </select>
-  </div>
-  <div class="col-md-3">
-    <label class="visually-hidden" for="status">Status</label>
+    <label class="visually-hidden" for="status" i18n="@@field.status">Status</label>
     <select id="status" class="form-select" (change)="filterByStatus(status.value)" #status>
-      <option value="" [selected]="!query().status">All statuses</option>
-      <option value="Active" [selected]="query().status === 'Active'">Active</option>
-      <option value="Inactive" [selected]="query().status === 'Inactive'">Inactive</option>
+      <option value="" [selected]="!query().status" i18n="@@employees.allStatuses">All statuses</option>
+      <option value="Active" [selected]="query().status === 'Active'" i18n="@@status.active">Active</option>
+      <option value="Inactive" [selected]="query().status === 'Inactive'" i18n="@@status.inactive">Inactive</option>
     </select>
-  </div>
-</form>
+    <button class="btn btn-outline-secondary" type="submit" i18n="@@employees.searchButton">Search</button>
+  </form>
 
-@if (error()) {
-  <div class="alert alert-danger" role="alert">{{ error() }}</div>
-}
+  @if (error()) {
+    <div class="alert alert-danger m-3" role="alert">{{ error() }}</div>
+  }
 
-<div class="card shadow-sm">
   <div class="table-responsive">
-    <table class="table table-hover align-middle mb-0">
-      <thead class="table-light">
+    <table class="table align-middle mb-0">
+      <thead>
         <tr>
-          <th scope="col"><button type="button" class="btn btn-link p-0 fw-semibold text-reset text-decoration-none" (click)="sort('name')">Name {{ sortIndicator('name') }}</button></th>
-          <th scope="col">Email</th>
-          <th scope="col">Job title</th>
-          <th scope="col">Department</th>
-          <th scope="col"><button type="button" class="btn btn-link p-0 fw-semibold text-reset text-decoration-none" (click)="sort('hireDate')">Hire date {{ sortIndicator('hireDate') }}</button></th>
-          <th scope="col" class="text-end"><button type="button" class="btn btn-link p-0 fw-semibold text-reset text-decoration-none" (click)="sort('salary')">Base salary {{ sortIndicator('salary') }}</button></th>
-          <th scope="col">Status</th>
-          <th scope="col" class="text-end">Actions</th>
+          <th scope="col">
+            <button type="button" class="sort" (click)="sort('name')">
+              <span i18n="@@employees.colName">Employee</span> {{ sortIndicator('name') }}
+            </button>
+          </th>
+          <th scope="col" class="d-none d-lg-table-cell" i18n="@@employees.colJobTitle">Job title</th>
+          <th scope="col" class="d-none d-md-table-cell" i18n="@@employees.colDepartment">Department</th>
+          <th scope="col" class="d-none d-md-table-cell">
+            <button type="button" class="sort" (click)="sort('hireDate')">
+              <span i18n="@@employees.colHireDate">Hire date</span> {{ sortIndicator('hireDate') }}
+            </button>
+          </th>
+          <th scope="col" class="amount">
+            <button type="button" class="sort" (click)="sort('salary')">
+              <span i18n="@@employees.colSalary">Base salary</span> {{ sortIndicator('salary') }}
+            </button>
+          </th>
+          <th scope="col" i18n="@@employees.colStatus">Status</th>
+          <th scope="col"><span class="visually-hidden" i18n="@@employees.colActions">Actions</span></th>
         </tr>
       </thead>
       <tbody>
         @if (loading() && !result()) {
-          <tr><td colspan="8" class="text-center text-body-secondary py-4">Loading…</td></tr>
+          <tr><td colspan="7" class="empty" i18n="@@common.loading">Loading…</td></tr>
         }
         @for (employee of result()?.items ?? []; track employee.id) {
           <tr>
-            <td class="fw-medium">{{ employee.fullName }}</td>
-            <td>{{ employee.email }}</td>
-            <td>{{ employee.jobTitle }}</td>
-            <td>{{ employee.departmentName }}</td>
-            <td>{{ employee.hireDate }}</td>
-            <td class="text-end font-monospace">{{ employee.baseMonthlySalary | money }}</td>
             <td>
-              <span class="badge" [class.text-bg-success]="employee.status === 'Active'"
-                    [class.text-bg-secondary]="employee.status === 'Inactive'">{{ employee.status }}</span>
+              <div class="person">
+                <span class="avatar">{{ initials(employee.fullName) }}</span>
+                <span>
+                  <span class="name">{{ employee.fullName }}</span>
+                  <span class="email"><bdi>{{ employee.email }}</bdi></span>
+                </span>
+              </div>
             </td>
-            <td class="text-end text-nowrap">
-              <a class="btn btn-sm btn-outline-primary me-1" [routerLink]="['/employees', employee.id, 'payslip']">Payslip</a>
-              <a class="btn btn-sm btn-outline-secondary me-1" [routerLink]="['/employees', employee.id, 'edit']">Edit</a>
-              <button type="button" class="btn btn-sm btn-outline-danger" (click)="confirmDelete(employee)">Delete</button>
+            <td class="d-none d-lg-table-cell">{{ employee.jobTitle }}</td>
+            <td class="d-none d-md-table-cell">{{ employee.departmentName }}</td>
+            <td class="d-none d-md-table-cell"><bdi>{{ employee.hireDate }}</bdi></td>
+            <td class="amount">{{ employee.baseMonthlySalary | money }}</td>
+            <td>
+              @if (employee.status === 'Active') {
+                <span class="pill pill-success" i18n="@@status.active">Active</span>
+              } @else {
+                <span class="pill pill-muted" i18n="@@status.inactive">Inactive</span>
+              }
+            </td>
+            <td>
+              <div class="row-actions">
+                <a class="btn btn-light icon-button" [routerLink]="['/employees', employee.id, 'payslip']"
+                   title="Payslip" i18n-title="@@employees.actionPayslip" aria-label="Payslip" i18n-aria-label="@@employees.actionPayslip">
+                  <app-icon name="file" />
+                </a>
+                <a class="btn btn-light icon-button" [routerLink]="['/employees', employee.id, 'edit']"
+                   title="Edit" i18n-title="@@employees.actionEdit" aria-label="Edit" i18n-aria-label="@@employees.actionEdit">
+                  <app-icon name="edit" />
+                </a>
+                <button type="button" class="btn btn-light icon-button text-danger" (click)="confirmDelete(employee)"
+                        title="Delete" i18n-title="@@employees.actionDelete" aria-label="Delete" i18n-aria-label="@@employees.actionDelete">
+                  <app-icon name="trash" />
+                </button>
+              </div>
             </td>
           </tr>
         } @empty {
           @if (!loading()) {
-            <tr><td colspan="8" class="text-center text-body-secondary py-4">No employees match the filters.</td></tr>
+            <tr><td colspan="7" class="empty" i18n="@@employees.empty">No employees match the filters.</td></tr>
           }
         }
       </tbody>
     </table>
   </div>
+
   @if (result(); as page) {
-    <div class="card-footer bg-white">
-      <app-pagination [page]="page.page" [pageSize]="page.pageSize" [totalCount]="page.totalCount" (pageChange)="goToPage($event)" />
+    <div class="surface-footer">
+      <div class="w-100">
+        <app-pagination [page]="page.page" [pageSize]="page.pageSize" [totalCount]="page.totalCount" (pageChange)="goToPage($event)" />
+      </div>
     </div>
   }
-</div>
+</section>
 
-<app-confirm-dialog title="Delete employee" confirmLabel="Delete" />
+<app-confirm-dialog title="Delete employee" i18n-title="@@employees.deleteTitle"
+                    confirmLabel="Delete" i18n-confirmLabel="@@employees.actionDelete" />

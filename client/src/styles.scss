@@ -18,15 +18,134 @@
 @import "bootstrap/scss/alert";
 @import "bootstrap/scss/badge";
 @import "bootstrap/scss/nav";
-@import "bootstrap/scss/navbar";
 @import "bootstrap/scss/pagination";
+@import "bootstrap/scss/helpers"; // text-bg-*, visually-hidden
 @import "bootstrap/scss/utilities/api";
 
+@import "styles/rtl";
+
 :root {
-  --app-surface: #f6f8fa;
-  --app-header-height: 3.5rem;
+  --app-surface: #f4f6f9;
+  --app-sidebar: #0f2742;
+  --app-sidebar-muted: #9fb3c8;
+  --app-sidebar-active: #1f4e79;
+  --app-card-shadow: 0 1px 2px rgba(16, 24, 40, 0.06), 0 1px 3px rgba(16, 24, 40, 0.1);
+  --app-muted: #667085;
+  --app-border: #e4e7ec;
 }
 
 body {
   background-color: var(--app-surface);
+}
+
+// ---- Page structure shared by all pages ----
+.page-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-block-end: 1.5rem;
+
+  h1 {
+    font-size: 1.6rem;
+    margin: 0;
+  }
+
+  .subtitle {
+    color: var(--app-muted);
+    margin: 0.25rem 0 0;
+  }
+
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+  }
+}
+
+.surface {
+  background: #fff;
+  border: 1px solid var(--app-border);
+  border-radius: 0.75rem;
+  box-shadow: var(--app-card-shadow);
+}
+
+.surface-body {
+  padding: 1.25rem 1.5rem;
+}
+
+.surface-footer {
+  padding: 1rem 1.5rem;
+  border-block-start: 1px solid var(--app-border);
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+.section-title {
+  font-size: 0.8rem;
+  font-weight: 650;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--app-muted);
+  margin-block-end: 1rem;
+}
+
+// Status and tag pills that do not depend on Bootstrap's LTR-only helpers.
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.15rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  white-space: nowrap;
+
+  &::before {
+    content: '';
+    width: 0.45rem;
+    height: 0.45rem;
+    border-radius: 50%;
+    background: currentColor;
+  }
+
+  &.pill-success { background: #ecfdf3; color: #067647; }
+  &.pill-muted { background: #f2f4f7; color: #475467; }
+  &.pill-info { background: #eff8ff; color: #175cd3; }
+  &.pill-warning { background: #fffaeb; color: #b54708; }
+}
+
+.pill-gap {
+  margin-inline-start: 0.35rem;
+}
+
+.icon-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.1rem;
+  height: 2.1rem;
+  padding: 0;
+  border-radius: 0.5rem;
+}
+
+.amount {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  text-align: end;
+}
+
+// Numbers and emails read left-to-right even inside Arabic text.
+.ltr {
+  direction: ltr;
+  unicode-bidi: isolate;
+}
+
+@media print {
+  body {
+    background: #fff;
+  }
 }

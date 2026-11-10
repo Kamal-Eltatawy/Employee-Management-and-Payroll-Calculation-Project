@@ -1,9 +1,12 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Payroll.Application.Abstractions;
+using Payroll.Infrastructure.Caching;
 using Payroll.Infrastructure.Identity;
+using Payroll.Infrastructure.Maintenance;
 using Payroll.Infrastructure.Persistence;
 using Payroll.Infrastructure.Repositories;
 using Payroll.Infrastructure.Seeding;
@@ -14,17 +17,27 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddDbContext<AppDbContext>(options => options.UseSqlServer(
+        // Pooled contexts: fewer allocations per request under load (D62). AppDbContext has only the options constructor.
+        services.AddDbContextPool<AppDbContext>(options => options.UseSqlServer(
             configuration.GetConnectionString("Default")
             ?? throw new InvalidOperationException(
                 "Connection string 'Default' is missing. Copy .env.example to .env and set ConnectionStrings__Default.")));
 
         services.AddScoped<IUnitOfWork>(provider => provider.GetRequiredService<AppDbContext>());
         services.AddScoped<IEmployeeRepository, EmployeeRepository>();
-        services.AddScoped<IDepartmentRepository, DepartmentRepository>();
+        services.AddMemoryCache();
+        services.AddScoped<DepartmentRepository>();
+        services.AddScoped<IDepartmentRepository>(provider =>
+            new CachedDepartmentRepository(provider.GetRequiredService<DepartmentRepository>(), provider.GetRequiredService<IMemoryCache>()));
         services.AddScoped<IPayComponentTypeRepository, PayComponentTypeRepository>();
-        services.AddScoped<IPayrollPolicyRepository, PayrollPolicyRepository>();
-        services.AddScoped<ITaxSchemeRepository, TaxSchemeRepository>();
+        services.AddScoped<PayrollPolicyRepository>();
+        services.AddScoped<IPayrollPolicyRepository>(provider => new CachedPayrollPolicyRepository(
+            provider.GetRequiredService<PayrollPolicyRepository>(), provider.GetRequiredService<IMemoryCache>(),
+            provider.GetRequiredService<TimeProvider>()));
+        services.AddScoped<TaxSchemeRepository>();
+        services.AddScoped<ITaxSchemeRepository>(provider =>
+            new CachedTaxSchemeRepository(provider.GetRequiredService<TaxSchemeRepository>(), provider.GetRequiredService<IMemoryCache>()));
+        services.AddHostedService<RefreshTokenCleanupService>();
         services.AddScoped<DevelopmentDataSeeder>();
 
         // Identity (D24): users, roles and password hashing. No cookies: the API authenticates with JWT only.

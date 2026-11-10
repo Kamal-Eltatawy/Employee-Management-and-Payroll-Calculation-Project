@@ -3,7 +3,7 @@
 A full-stack assessment project: HR manages employees and their allowances/deductions, and anyone with access can see an exact monthly payslip (progressive tax, social insurance with a cap, taxable and non-taxable allowances, hire-month proration, effective-dated payroll policies per tax scheme).
 
 - **Backend:** ASP.NET Core Web API on **.NET 10**, EF Core 10 on **SQL Server 2022** (Docker), ASP.NET Core Identity + JWT with rotating refresh tokens, FluentValidation, Mapster.
-- **Frontend:** **Angular 22** (standalone components, signals, typed reactive forms), Bootstrap 5.3 from SCSS source.
+- **Frontend:** **Angular 22** (standalone components, signals, typed reactive forms), Bootstrap 5.3 from SCSS source, English and Arabic (RTL) with Angular i18n.
 - **Tests:** xUnit v3 unit tests (Domain, Application, Api), integration tests against a real SQL Server in Testcontainers, and Angular logic tests (Vitest through the Angular CLI).
 
 The full design, with every decision and its reasoning (D1–D55), is in [`docs/design/2026-11-09-employee-payroll-design.md`](docs/design/2026-11-09-employee-payroll-design.md).
@@ -37,17 +37,25 @@ dotnet run --project src/Payroll.Api
 # 4. Client (second terminal)
 cd client
 npm install
-npm start
-#    http://localhost:4200  (the dev server proxies /api to http://localhost:5080)
+npm start            # English: http://localhost:4200  (the dev server proxies /api to http://localhost:5080)
+npm run start:ar     # Arabic (RTL): http://localhost:4201  (optional, a third terminal)
 ```
 
 ### Or everything in Docker
 
 ```powershell
 Copy-Item .env.example .env     # once, then set the values
-docker compose up --build
-#    App: http://localhost:8080   Swagger: http://localhost:5081/swagger
+.\start.ps1                     # builds and starts db + API + app, waits until ready, prints every address
+# or: docker compose up --build  (the "urls" service prints the addresses once everything is healthy)
 ```
+
+| What | Address |
+|---|---|
+| App, English | http://localhost:8080/en/ |
+| App, Arabic (RTL) | http://localhost:8080/ar/ |
+| Swagger UI | http://localhost:5081/swagger |
+| Health | http://localhost:8080/health |
+| SQL Server | `localhost,14333` (user `sa`, password from `.env`) |
 
 The API container starts in Development (migrations + demo data + Swagger), and nginx serves the Angular build and proxies `/api` to the API, so the app and API share one origin (no CORS, refresh cookie works). Use only HTTPS outside localhost: the refresh cookie is `Secure`.
 
@@ -101,11 +109,16 @@ Payroll.Domain             entities · value objects · payroll calculators · b
 | Payroll policies | Brackets + insurance rate/cap are effective-dated data per scheme. The latest policy on or before the month applies (D29). Past months are closed; the current month stays open for corrections (D54) |
 | Money | `decimal` everywhere, **no rounding in the domain**; the API returns full precision and only the Angular `MoneyPipe` rounds for display (2 decimals, half away from zero) (D32/D33) |
 | Errors | One `IExceptionHandler`; every error is `application/problem+json` with `traceId` and camelCase JSON-path field keys such as `payComponents[0].amount` (D17/D42) |
+| Error mapping | One `IProblemMapper` per exception type, picked by `ApiExceptionHandler` (nearest base type first), messages through the injected `IApiText` (OCP/DIP, D62) |
+| Scalability | Pooled `DbContext`; cached reference data and closed-month policies (decorators); SQL aggregates and batched payroll for the dashboard; prefix search on indexed columns; expired refresh tokens cleaned up in the background (D62) |
+| Security | Rate limit on login/refresh per IP (429); access token in memory only; refresh token HttpOnly + rotation + reuse detection (D55/D61/D62) |
 | Database errors | Translated in exactly one place, `AppDbContext.SaveChangesAsync` (unique index → 409 on the field, concurrency → 409) (S6) |
 | Concurrency | `rowversion` on employees; the client sends it back on update (D12) |
 | Soft delete | `DeletedAtUtc` + EF query filter; the email stays reserved (D5/D6) |
 | Auth | Identity + 15-minute JWT; rotating refresh token in an HttpOnly, Secure, SameSite=Strict cookie scoped to `/api/auth`, stored only as a SHA-256 hash, with reuse detection (D24/D25/D55) |
 | Client state | Thin typed API services + signals in pages; list filters live in the URL; no store library (D41) |
+| Home page | HR: head counts, distribution by department and tax scheme, and the current month's payroll totals computed with the real payslip engine (`GET /api/dashboard`). Employee: this month's net pay and a link to the payslip (D59) |
+| Languages | English and Arabic (RTL). Official Angular i18n, one build per language; the API answers in the same language through `Accept-Language` and coded, translated error messages (D56) |
 
 ### Payroll formula (per employee, per month)
 
@@ -130,7 +143,8 @@ Worked example (spec §11.5, unit-tested): base 17,000, transport 1,000 (non-tax
 | Auth | `POST auth/login`, `POST auth/refresh`, `POST auth/logout` | anonymous |
 | Employees | `GET employees?search=&departmentId=&status=&sortBy=&sortDir=&page=&pageSize=`, `GET/PUT/DELETE employees/{id}`, `POST employees` | Hr |
 | Payslip | `GET employees/{id}/payslip?month=yyyy-MM` | Hr (any), Employee (own only) |
-| Reference data | `GET departments`, `GET tax-schemes` | signed in |
+| Reference data | `GET departments`, `GET tax-schemes` (names in the request language, D58) | signed in |
+| Dashboard | `GET dashboard` | Hr |
 | Pay component types | full CRUD on `pay-component-types` | Hr |
 | Payroll policies | `GET payroll-policies`, `GET payroll-policies/{id}`, `GET payroll-policies/effective?taxSchemeId=&month=`, `POST/PUT/DELETE` | Hr |
 | Health | `GET /health` (outside `/api`) | anonymous |
@@ -152,6 +166,7 @@ Worked example (spec §11.5, unit-tested): base 17,000, transport 1,000 (non-tax
 - No salary history and no stored payroll runs, so a past payslip combines the historical policy with the current salary data.
 - Pay component types and payroll policies have an API but no admin screen; departments and tax schemes are read-only seed data.
 - An access token issued before an employee is deactivated stays valid until it expires (at most 15 minutes); the next refresh is refused.
+- Employee search matches the start of the name or email (index-friendly), not words in the middle of a name.
 - No restore endpoint for soft-deleted employees. Proration only covers the hire month (there is no termination date).
 - Displayed lines can differ from the displayed net by 0.01, because each value is rounded once for display.
 

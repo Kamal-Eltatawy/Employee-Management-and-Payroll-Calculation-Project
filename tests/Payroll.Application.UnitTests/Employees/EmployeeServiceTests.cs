@@ -25,10 +25,7 @@ public sealed class EmployeeServiceTests
         _loanId = _db.PayComponentTypes.Seed("Loan Repayment", PayComponentKind.Deduction).Id;
 
         var clock = TestData.Clock();
-        _service = new EmployeeService(
-            _db.Employees, _db.Departments, _db.PayComponentTypes, _db.TaxSchemes, _db.UnitOfWork,
-            new CreateEmployeeRequestValidator(clock), new UpdateEmployeeRequestValidator(clock),
-            new EmployeeSearchRequestValidator(), clock, MappingConfig.Create());
+        _service = TestData.EmployeeService(_db, clock);
     }
 
     private static CancellationToken Ct => TestContext.Current.CancellationToken;
@@ -182,16 +179,18 @@ public sealed class EmployeeServiceTests
     }
 
     [Fact]
-    public async Task Search_matches_name_or_email_case_insensitively()
+    public async Task Search_matches_the_start_of_the_name_or_email_case_insensitively()
     {
         await CreateAsync("ali@demo.local", "Ali Hassan");
         await CreateAsync("sara@demo.local", "Sara Ahmed");
 
-        var byName = await _service.SearchAsync(new EmployeeSearchRequest("HASS", null, null, null, null), Ct);
+        var byName = await _service.SearchAsync(new EmployeeSearchRequest("ali h", null, null, null, null), Ct);
+        var middle = await _service.SearchAsync(new EmployeeSearchRequest("hassan", null, null, null, null), Ct);
         var byEmail = await _service.SearchAsync(new EmployeeSearchRequest(" SARA@ ", null, null, null, null), Ct);
 
         Assert.Equal("Ali Hassan", Assert.Single(byName.Items).FullName);
         Assert.Equal("Sara Ahmed", Assert.Single(byEmail.Items).FullName);
+        Assert.Empty(middle.Items); // prefix search, so it can use the indexes (D62)
     }
 
     [Fact]

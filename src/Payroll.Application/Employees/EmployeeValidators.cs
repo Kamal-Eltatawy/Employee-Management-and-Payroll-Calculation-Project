@@ -13,18 +13,18 @@ public abstract class EmployeeWriteRequestValidator<T> : AbstractValidator<T>
         RuleFor(x => x.FullName).NotEmpty().MaximumLength(Employee.FullNameMaxLength);
         RuleFor(x => x.Email).NotEmpty().MaximumLength(Employee.EmailMaxLength).EmailAddress();
         RuleFor(x => x.JobTitle).NotEmpty().MaximumLength(Employee.JobTitleMaxLength);
-        RuleFor(x => x.DepartmentId).GreaterThan(0).WithMessage("Department is required.");
-        RuleFor(x => x.TaxSchemeId).GreaterThan(0).WithMessage("Tax scheme is required.");
+        RuleFor(x => x.DepartmentId).GreaterThan(0).WithMessage("Department is required.").WithErrorCode(ErrorCodes.DepartmentRequired);
+        RuleFor(x => x.TaxSchemeId).GreaterThan(0).WithMessage("Tax scheme is required.").WithErrorCode(ErrorCodes.TaxSchemeRequired);
         RuleFor(x => x.HireDate)
             .NotEmpty()
-            .Must(hireDate => hireDate <= clock.Today()).WithMessage("Hire date cannot be in the future.");
+            .Must(hireDate => hireDate <= clock.Today()).WithMessage("Hire date cannot be in the future.").WithErrorCode(ErrorCodes.HireDateInFuture);
         RuleFor(x => x.BaseMonthlySalary).GreaterThan(0).PrecisionScale(18, 2, ignoreTrailingZeros: true);
         RuleFor(x => x.Status).IsInEnum();
 
         RuleFor(x => x.PayComponents).NotNull();
         RuleForEach(x => x.PayComponents).NotNull().ChildRules(component =>
         {
-            component.RuleFor(c => c.PayComponentTypeId).GreaterThan(0).WithMessage("Pay component type is required.");
+            component.RuleFor(c => c.PayComponentTypeId).GreaterThan(0).WithMessage("Pay component type is required.").WithErrorCode(ErrorCodes.PayComponentTypeRequired);
             component.RuleFor(c => c.Amount).GreaterThan(0).PrecisionScale(18, 2, ignoreTrailingZeros: true);
         });
         RuleFor(x => x.PayComponents).Custom((components, context) =>
@@ -39,9 +39,9 @@ public abstract class EmployeeWriteRequestValidator<T> : AbstractValidator<T>
             {
                 if (components[i] is { } component && !seen.Add(component.PayComponentTypeId))
                 {
-                    context.AddFailure(
+                    context.AddFailure(new FluentValidation.Results.ValidationFailure(
                         $"{nameof(IEmployeeWriteRequest.PayComponents)}[{i}].{nameof(PayComponentAssignmentDto.PayComponentTypeId)}",
-                        "This pay component type is already assigned.");
+                        "This pay component type is already assigned.") { ErrorCode = ErrorCodes.DuplicatePayComponentType });
                 }
             }
         });
@@ -58,7 +58,7 @@ public sealed class UpdateEmployeeRequestValidator : EmployeeWriteRequestValidat
     {
         RuleFor(x => x.RowVersion)
             .NotEmpty()
-            .Must(BeBase64).WithMessage("Row version is not valid.");
+            .Must(BeBase64).WithMessage("Row version is not valid.").WithErrorCode(ErrorCodes.RowVersionInvalid);
     }
 
     private static bool BeBase64(string? value) =>
@@ -74,10 +74,10 @@ public sealed class EmployeeSearchRequestValidator : AbstractValidator<EmployeeS
         RuleFor(x => x.Status).IsInEnum().When(x => x.Status is not null);
         RuleFor(x => x.SortBy)
             .Must(value => value is null || EmployeeSearchOptions.SortFields.ContainsKey(value))
-            .WithMessage("Sort by must be one of: name, hireDate, salary.");
+            .WithMessage("Sort by must be one of: name, hireDate, salary.").WithErrorCode(ErrorCodes.SortByInvalid);
         RuleFor(x => x.SortDir)
             .Must(value => value is null || EmployeeSearchOptions.SortDirections.ContainsKey(value))
-            .WithMessage("Sort direction must be asc or desc.");
+            .WithMessage("Sort direction must be asc or desc.").WithErrorCode(ErrorCodes.SortDirInvalid);
         RuleFor(x => x.Page).GreaterThanOrEqualTo(1);
         RuleFor(x => x.PageSize).InclusiveBetween(1, EmployeeSearchOptions.MaxPageSize);
     }

@@ -18,20 +18,23 @@ public static class MappingConfig
         var config = new TypeAdapterConfig { RequireDestinationMemberSource = true };
 
         config.NewConfig<Employee, EmployeeResponse>()
-            .Map(dest => dest.DepartmentName, src => src.Department!.Name)
-            .Map(dest => dest.TaxSchemeName, src => src.TaxScheme!.Name)
+            .Map(dest => dest.DepartmentName, src => LocalizedName.Pick(src.Department!.Name, src.Department!.NameAr))
+            .Map(dest => dest.TaxSchemeName, src => LocalizedName.Pick(src.TaxScheme!.Name, src.TaxScheme!.NameAr))
             .Map(dest => dest.RowVersion, src => Convert.ToBase64String(src.RowVersion));
 
         config.NewConfig<Employee, EmployeeListItem>()
-            .Map(dest => dest.DepartmentName, src => src.Department!.Name);
+            .Map(dest => dest.DepartmentName, src => LocalizedName.Pick(src.Department!.Name, src.Department!.NameAr));
 
         config.NewConfig<EmployeePayComponent, EmployeePayComponentResponse>()
-            .Map(dest => dest.Name, src => src.PayComponentType!.Name)
+            .Map(dest => dest.Name, src => LocalizedName.Pick(src.PayComponentType!.Name, src.PayComponentType!.NameAr))
             .Map(dest => dest.Kind, src => src.PayComponentType!.Kind)
             .Map(dest => dest.IsTaxable, src => src.PayComponentType!.IsTaxable);
 
-        config.NewConfig<Department, DepartmentResponse>();
-        config.NewConfig<PayComponentType, PayComponentTypeResponse>();
+        config.NewConfig<Department, DepartmentResponse>()
+            .Map(dest => dest.Name, src => LocalizedName.Pick(src.Name, src.NameAr));
+        config.NewConfig<PayComponentType, PayComponentTypeResponse>()
+            .Map(dest => dest.Name, src => LocalizedName.Pick(src.Name, src.NameAr))
+            .Map(dest => dest.NameEn, src => src.Name);
 
         config.NewConfig<PayslipLine, PayslipLineResponse>();
         config.NewConfig<Payslip, PayslipResponse>()

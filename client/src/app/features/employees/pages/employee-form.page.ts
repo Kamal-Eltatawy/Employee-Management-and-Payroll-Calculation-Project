@@ -8,6 +8,7 @@ import { NotificationService } from '../../../core/notifications/notification.se
 import { applyServerErrors } from '../../../shared/forms/apply-server-errors';
 import { maxTwoDecimals, noDuplicateType, notInFuture } from '../../../shared/forms/validators';
 import { FieldErrorsComponent } from '../../../shared/ui/field-errors.component';
+import { IconComponent } from '../../../shared/ui/icon.component';
 import { EmployeesApiService } from '../data/employees-api.service';
 import { Employee, EmployeeRequest, EmployeeStatus } from '../data/employee.models';
 import { ReferenceDataApiService } from '../data/reference-data-api.service';
@@ -17,8 +18,9 @@ import { PayComponentsEditorComponent } from '../ui/pay-components-editor.compon
 /** One page for create and edit (D44). Validators mirror the server rules (§10); the server stays the authority. */
 @Component({
   selector: 'app-employee-form-page',
-  imports: [ReactiveFormsModule, RouterLink, FieldErrorsComponent, PayComponentsEditorComponent],
+  imports: [ReactiveFormsModule, RouterLink, FieldErrorsComponent, PayComponentsEditorComponent, IconComponent],
   templateUrl: './employee-form.page.html',
+  styleUrl: './employee-form.page.scss',
 })
 export class EmployeeFormPage implements OnInit {
   /** Route parameter (bound by withComponentInputBinding); absent on /employees/new. */
@@ -92,7 +94,7 @@ export class EmployeeFormPage implements OnInit {
     save$.subscribe({
       next: (employee) => {
         this.saving.set(false);
-        this.notifications.success(`${employee.fullName} was saved.`);
+        this.notifications.success($localize`:@@employees.saved:${employee.fullName}:name: was saved.`);
         void this.router.navigate(['/employees']);
       },
       error: (error: ApiError) => {

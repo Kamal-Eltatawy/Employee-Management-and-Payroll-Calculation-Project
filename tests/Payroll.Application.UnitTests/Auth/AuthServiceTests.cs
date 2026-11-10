@@ -24,10 +24,9 @@ public sealed class AuthServiceTests
         _db.Departments.Seed(1, "Engineering");
         _db.TaxSchemes.Seed(1, "Standard", TaxMethod.Progressive);
         var clock = _clock;
-        _employees = new EmployeeService(_db.Employees, _db.Departments, _db.PayComponentTypes, _db.TaxSchemes, _db.UnitOfWork,
-            new CreateEmployeeRequestValidator(clock), new UpdateEmployeeRequestValidator(clock), new EmployeeSearchRequestValidator(),
-            clock, MappingConfig.Create());
-        _auth = new AuthService(_credentials, _db.Employees, _tokens, _refreshTokens, _db.UnitOfWork, new LoginRequestValidator(), _clock);
+        _employees = TestData.EmployeeService(_db, clock);
+        _auth = new AuthService(_credentials, _db.Employees, _tokens, _refreshTokens, _db.UnitOfWork, new LoginRequestValidator(),
+            new RefreshTokenOptions { RefreshReuseGraceSeconds = 30 }, _clock);
         _credentials.Add("hr@payroll.local", "Hr-Pass1!", Roles.Hr);
     }
 
@@ -106,7 +105,8 @@ public sealed class AuthServiceTests
         var result = await LoginHrAsync();
 
         Assert.Equal("refresh-1", result.RefreshToken.Value);
-        Assert.Null(Assert.Single(_refreshTokens.All).RevokedAtUtc);
+        Assert.Single(_refreshTokens.Active);
+        Assert.Equal("hr@payroll.local", result.Response.Email);
     }
 
     [Fact]
@@ -118,15 +118,31 @@ public sealed class AuthServiceTests
 
         Assert.NotEqual(login.RefreshToken.Value, refreshed.RefreshToken.Value);
         Assert.Equal("token-for-hr@payroll.local", refreshed.Response.AccessToken);
-        Assert.Single(_refreshTokens.All, t => t.RevokedAtUtc is null);
+        Assert.Single(_refreshTokens.Active);
+        Assert.Equal("hr@payroll.local", refreshed.Response.Email); // a client can restore its session from the cookie alone
         await _auth.RefreshAsync(refreshed.RefreshToken.Value, Ct); // the new one works
     }
 
     [Fact]
-    public async Task Reusing_a_rotated_token_revokes_the_whole_family()
+    public async Task Concurrent_refresh_within_the_grace_window_is_accepted()
+    {
+        var login = await LoginHrAsync();
+        var first = await _auth.RefreshAsync(login.RefreshToken.Value, Ct);   // e.g. the English tab
+        _clock.Advance(TimeSpan.FromSeconds(5));
+
+        var second = await _auth.RefreshAsync(login.RefreshToken.Value, Ct);  // the Arabic tab, same cookie
+
+        Assert.Equal(first.Response.Role, second.Response.Role);
+        Assert.Equal(2, _refreshTokens.Active.Count());
+        Assert.DoesNotContain(_refreshTokens.All, t => t.RevokedAtUtc is not null);
+    }
+
+    [Fact]
+    public async Task Reusing_a_rotated_token_after_the_grace_window_revokes_the_whole_family()
     {
         var login = await LoginHrAsync();
         var refreshed = await _auth.RefreshAsync(login.RefreshToken.Value, Ct);
+        _clock.Advance(TimeSpan.FromSeconds(31));
 
         await Assert.ThrowsAsync<UnauthorizedException>(() => _auth.RefreshAsync(login.RefreshToken.Value, Ct));
 

@@ -11,6 +11,7 @@ internal sealed class PayComponentTypeConfiguration : IEntityTypeConfiguration<P
         builder.ToTable("PayComponentTypes");
         builder.HasKey(t => t.Id);
         builder.Property(t => t.Name).HasMaxLength(PayComponentType.NameMaxLength).IsRequired();
+        builder.Property(t => t.NameAr).HasMaxLength(PayComponentType.NameMaxLength);
         builder.Property(t => t.Kind).HasConversion<int>();
         builder.HasIndex(t => t.Name).IsUnique();
         builder.HasData(ReferenceData.PayComponentTypeRows());

@@ -1,4 +1,6 @@
 using Microsoft.Extensions.Time.Testing;
+using Payroll.Application.Common;
+using Payroll.Application.UnitTests.Fakes;
 using Payroll.Application.Employees;
 using Payroll.Domain.Employees;
 
@@ -10,6 +12,21 @@ internal static class TestData
     public static FakeTimeProvider Clock() => new(new DateTimeOffset(2026, 3, 15, 9, 0, 0, TimeSpan.Zero));
 
     public static readonly DateOnly Today = new(2026, 3, 15);
+
+    /// <summary>The real EmployeeService wired to the in-memory fakes.</summary>
+    public static EmployeeService EmployeeService(FakeDatabase db, TimeProvider? clock = null)
+    {
+        clock ??= Clock();
+        return new EmployeeService(
+            db.Employees,
+            new EmployeeReferenceChecker(db.Departments, db.TaxSchemes, db.PayComponentTypes),
+            db.UnitOfWork,
+            new CreateEmployeeRequestValidator(clock),
+            new UpdateEmployeeRequestValidator(clock),
+            new EmployeeSearchRequestValidator(),
+            clock,
+            MappingConfig.Create());
+    }
 
     public static CreateEmployeeRequest CreateRequest(
         string fullName = "Ali Hassan", string email = "ali@demo.local", int departmentId = 1,

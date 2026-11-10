@@ -18,6 +18,18 @@ internal static class Guard
         return trimmed;
     }
 
+    /// <summary>An optional text: trimmed, null when blank.</summary>
+    public static string? OptionalText(string? value, int maxLength, string field)
+    {
+        var trimmed = value?.Trim();
+        if (string.IsNullOrEmpty(trimmed))
+        {
+            return null;
+        }
+
+        return trimmed.Length <= maxLength ? trimmed : throw new DomainException($"{field} must be at most {maxLength} characters.");
+    }
+
     public static decimal Positive(decimal value, string field) =>
         value > 0 ? value : throw new DomainException($"{field} must be greater than zero.");
 

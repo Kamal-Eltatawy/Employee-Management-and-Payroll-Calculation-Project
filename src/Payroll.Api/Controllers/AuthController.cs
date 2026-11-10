@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
+using Payroll.Api.Auth;
 using Payroll.Application.Abstractions;
 using Payroll.Application.Auth;
 
@@ -12,6 +14,7 @@ namespace Payroll.Api.Controllers;
 [ApiController]
 [Route("api/auth")]
 [AllowAnonymous]
+[EnableRateLimiting(AuthRateLimiting.Policy)]
 public sealed class AuthController(IAuthService auth) : ControllerBase
 {
     public const string RefreshCookie = "payroll_refresh";

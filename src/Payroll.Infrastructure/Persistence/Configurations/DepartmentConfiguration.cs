@@ -11,6 +11,7 @@ internal sealed class DepartmentConfiguration : IEntityTypeConfiguration<Departm
         builder.ToTable("Departments");
         builder.HasKey(d => d.Id);
         builder.Property(d => d.Name).HasMaxLength(Department.NameMaxLength).IsRequired();
+        builder.Property(d => d.NameAr).HasMaxLength(Department.NameMaxLength);
         builder.HasIndex(d => d.Name).IsUnique();
         builder.HasData(ReferenceData.DepartmentRows());
     }

@@ -41,14 +41,14 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options)
         }
         catch (DbUpdateConcurrencyException)
         {
-            throw new ConflictException(ConflictMessages.Concurrency);
+            throw ConflictException.Coded(ErrorCodes.Concurrency, ConflictMessages.Concurrency);
         }
         catch (DbUpdateException exception)
             when (exception.InnerException is SqlException { Number: UniqueIndexViolation or UniqueConstraintViolation } sql)
         {
             throw sql.Message.Contains(EmployeeConfiguration.EmailIndexName, StringComparison.OrdinalIgnoreCase)
-                ? ConflictException.ForField("email", ConflictMessages.EmailInUse)
-                : new ConflictException("The record conflicts with an existing record.");
+                ? ConflictException.Coded(ErrorCodes.EmailInUse, ConflictMessages.EmailInUse, "email")
+                : ConflictException.Coded(ErrorCodes.UniqueConflict, "The record conflicts with an existing record.");
         }
     }
 

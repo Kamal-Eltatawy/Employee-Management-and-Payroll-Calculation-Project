@@ -8,11 +8,12 @@ public sealed class PayrollPolicyRequestValidator : AbstractValidator<PayrollPol
 {
     public PayrollPolicyRequestValidator(TimeProvider clock)
     {
-        RuleFor(x => x.TaxSchemeId).GreaterThan(0).WithMessage("Tax scheme is required.");
+        RuleFor(x => x.TaxSchemeId).GreaterThan(0).WithMessage("Tax scheme is required.").WithErrorCode(ErrorCodes.TaxSchemeRequired);
         RuleFor(x => x.EffectiveFrom)
-            .Must(date => date.Day == 1).WithMessage("A payroll policy must take effect on the first day of a month.")
+            .Must(date => date.Day == 1).WithMessage("A payroll policy must take effect on the first day of a month.").WithErrorCode(ErrorCodes.PolicyFirstDay)
             .Must(date => date >= clock.CurrentMonth().FirstDay)
-            .WithMessage("A payroll policy can only take effect from the current month or later; past months are closed.");
+            .WithMessage("A payroll policy can only take effect from the current month or later; past months are closed.")
+            .WithErrorCode(ErrorCodes.PolicyClosedMonth);
         RuleFor(x => x.InsuranceRatePercent).InclusiveBetween(0, 100).PrecisionScale(5, 2, ignoreTrailingZeros: true);
         RuleFor(x => x.InsuranceCap)
             .GreaterThanOrEqualTo(0).PrecisionScale(18, 2, ignoreTrailingZeros: true)
@@ -39,17 +40,20 @@ public sealed class PayrollPolicyRequestValidator : AbstractValidator<PayrollPol
                 var path = $"{nameof(PayrollPolicyRequest.TaxBrackets)}[{i}].{nameof(TaxBracketDto.UpperBound)}";
                 if (isLast && brackets[i].UpperBound is not null)
                 {
-                    context.AddFailure(path, "The last tax bracket must be open-ended (no upper bound).");
+                    context.AddFailure(Failure(path, "The last tax bracket must be open-ended (no upper bound).", ErrorCodes.BracketLastOpen));
                 }
                 else if (!isLast && brackets[i].UpperBound is null)
                 {
-                    context.AddFailure(path, "Only the last tax bracket can be open-ended.");
+                    context.AddFailure(Failure(path, "Only the last tax bracket can be open-ended.", ErrorCodes.BracketOnlyLastOpen));
                 }
                 else if (i > 0 && brackets[i].UpperBound is { } upper && brackets[i - 1].UpperBound is { } previous && upper <= previous)
                 {
-                    context.AddFailure(path, "Upper bounds must be strictly ascending.");
+                    context.AddFailure(Failure(path, "Upper bounds must be strictly ascending.", ErrorCodes.BracketAscending));
                 }
             }
         });
     }
+
+    private static FluentValidation.Results.ValidationFailure Failure(string path, string message, string code) =>
+        new(path, message) { ErrorCode = code };
 }
