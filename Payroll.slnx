@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Payroll.Api/Payroll.Api.csproj" />
+    <Project Path="src/Payroll.Application/Payroll.Application.csproj" />
+    <Project Path="src/Payroll.Domain/Payroll.Domain.csproj" />
+    <Project Path="src/Payroll.Infrastructure/Payroll.Infrastructure.csproj" />
+  </Folder>
+</Solution>
