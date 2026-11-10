@@ -34,7 +34,7 @@
 | Phase (master plan numbering) | Status |
 |---|---|
 | 1 Setup & skeleton | **done** (waiting for Kamal's last commit) |
-| 2 Employee CRUD backend + tests | todo |
+| 2 Employee CRUD backend + tests | build green, **112/112 tests pass**, migration `InitialCreate` created; `dotnet run` failed with SQL login 18456: a local Windows SQL Server owns port 1433. Fixed: compose maps **host 14333** → 1433; `.env.example` and Kamal's `.env` use `localhost,14333`. Swagger check pending |
 | 3 Payroll backend + tests | todo |
 | 4 Angular client + logic tests | todo |
 | 5 Admin APIs (types CRUD + policy writes) + tests | todo |
@@ -56,8 +56,9 @@
 
 ## Next action
 
-1. **Kamal** commits `src tests docker-compose.yml .env.example docs/plans/PROGRESS.md` (Phase 1 complete; client already committed in `a07590e4`).
-2. **Claude** starts Phase 2 (Employee CRUD backend + tests).
+1. **Kamal** (if not done) commits Phase 1 leftovers.
+2. **Kamal** runs the Phase 2 block: `dotnet build`, `dotnet test` (3 test projects), `dotnet ef migrations add InitialCreate --project src/Payroll.Infrastructure --startup-project src/Payroll.Api --output-dir Persistence/Migrations`, `dotnet run --project src/Payroll.Api`, then the Swagger checks (list, create, duplicate email → 409 `errors.email`, stale rowVersion → 409, delete → 204 then 404). Pastes the output.
+3. **Claude** fixes what the output shows, then Phase 3.
 
 (All previous commits are done. The git history is clean up to `a1284f3`.)
 
@@ -70,3 +71,7 @@
   - xUnit v3 4.x requires Microsoft.Testing.Platform on the .NET 10 SDK: `global.json` got `"test": {"runner": "Microsoft.Testing.Platform"}`, and `Microsoft.NET.Test.Sdk` + `xunit.runner.visualstudio` were removed from the test project.
   - D52 (fast mode, full scope) adopted because of the deadline.
   - P1 Task 6: Angular 22.2.6 scaffold copied into `client/` (no `node_modules`). Plan deviations: Bootstrap partial is `bootstrap/scss/alert` (not `alerts`); `mixed-decls` removed from `silenceDeprecations` (obsolete in current Sass). Scaffold uses Vitest + jsdom for `ng test`.
+  - Phase 1 done (client `a07590e4`; API 404 problem+json + Swagger verified).
+  - Phase 2 written: Domain (`Employee`, `EmployeePayComponent`, `Department`, `PayComponentType`, `Guard`), Application (DTOs, validators, `EmployeeService`, `DepartmentService`, Mapster config, repository abstractions, `ClockExtensions.Today/UtcNow`, `ConflictMessages`), Infrastructure (`AppDbContext` with S6 translation, configurations + `HasData`, 3 repositories, `DevelopmentDataSeeder`, `AddInfrastructure`, `MigrateAndSeedDevelopmentDataAsync`), Api (`EmployeesController`, `DepartmentsController`, Program wiring), tests (new `Payroll.Domain.UnitTests`, `Payroll.Application.UnitTests` with `FakeDatabase`; controller tests).
+  - Notes: `Microsoft.EntityFrameworkCore.Design` is referenced by **Api** (the EF startup project needs it), not Infrastructure as §17 says. `SuppressImplicitRequiredAttributeForNonNullableReferenceTypes = true` so FluentValidation produces all required-field errors (camelCase keys). The employees list endpoint binds individual query params (defaults page=1, pageSize=10) and builds `EmployeeSearchRequest`. `ClockExtensions.CurrentMonth` is deferred to Phase 3 (needs `PayrollMonth`).
+  - NuGet audit (warnings as errors) flagged transitive `System.Security.Cryptography.Pkcs` 9.0.11 (via Microsoft.Data.SqlClient). Fixed with `CentralPackageTransitivePinningEnabled` + a pin to 10.0.14 in `Directory.Packages.props`.
