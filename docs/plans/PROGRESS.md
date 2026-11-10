@@ -57,7 +57,7 @@
 
 ## Next action
 
-1. **Kamal**: `dotnet ef migrations add AddRefreshTokenRotation ...`, `dotnet build`, `dotnet test --solution Payroll.slnx` (unit + integration, Docker running), run API + `npm start` + `npm run start:ar`: log in once, switch language (no new login), log in as another user in one language and check the other follows. Then `.\start.ps1`. Commit.
+1. **Kamal**: commit + push `.github/workflows/ci.yml`, README, spec, PROGRESS; check the Actions tab: three green jobs. Then the project is complete.
 
 (All previous commits are done. The git history is clean up to `a1284f3`.)
 
@@ -93,4 +93,5 @@
   - **D62 (Kamal: all 8 review items):** `PayslipLine.PayComponentTypeId`, `DomainErrorCodes`, calculators split (`Proration.cs`, `TaxCalculators.cs`, `SocialInsuranceCalculator.cs`, `PayrollCalculator.cs`), `IEmployeeReferenceChecker` (+ `TestData.EmployeeService(db)` factory in tests), `IApiText`/`ResxApiText`, `IProblemMapper` + 6 mappers registered in `AddApiProblemDetails`, `GetHeadcountAsync` (GROUP BY) + `ListPayableBatchAsync` (keyset, 500), `AddAuthRateLimiting` (`[EnableRateLimiting("auth")]`, integration tests set `RateLimiting__AuthPermitLimit=1000`), `AddDbContextPool`, `Cached*Repository` decorators + `AddMemoryCache`, `RefreshTokenCleanupService`, prefix search. New migration needed: `AddRefreshTokenRotation` (RotatedAtUtc).
   - Kamal's run: build green, migration `AddRefreshTokenRotation` created, 284/285 tests. The failure: the option property was `ReuseGraceSeconds` while config/spec use `Auth:RefreshReuseGraceSeconds`, so the test's 0 never bound. Renamed the property to `RefreshReuseGraceSeconds`.
   - Final check against the assessment PDF: every required task covered; added an explicit rounding-rule assumption and a 6–8 h scope note to the README, completed `ai-usage/README.md` (exact skills, CLAUDE.md, tools) and the session-2 transcript. Only bonus item not done: CI (dropped by Kamal).
+  - Kamal pushed the repository to his personal GitHub. **D63:** `.github/workflows/ci.yml` (backend build + all tests, frontend build en/ar + tests, Docker image build). README and spec updated.
   - NuGet audit (warnings as errors) flagged transitive `System.Security.Cryptography.Pkcs` 9.0.11 (via Microsoft.Data.SqlClient). Fixed with `CentralPackageTransitivePinningEnabled` + a pin to 10.0.14 in `Directory.Packages.props`.

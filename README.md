@@ -77,6 +77,8 @@ In Swagger: call `POST /api/auth/login`, click **Authorize**, paste the `accessT
 
 ### Tests
 
+GitHub Actions (`.github/workflows/ci.yml`) runs on every push and pull request: .NET build with warnings as errors, all unit and integration tests (Testcontainers SQL Server), the Angular build in both languages with its tests, and the Docker image build.
+
 ```powershell
 dotnet test --solution Payroll.slnx          # all .NET tests (integration tests need Docker running)
 dotnet test --project tests/Payroll.Domain.UnitTests   # one project, e.g. unit tests only (no DB, no network)
@@ -175,7 +177,7 @@ Worked example (spec §11.5, unit-tested): base 17,000, transport 1,000 (non-tax
 
 1. Stored payroll runs with an explicit "close payroll month" step (would replace the current-month rule of D54).
 2. Admin screens for pay component types, payroll policies and tax schemes.
-3. A CI pipeline (build, unit + integration tests, Angular tests) and an HTTPS reverse proxy for non-local deployments.
+3. An HTTPS reverse proxy and a deployment stage in CI for non-local environments.
 4. Salary history, termination-month proration, restore for deleted employees.
 
 ---
@@ -195,9 +197,9 @@ The committed scope was agreed up front at about **12.25 hours** (D49), split in
 | 7 | Identity + JWT (backend and client) + tests | done |
 | 8 | README + `/ai-usage` | done |
 | 9 | *Optional:* integration tests (Testcontainers SQL Server + `WebApplicationFactory`) | done |
-| 10 | *Optional:* full `docker compose up` (db + API + client) | done; CI pipeline skipped by decision |
+| 10 | *Optional:* full `docker compose up` (db + API + client) and a CI pipeline | done |
 
-Scope added during implementation, at my request: tax schemes per employee with pluggable tax methods (D53), keeping the current month open for policy corrections (D54), rotating refresh tokens (D55), Arabic and English in the UI and the API (D56, D58), a new layout and home dashboards (D57, D59), a one-command Docker run (D60), a server-owned session shared by both languages (D61), and a SOLID/scalability review (D62). Each addition is recorded in the spec's decision log with its reasoning.
+Scope added during implementation, at my request: tax schemes per employee with pluggable tax methods (D53), keeping the current month open for policy corrections (D54), rotating refresh tokens (D55), Arabic and English in the UI and the API (D56, D58), a new layout and home dashboards (D57, D59), a one-command Docker run (D60), a CI pipeline (D63), a server-owned session shared by both languages (D61), and a SOLID/scalability review (D62). Each addition is recorded in the spec's decision log with its reasoning.
 
 The assessment suggests 6–8 hours. The core requirements fit that; the committed scope was knowingly larger (D49) and the additions above went further. I chose depth over breadth where it served the evaluation criteria (architecture, validation, tests, auth) and documented every decision so the trade-offs are visible.
 

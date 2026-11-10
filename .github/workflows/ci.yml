@@ -1,0 +1,71 @@
+# Builds and tests everything on every push and pull request (D63).
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  backend:
+    name: Backend (.NET build + unit and integration tests)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+
+      - name: Restore
+        run: dotnet restore Payroll.slnx
+
+      - name: Build (warnings are errors)
+        run: dotnet build Payroll.slnx --configuration Release --no-restore
+
+      # The integration tests start SQL Server with Testcontainers; GitHub's Ubuntu runners have Docker.
+      - name: Test
+        run: dotnet test --solution Payroll.slnx --configuration Release --no-build
+
+  frontend:
+    name: Frontend (Angular build in en + ar, logic tests)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: client
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: client/package-lock.json
+
+      - name: Install
+        run: npm ci
+
+      - name: Build (production, both locales)
+        run: npx ng build
+
+      - name: Test
+        run: npx ng test --watch=false
+
+  docker:
+    name: Docker images
+    runs-on: ubuntu-latest
+    needs: [backend, frontend]
+    steps:
+      - uses: actions/checkout@v4
+
+      # docker-compose.yml requires the variables from .env; the example values are enough to build the images.
+      - name: Use the example environment
+        run: cp .env.example .env
+
+      - name: Build the api and web images
+        run: docker compose build api web
