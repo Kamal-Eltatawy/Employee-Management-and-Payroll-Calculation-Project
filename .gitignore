@@ -1,0 +1,38 @@
+# ---- Secrets & local configuration (never commit) ----
+.env
+!.env.example
+appsettings.*.local.json
+*.pfx
+*.key
+
+# ---- .NET ----
+bin/
+obj/
+TestResults/
+*.user
+*.suo
+*.userprefs
+.vs/
+*.rsuser
+coverage*.xml
+coverage*.json
+
+# ---- Node / Angular ----
+node_modules/
+dist/
+.angular/
+coverage/
+npm-debug.log*
+yarn-error.log*
+
+# ---- IDEs ----
+.idea/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/launch.json
+!.vscode/tasks.json
+
+# ---- OS ----
+.DS_Store
+Thumbs.db
+desktop.ini
