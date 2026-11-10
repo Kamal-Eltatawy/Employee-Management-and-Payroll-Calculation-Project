@@ -23,7 +23,7 @@
 | Item | Value |
 |---|---|
 | .NET SDK (Kamal) | 10.0.400 (`global.json`: 10.0.100 + `latestFeature`, test runner = MTP) |
-| Node (Kamal) | **v22.22.0: must upgrade to ≥ 22.22.3 or 24 LTS before running the Angular client** |
+| Node (Kamal) | v26.13.0 (npm 11: install-scripts warnings for esbuild/lmdb/@parcel/watcher/msgpackr-extract are harmless; the build works) |
 | Docker (Kamal) | 29.8.0, Compose v5.5.1 |
 | Angular CLI / Bootstrap | 22.2.6 / 5.3.8 |
 | Pinned NuGet (`Directory.Packages.props`) | EF/ASP.NET 10.0.14, FluentValidation 12.2.0, Mapster 10.0.14, xunit.v3 4.0.3, NSubstitute 6.2.0, TimeProvider.Testing 10.11.0, JsonWebTokens 8.23.0, SwaggerUI 10.3.1, Testcontainers.MsSql 4.16.0 (`Microsoft.NET.Test.Sdk` / `xunit.runner.visualstudio` entries are unused) |
@@ -50,19 +50,17 @@
 | 1 Toolchain | done |
 | 2 Package pins | done (Kamal to commit) |
 | 3 Skeleton | done, build green (Kamal to commit) |
-| 4 Error handling | tests written in `tests/Payroll.Api.UnitTests` and added to the solution. **The implementation (Task 4 Step 4 in the plan file) is not written yet.** |
-| 5 Host / `.env` / compose | todo (code in the plan file, Task 5) |
-| 6 Angular scaffold | todo (steps in the plan file, Task 6) |
+| 4 Error handling | **done**: build green, 22/22 tests pass |
+| 5 Host / `.env` / compose | code written; build OK. **Docker Desktop was not running**: re-run `docker compose up -d db` after starting it, then `dotnet run` + `/swagger` + a 404 problem+json check |
+| 6 Angular scaffold | **done**: `ng serve` runs on Kamal's machine (Node 26.13.0) |
 
 ## Next action
 
-1. **Kamal** makes the pending commits:
-   - `docs: add approved design spec, implementation plans and repo settings`
-   - `build: pin NuGet package versions centrally`
-   - `build: add layered solution skeleton (...)` (this one includes `global.json` with the MTP test runner)
-2. **Claude** (fast mode) writes the Phase 1 Task 4 Step 4 implementation **and** all of Task 5 (`DotEnvFile` + tests, `Program.cs`, launchSettings, appsettings, `docker-compose.yml`, `.env.example`), copying the code from `01-setup-and-skeleton.md`.
-3. **Kamal** runs `dotnet build Payroll.slnx` and `dotnet test --solution Payroll.slnx` (expect 22 passed), then the Task 5 Step 7 checks.
-4. **Claude** does Task 6 (Angular scaffold in `/tmp`, copied without `node_modules`, `ng build` verified), then moves on to Phase 2.
+1. **Kamal** starts Docker Desktop, then runs the Task 5 checks (`docker compose up -d db`, `dotnet run`, `/swagger`, a 404 returned as problem+json). Then Kamal commits `src tests docker-compose.yml .env.example`.
+2. **Kamal** commits `client` + `docs/plans/PROGRESS.md` (client verified running).
+3. **Claude** moves on to Phase 2 (Employee CRUD backend + tests), after Kamal pastes the Phase 1 output.
+
+(All previous commits are done. The git history is clean up to `a1284f3`.)
 
 ## Log
 
@@ -72,3 +70,4 @@
   - `dotnet-tools.json` is at the repo root.
   - xUnit v3 4.x requires Microsoft.Testing.Platform on the .NET 10 SDK: `global.json` got `"test": {"runner": "Microsoft.Testing.Platform"}`, and `Microsoft.NET.Test.Sdk` + `xunit.runner.visualstudio` were removed from the test project.
   - D52 (fast mode, full scope) adopted because of the deadline.
+  - P1 Task 6: Angular 22.2.6 scaffold copied into `client/` (no `node_modules`). Plan deviations: Bootstrap partial is `bootstrap/scss/alert` (not `alerts`); `mixed-decls` removed from `silenceDeprecations` (obsolete in current Sass). Scaffold uses Vitest + jsdom for `ng test`.
