@@ -253,4 +253,53 @@
 
 > في حاجات غلط في الاوت وكمان عايز لوكلايزيشن وكمان اللاوت مش عاجبني  وقبل ده كله صدر الشت واعمل الحاجات القولي عليها واتش الاول ان session 1 فاضي
 
-**Assistant:** [Found that `session-01-design-and-setup.md` is no longer empty: it was filled at the end of session 1 and committed in `1c20b44`. Wrote this file.] *(The session continues with the payslip fixes, localization and the layout.)*
+**Assistant:** [Found that `session-01-design-and-setup.md` is no longer empty: it was filled at the end of session 1 and committed in `1c20b44`. Wrote this file.] The empty badges were a missing Bootstrap `helpers` import (fixed); the odd November numbers came from Kamal's own test policy. Asked three questions: how to localize, whether server messages are translated too, and the new layout.
+
+**Kamal's answers:** "Angular i18n الرسمي" · "الواجهة + السيرفر (Recommended)" · "Sidebar + كشف رسمي (Recommended)"
+
+---
+
+## 8. Arabic + English (D56), new layout (D57)
+
+**Assistant:** [Backend: error codes on every user-facing exception and validation failure, `.resx` translations (English and Arabic), `RequestLocalization` (UI culture only), translated field names for FluentValidation. Client: `@angular/localize` added in the sandbox copy, one build per locale, 153 messages with stable ids, Arabic translation file, RTL with logical CSS, sidebar shell, sectioned form, formal printable payslip. `ng build` for both locales and 30 tests green.]
+
+**Kamal:**
+
+> فش مشكلة في العين بتاعت الباسورد بتاعت الفور بتاع اللوجن
+
+**Assistant:** [Replaced the browser's (Edge) password reveal with an own show/hide button that never overlaps the validation state, in LTR and RTL.]
+
+**Kamal:** [screenshots: the Arabic and English payslip.]
+
+> مش احسن حاجة وهتلاقي الارقا مش مظبوطف في العربي وكمان الرقم الموظف في العربي وحاجات تانية مش مظبوطه ةكمان عايز لاي اوقت حلو وعايز حاجة للهوم فيها شوية احصائيات لو انت ات ار لو انت موظف يبقي في هوم قم تقدر تخش علي الباي سليب بتاعك وكمان عايزها ريسبونسف في كل حاجة وكمان عايز تظبط بقي الدوكر بعد م عملنا كل ده وكمان عايز الدوكر يظهر الادريس بتاع  كل حاجة بعد نعمل كومبوس الابي اي والعربي والانجليزي
+
+**Assistant:** Asked how to translate master data names and what the home page shows.
+
+**Kamal's answers:** "عمود NameAr (Recommended)" · "إحصائيات + رواتب الشهر (Recommended)"
+
+**Assistant:** [**D58** Arabic names for departments, pay component types and tax schemes, picked by request language. **D59** `/home`: HR dashboard (`GET /api/dashboard`: counts, distributions, the month's payroll computed with the real engine) and an employee home. **D60** Docker: web health check through `/health`, a `urls` service and `start.ps1` that print every address. Client fixes: `<bdi>` for ids, dates and emails; own month picker (the native one showed English); responsive top bar with a menu button.]
+
+---
+
+## 9. Server-owned session (D61) and the backend review (D62)
+
+**Kamal:** [screenshots: home and payslip in both languages.]
+
+> مش عاجبني فكره اني اعمل لوجن كل شوية لو حولت اللغة وكمان في مشكلة لو انا كنت داخل بموظف عادي في النسخة الانليزي ودخلت بالنسخة العربي بالاتش ار وحلوت انحليزي هيفتح علي الموظف   ومسمهاش قسيمة رؤاتبي اسمها الراتب
+> وكمان عايزك تراجع كده الباك اند وتشوف هل فيه حاجاتا ممكن تتنفذ احسن بكتير وتبقي مكبقة قواعد السولد اكتر والو او بي اكتر وتبقي اسكالابول
+
+**Assistant:** Agreed it was a design flaw: each build kept its own `sessionStorage` while the refresh cookie is shared. **D61**: the server owns the session (app initializer calls `/api/auth/refresh`, access token in memory only, `email` in the login response, rotation separated from revocation with a 30-second grace window for simultaneous refreshes). Arabic label "الراتب". Then presented the backend review as two multi-choice questions.
+
+**Kamal's answers:** all eight items: payslip lines by id · reference checks in their own class · dashboard in SQL · exception registry · rate limiting · cache + DbContext pooling · refresh token cleanup · index-friendly search.
+
+**Assistant:** [**D62**: `PayslipLine.PayComponentTypeId`, `DomainErrorCodes`, calculators split into files, `IEmployeeReferenceChecker`, injectable `IApiText`, one `IProblemMapper` per exception type, SQL `GROUP BY` + keyset batches for the dashboard, per-IP rate limit on `/api/auth`, `AddDbContextPool`, caching decorators, `RefreshTokenCleanupService`, prefix search.]
+
+**Kamal:** [pasted output: migration `AddRefreshTokenRotation` created, build green, 284 of 285 tests passed; the refresh-reuse integration test got 200 instead of 401.]
+
+**Assistant:** The option property was `ReuseGraceSeconds` while the configuration key is `Auth:RefreshReuseGraceSeconds`, so the test's value 0 never bound. Renamed the property.
+
+**Kamal:** [attached the assessment PDF again]
+
+> تمام كده هل ناقص حاجة
+
+**Assistant:** [Checked every PDF requirement against the repository; completed this transcript, the AI-usage tool list and the README scope note.]

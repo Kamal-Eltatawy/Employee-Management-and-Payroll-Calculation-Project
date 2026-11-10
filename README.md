@@ -153,6 +153,7 @@ Worked example (spec §11.5, unit-tested): base 17,000, transport 1,000 (non-tax
 
 ## 3. Assumptions
 
+- **Rounding rule:** every amount is computed and returned at full `decimal` precision; it is rounded only for display, to 2 decimals, half away from zero (`MoneyPipe`). The net shown is the true net rounded once, so displayed lines may differ from it by 0.01.
 - Tax brackets are **monthly**. The tax base is base salary + taxable allowances; social insurance is not deducted from it.
 - Social insurance is a percentage of the **base salary only**, with an optional cap (a cap of 0 means zero insurance; no cap means uncapped).
 - The hire month is prorated by calendar days, counting the hire day. Allowances and the insurance cap are prorated; deductions are not.
@@ -196,7 +197,9 @@ The committed scope was agreed up front at about **12.25 hours** (D49), split in
 | 9 | *Optional:* integration tests (Testcontainers SQL Server + `WebApplicationFactory`) | done |
 | 10 | *Optional:* full `docker compose up` (db + API + client) | done; CI pipeline skipped by decision |
 
-Scope added during implementation, at my request: tax schemes per employee with pluggable tax methods (D53), keeping the current month open for policy corrections (D54), and rotating refresh tokens (D55). Each addition is recorded in the spec's decision log with its reasoning.
+Scope added during implementation, at my request: tax schemes per employee with pluggable tax methods (D53), keeping the current month open for policy corrections (D54), rotating refresh tokens (D55), Arabic and English in the UI and the API (D56, D58), a new layout and home dashboards (D57, D59), a one-command Docker run (D60), a server-owned session shared by both languages (D61), and a SOLID/scalability review (D62). Each addition is recorded in the spec's decision log with its reasoning.
+
+The assessment suggests 6–8 hours. The core requirements fit that; the committed scope was knowingly larger (D49) and the additions above went further. I chose depth over breadth where it served the evaluation criteria (architecture, validation, tests, auth) and documented every decision so the trade-offs are visible.
 
 ## 7. AI usage
 
