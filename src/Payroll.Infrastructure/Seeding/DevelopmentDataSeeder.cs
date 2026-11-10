@@ -20,9 +20,13 @@ public sealed class DevelopmentDataSeeder(AppDbContext db, TimeProvider clock)
         var utcNow = clock.UtcNow();
 
         Employee Create(string name, string email, string jobTitle, int departmentId, DateOnly hireDate, decimal salary,
-            EmployeeStatus status, params PayComponentAssignment[] components)
+            EmployeeStatus status, params PayComponentAssignment[] components) =>
+            CreateInScheme(TaxSchemes.Standard, name, email, jobTitle, departmentId, hireDate, salary, status, components);
+
+        Employee CreateInScheme(int taxSchemeId, string name, string email, string jobTitle, int departmentId, DateOnly hireDate,
+            decimal salary, EmployeeStatus status, params PayComponentAssignment[] components)
         {
-            var employee = new Employee(name, email, jobTitle, departmentId, hireDate, salary, status, today, utcNow);
+            var employee = new Employee(name, email, jobTitle, departmentId, taxSchemeId, hireDate, salary, status, today, utcNow);
             employee.SetPayComponents(components, utcNow);
             return employee;
         }
@@ -35,10 +39,10 @@ public sealed class DevelopmentDataSeeder(AppDbContext db, TimeProvider clock)
             Create("Sara Ahmed", "sara@demo.local", "Accountant", Departments.Finance, new DateOnly(2023, 2, 15), 12000m,
                 EmployeeStatus.Active,
                 new PayComponentAssignment(PayComponentTypes.Meal, 500m), new PayComponentAssignment(PayComponentTypes.MedicalPlan, 300m)),
-            Create("Omar Khaled", "omar@demo.local", "HR Specialist", Departments.HumanResources, new DateOnly(2022, 9, 1), 9000m,
+            CreateInScheme(TaxSchemes.Exempt, "Omar Khaled", "omar@demo.local", "HR Specialist", Departments.HumanResources, new DateOnly(2022, 9, 1), 9000m,
                 EmployeeStatus.Active,
                 new PayComponentAssignment(PayComponentTypes.Transport, 600m)),
-            Create("Mona Ibrahim", "mona@demo.local", "Operations Lead", Departments.Operations, new DateOnly(2025, 1, 10), 15000m,
+            CreateInScheme(TaxSchemes.Flat, "Mona Ibrahim", "mona@demo.local", "Operations Lead", Departments.Operations, new DateOnly(2025, 1, 10), 15000m,
                 EmployeeStatus.Active,
                 new PayComponentAssignment(PayComponentTypes.Housing, 1500m), new PayComponentAssignment(PayComponentTypes.MedicalPlan, 400m)),
             Create("Youssef Adel", "youssef@demo.local", "Sales Manager", Departments.Sales, new DateOnly(2021, 11, 1), 22000m,

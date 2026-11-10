@@ -21,6 +21,8 @@ public static class DependencyInjection
         services.AddScoped<IEmployeeRepository, EmployeeRepository>();
         services.AddScoped<IDepartmentRepository, DepartmentRepository>();
         services.AddScoped<IPayComponentTypeRepository, PayComponentTypeRepository>();
+        services.AddScoped<IPayrollPolicyRepository, PayrollPolicyRepository>();
+        services.AddScoped<ITaxSchemeRepository, TaxSchemeRepository>();
         services.AddScoped<DevelopmentDataSeeder>();
 
         return services;

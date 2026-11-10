@@ -11,8 +11,8 @@ public sealed class EmployeeTests
     private static Employee NewEmployee(
         string fullName = "Ali Hassan", string email = "ali@demo.local", string jobTitle = "Developer",
         int departmentId = 1, DateOnly? hireDate = null, decimal salary = 17000m,
-        EmployeeStatus status = EmployeeStatus.Active) =>
-        new(fullName, email, jobTitle, departmentId, hireDate ?? new DateOnly(2024, 6, 1), salary, status, Today, UtcNow);
+        EmployeeStatus status = EmployeeStatus.Active, int taxSchemeId = 1) =>
+        new(fullName, email, jobTitle, departmentId, taxSchemeId, hireDate ?? new DateOnly(2024, 6, 1), salary, status, Today, UtcNow);
 
     [Fact]
     public void Constructor_trims_text_and_normalises_email()
@@ -42,6 +42,7 @@ public sealed class EmployeeTests
     [InlineData("blank job title")]
     [InlineData("long job title")]
     [InlineData("no department")]
+    [InlineData("no tax scheme")]
     [InlineData("future hire date")]
     [InlineData("zero salary")]
     [InlineData("negative salary")]
@@ -56,6 +57,7 @@ public sealed class EmployeeTests
             "blank job title" => NewEmployee(jobTitle: ""),
             "long job title" => NewEmployee(jobTitle: new string('a', 101)),
             "no department" => NewEmployee(departmentId: 0),
+            "no tax scheme" => NewEmployee(taxSchemeId: 0),
             "future hire date" => NewEmployee(hireDate: Today.AddDays(1)),
             "zero salary" => NewEmployee(salary: 0m),
             "negative salary" => NewEmployee(salary: -1m),
@@ -73,7 +75,7 @@ public sealed class EmployeeTests
         var employee = NewEmployee();
 
         Assert.Throws<DomainException>(() => employee.UpdateDetails(
-            "Ali", "ali@demo.local", "Dev", 1, Today.AddDays(1), 1000m, EmployeeStatus.Active, Today, UtcNow));
+            "Ali", "ali@demo.local", "Dev", 1, 1, Today.AddDays(1), 1000m, EmployeeStatus.Active, Today, UtcNow));
     }
 
     [Fact]
@@ -82,11 +84,12 @@ public sealed class EmployeeTests
         var employee = NewEmployee();
         var later = UtcNow.AddHours(1);
 
-        employee.UpdateDetails("Ali H", "NEW@demo.local", "Lead", 2, new DateOnly(2024, 1, 1), 20000m,
+        employee.UpdateDetails("Ali H", "NEW@demo.local", "Lead", 2, 3, new DateOnly(2024, 1, 1), 20000m,
             EmployeeStatus.Inactive, Today, later);
 
         Assert.Equal("new@demo.local", employee.Email);
         Assert.Equal(2, employee.DepartmentId);
+        Assert.Equal(3, employee.TaxSchemeId);
         Assert.Equal(EmployeeStatus.Inactive, employee.Status);
         Assert.Equal(later, employee.UpdatedAtUtc);
     }

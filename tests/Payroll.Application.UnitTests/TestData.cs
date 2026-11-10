@@ -14,11 +14,12 @@ internal static class TestData
     public static CreateEmployeeRequest CreateRequest(
         string fullName = "Ali Hassan", string email = "ali@demo.local", int departmentId = 1,
         DateOnly? hireDate = null, decimal salary = 17000m, EmployeeStatus status = EmployeeStatus.Active,
-        params PayComponentAssignmentDto[] components) =>
-        new(fullName, email, "Developer", departmentId, hireDate ?? new DateOnly(2024, 6, 1), salary, status, components);
+        int taxSchemeId = 1, params PayComponentAssignmentDto[] components) =>
+        new(fullName, email, "Developer", departmentId, taxSchemeId, hireDate ?? new DateOnly(2024, 6, 1), salary, status,
+            components);
 
     public static UpdateEmployeeRequest UpdateRequest(EmployeeResponse current, string? email = null, string? rowVersion = null,
         params PayComponentAssignmentDto[] components) =>
-        new(current.FullName, email ?? current.Email, current.JobTitle, current.DepartmentId, current.HireDate,
+        new(current.FullName, email ?? current.Email, current.JobTitle, current.DepartmentId, current.TaxSchemeId, current.HireDate,
             current.BaseMonthlySalary, current.Status, components, rowVersion ?? current.RowVersion);
 }

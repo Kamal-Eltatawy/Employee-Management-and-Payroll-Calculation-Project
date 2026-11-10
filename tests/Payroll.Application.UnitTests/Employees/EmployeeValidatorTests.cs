@@ -51,6 +51,10 @@ public sealed class EmployeeValidatorTests
         AssertError(_create.Validate(TestData.CreateRequest() with { JobTitle = "" }), "JobTitle");
 
     [Fact]
+    public void Tax_scheme_is_required() =>
+        AssertError(_create.Validate(TestData.CreateRequest(taxSchemeId: 0)), "TaxSchemeId");
+
+    [Fact]
     public void Department_is_required() =>
         AssertError(_create.Validate(TestData.CreateRequest(departmentId: 0)), "DepartmentId");
 
@@ -109,7 +113,7 @@ public sealed class EmployeeValidatorTests
     {
         var create = TestData.CreateRequest();
         var request = new UpdateEmployeeRequest(create.FullName, create.Email, create.JobTitle, create.DepartmentId,
-            create.HireDate, create.BaseMonthlySalary, create.Status, [], rowVersion);
+            create.TaxSchemeId, create.HireDate, create.BaseMonthlySalary, create.Status, [], rowVersion);
 
         AssertError(_update.Validate(request), "RowVersion");
     }
@@ -117,7 +121,7 @@ public sealed class EmployeeValidatorTests
     [Fact]
     public void Update_applies_the_shared_rules()
     {
-        var request = new UpdateEmployeeRequest("", "ali@demo.local", "Dev", 1, TestData.Today, 1m,
+        var request = new UpdateEmployeeRequest("", "ali@demo.local", "Dev", 1, 1, TestData.Today, 1m,
             EmployeeStatus.Active, [], "AAAAAAAAB9E=");
 
         AssertError(_update.Validate(request), "FullName");

@@ -5,6 +5,7 @@ using Payroll.Application.Common;
 using Payroll.Domain.Departments;
 using Payroll.Domain.Employees;
 using Payroll.Domain.PayComponents;
+using Payroll.Domain.Payroll;
 
 namespace Payroll.Infrastructure.Persistence;
 
@@ -20,6 +21,10 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
     public DbSet<Department> Departments => Set<Department>();
 
     public DbSet<PayComponentType> PayComponentTypes => Set<PayComponentType>();
+
+    public DbSet<PayrollPolicy> PayrollPolicies => Set<PayrollPolicy>();
+
+    public DbSet<TaxScheme> TaxSchemes => Set<TaxScheme>();
 
     /// <summary>The single place where database failures become application exceptions (S6).</summary>
     async Task IUnitOfWork.SaveChangesAsync(CancellationToken ct)

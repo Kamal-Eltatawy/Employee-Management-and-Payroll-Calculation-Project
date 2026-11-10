@@ -14,6 +14,7 @@ public abstract class EmployeeWriteRequestValidator<T> : AbstractValidator<T>
         RuleFor(x => x.Email).NotEmpty().MaximumLength(Employee.EmailMaxLength).EmailAddress();
         RuleFor(x => x.JobTitle).NotEmpty().MaximumLength(Employee.JobTitleMaxLength);
         RuleFor(x => x.DepartmentId).GreaterThan(0).WithMessage("Department is required.");
+        RuleFor(x => x.TaxSchemeId).GreaterThan(0).WithMessage("Tax scheme is required.");
         RuleFor(x => x.HireDate)
             .NotEmpty()
             .Must(hireDate => hireDate <= clock.Today()).WithMessage("Hire date cannot be in the future.");

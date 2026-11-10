@@ -3,6 +3,7 @@ using Payroll.Application.Common;
 using Payroll.Domain.Departments;
 using Payroll.Domain.Employees;
 using Payroll.Domain.PayComponents;
+using Payroll.Domain.Payroll;
 
 namespace Payroll.Application.UnitTests.Fakes;
 
@@ -12,18 +13,87 @@ public sealed class FakeDatabase
     public FakeDatabase()
     {
         Departments = new InMemoryDepartmentRepository();
+        TaxSchemes = new InMemoryTaxSchemeRepository();
         PayComponentTypes = new InMemoryPayComponentTypeRepository(this);
         Employees = new InMemoryEmployeeRepository(this);
+        PayrollPolicies = new InMemoryPayrollPolicyRepository();
         UnitOfWork = new FakeUnitOfWork(this);
     }
 
     public InMemoryDepartmentRepository Departments { get; }
 
+    public InMemoryTaxSchemeRepository TaxSchemes { get; }
+
     public InMemoryPayComponentTypeRepository PayComponentTypes { get; }
 
     public InMemoryEmployeeRepository Employees { get; }
 
+    public InMemoryPayrollPolicyRepository PayrollPolicies { get; }
+
     public FakeUnitOfWork UnitOfWork { get; }
+}
+
+public sealed class InMemoryTaxSchemeRepository : ITaxSchemeRepository
+{
+    private readonly List<TaxScheme> _schemes = [];
+
+    public TaxScheme Seed(int id, string name, TaxMethod method)
+    {
+        var scheme = new TaxScheme(id, name, method);
+        _schemes.Add(scheme);
+        return scheme;
+    }
+
+    public TaxScheme? Find(int id) => _schemes.Find(s => s.Id == id);
+
+    public Task<IReadOnlyList<TaxScheme>> ListAsync(CancellationToken ct) =>
+        Task.FromResult<IReadOnlyList<TaxScheme>>(_schemes.OrderBy(s => s.Id).ToList());
+
+    public Task<TaxScheme?> GetByIdAsync(int id, CancellationToken ct) => Task.FromResult(Find(id));
+
+    public Task<bool> ExistsAsync(int id, CancellationToken ct) => Task.FromResult(Find(id) is not null);
+}
+
+public sealed class InMemoryPayrollPolicyRepository : IPayrollPolicyRepository
+{
+    private readonly List<PayrollPolicy> _policies = [];
+    private int _nextId = 1;
+
+    /// <summary>Default: a Standard (progressive) policy with the spec v1 brackets.</summary>
+    public PayrollPolicy Seed(DateOnly effectiveFrom, decimal insuranceRatePercent = 11m, decimal? cap = 1500m,
+        TaxScheme? scheme = null, params TaxBracketDefinition[] brackets)
+    {
+        scheme ??= new TaxScheme(1, "Standard", TaxMethod.Progressive);
+        var policy = new PayrollPolicy(scheme, effectiveFrom, insuranceRatePercent, cap,
+            brackets.Length > 0 || scheme.Method == TaxMethod.Exempt
+                ? brackets
+                : new TaxBracketDefinition[] { new(5000m, 0m), new(15000m, 10m), new(null, 20m) },
+            DateTime.UtcNow);
+        Add(policy);
+        return policy;
+    }
+
+    public Task<IReadOnlyList<PayrollPolicy>> ListAsync(CancellationToken ct) =>
+        Task.FromResult<IReadOnlyList<PayrollPolicy>>(_policies.OrderBy(p => p.EffectiveFrom).ToList());
+
+    public Task<PayrollPolicy?> GetByIdAsync(int id, CancellationToken ct) =>
+        Task.FromResult(_policies.Find(p => p.Id == id));
+
+    public Task<PayrollPolicy?> GetEffectiveForAsync(int taxSchemeId, PayrollMonth month, CancellationToken ct) =>
+        Task.FromResult(_policies
+            .Where(p => p.TaxSchemeId == taxSchemeId && p.EffectiveFrom <= month.FirstDay)
+            .MaxBy(p => p.EffectiveFrom));
+
+    public Task<bool> EffectiveFromExistsAsync(int taxSchemeId, DateOnly effectiveFrom, int? excludeId, CancellationToken ct) =>
+        Task.FromResult(_policies.Any(p => p.TaxSchemeId == taxSchemeId && p.EffectiveFrom == effectiveFrom && p.Id != excludeId));
+
+    public void Add(PayrollPolicy policy)
+    {
+        PrivateSetter.Set(policy, nameof(PayrollPolicy.Id), _nextId++);
+        _policies.Add(policy);
+    }
+
+    public void Remove(PayrollPolicy policy) => _policies.Remove(policy);
 }
 
 public sealed class FakeUnitOfWork(FakeDatabase db) : IUnitOfWork
@@ -167,7 +237,7 @@ public sealed class InMemoryEmployeeRepository(FakeDatabase db) : IEmployeeRepos
     }
 
     private static string Snapshot(Employee e) =>
-        $"{e.FullName}|{e.Email}|{e.JobTitle}|{e.DepartmentId}|{e.HireDate}|{e.BaseMonthlySalary}|{e.Status}|{e.DeletedAtUtc}|" +
+        $"{e.FullName}|{e.Email}|{e.JobTitle}|{e.DepartmentId}|{e.TaxSchemeId}|{e.HireDate}|{e.BaseMonthlySalary}|{e.Status}|{e.DeletedAtUtc}|" +
         string.Join(",", e.PayComponents.OrderBy(c => c.PayComponentTypeId).Select(c => $"{c.PayComponentTypeId}:{c.Amount}"));
 
     // Excludes soft-deleted rows (the EF query filter) and loads navigations (the EF Includes).
@@ -177,6 +247,7 @@ public sealed class InMemoryEmployeeRepository(FakeDatabase db) : IEmployeeRepos
     private Employee LoadNavigations(Employee employee)
     {
         PrivateSetter.Set(employee, nameof(Employee.Department), db.Departments.Find(employee.DepartmentId));
+        PrivateSetter.Set(employee, nameof(Employee.TaxScheme), db.TaxSchemes.Find(employee.TaxSchemeId));
         foreach (var component in employee.PayComponents)
         {
             PrivateSetter.Set(component, nameof(EmployeePayComponent.PayComponentType),

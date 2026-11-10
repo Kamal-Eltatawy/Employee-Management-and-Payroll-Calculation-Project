@@ -11,6 +11,7 @@ public sealed class EmployeeRepository(AppDbContext db) : IEmployeeRepository
     public Task<Employee?> GetByIdAsync(int id, CancellationToken ct) =>
         db.Employees
             .Include(e => e.Department)
+            .Include(e => e.TaxScheme)
             .Include(e => e.PayComponents).ThenInclude(c => c.PayComponentType)
             .AsSplitQuery()
             .SingleOrDefaultAsync(e => e.Id == id, ct);

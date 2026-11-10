@@ -11,6 +11,7 @@ public sealed class EmployeeService(
     IEmployeeRepository employees,
     IDepartmentRepository departments,
     IPayComponentTypeRepository payComponentTypes,
+    ITaxSchemeRepository taxSchemes,
     IUnitOfWork unitOfWork,
     IValidator<CreateEmployeeRequest> createValidator,
     IValidator<UpdateEmployeeRequest> updateValidator,
@@ -38,8 +39,8 @@ public sealed class EmployeeService(
 
         var utcNow = clock.UtcNow();
         var employee = new Employee(
-            request.FullName, request.Email, request.JobTitle, request.DepartmentId, request.HireDate,
-            request.BaseMonthlySalary, request.Status, clock.Today(), utcNow);
+            request.FullName, request.Email, request.JobTitle, request.DepartmentId, request.TaxSchemeId,
+            request.HireDate, request.BaseMonthlySalary, request.Status, clock.Today(), utcNow);
         employee.SetPayComponents(ToAssignments(request.PayComponents), utcNow);
 
         employees.Add(employee);
@@ -63,8 +64,8 @@ public sealed class EmployeeService(
 
         var utcNow = clock.UtcNow();
         employee.UpdateDetails(
-            request.FullName, request.Email, request.JobTitle, request.DepartmentId, request.HireDate,
-            request.BaseMonthlySalary, request.Status, clock.Today(), utcNow);
+            request.FullName, request.Email, request.JobTitle, request.DepartmentId, request.TaxSchemeId,
+            request.HireDate, request.BaseMonthlySalary, request.Status, clock.Today(), utcNow);
         employee.SetPayComponents(ToAssignments(request.PayComponents), utcNow);
 
         await unitOfWork.SaveChangesAsync(ct);
@@ -98,6 +99,11 @@ public sealed class EmployeeService(
         if (!await departments.ExistsAsync(request.DepartmentId, ct))
         {
             failures.Add(new ValidationFailure(nameof(request.DepartmentId), "Department does not exist."));
+        }
+
+        if (!await taxSchemes.ExistsAsync(request.TaxSchemeId, ct))
+        {
+            failures.Add(new ValidationFailure(nameof(request.TaxSchemeId), "Tax scheme does not exist."));
         }
 
         var requestedIds = request.PayComponents.Select(c => c.PayComponentTypeId).Distinct().ToList();

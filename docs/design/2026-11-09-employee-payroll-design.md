@@ -598,6 +598,8 @@ The values were verified with arbitrary-precision decimal arithmetic.
 | Exempt an allowance from tax | data: `IsTaxable` |
 | New brackets, insurance rate or cap | data: a new `PayrollPolicy` with a future `EffectiveFrom` |
 | Proration by working days | new `IProrationCalculator` implementation; consumers unchanged |
+| A different tax regime for some employees | data: a new `TaxScheme` + its policies, then assign employees (D53) |
+| A new way of computing income tax | new `ITaxCalculator` with a new `TaxMethod` value + one DI registration (D53) |
 | A new earning kind (e.g. overtime from an Attendance module) | new domain calculator + one extra input to `PayrollCalculator` |
 
 ---
@@ -1002,3 +1004,4 @@ Each phase ends in a **working, buildable state** that Kamal can commit (D10, D5
 | D50 | Claude never commits or pushes; Kamal owns Git; Claude only ran `git init` | Active |
 | D51 | TDD inside every phase; the separate backend-tests phase is dissolved (updates D10 / §18) | Active (relaxed by D52) |
 | D52 | Deadline = 2026-11-10. **Fast mode, full scope:** no more per-phase detailed plans; each phase is written in one batch (code + tests together); Kamal runs build + test once per phase; questions only for genuinely undecided points | Active |
+| D53 | **Tax schemes per employee.** `TaxScheme` (Name, `TaxMethod`: Progressive / Flat / Exempt) is seeded master data with `GET /tax-schemes`; every `Employee` has a required `TaxSchemeId`; every `PayrollPolicy` belongs to one scheme (unique `TaxSchemeId + EffectiveFrom`), and the effective policy is chosen per the employee's scheme (refines D29/D30). `ITaxCalculator` exposes `Method`; all implementations (`ProgressiveTaxCalculator`, `FlatTaxCalculator`, `ExemptTaxCalculator`) are registered and `PayrollCalculator` receives `IEnumerable<ITaxCalculator>` and picks by the scheme's method (strategy, refines D38). Bracket shape per method: Progressive ≥ 1, Flat exactly one open bracket (its rate), Exempt none. Payslip and policy responses carry the scheme. Existing employees default to Standard. Seed: Standard (v1/v2), Flat Rate 15 %, Tax Exempt. | Active |

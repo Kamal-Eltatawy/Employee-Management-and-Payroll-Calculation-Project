@@ -118,6 +118,11 @@ namespace Payroll.Infrastructure.Persistence.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
+                    b.Property<int>("TaxSchemeId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(1);
+
                     b.Property<DateTime>("UpdatedAtUtc")
                         .HasColumnType("datetime2");
 
@@ -132,6 +137,8 @@ namespace Payroll.Infrastructure.Persistence.Migrations
                     b.HasIndex("FullName");
 
                     b.HasIndex("Status");
+
+                    b.HasIndex("TaxSchemeId");
 
                     b.ToTable("Employees", (string)null);
                 });
@@ -244,6 +251,206 @@ namespace Payroll.Infrastructure.Persistence.Migrations
                         });
                 });
 
+            modelBuilder.Entity("Payroll.Domain.Payroll.PayrollPolicy", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateOnly>("EffectiveFrom")
+                        .HasColumnType("date");
+
+                    b.Property<decimal?>("InsuranceCap")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("InsuranceRatePercent")
+                        .HasPrecision(5, 2)
+                        .HasColumnType("decimal(5,2)");
+
+                    b.Property<int>("TaxSchemeId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TaxSchemeId", "EffectiveFrom")
+                        .IsUnique();
+
+                    b.ToTable("PayrollPolicies", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CreatedAtUtc = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            EffectiveFrom = new DateOnly(2025, 1, 1),
+                            InsuranceCap = 1500m,
+                            InsuranceRatePercent = 11m,
+                            TaxSchemeId = 1
+                        },
+                        new
+                        {
+                            Id = 2,
+                            CreatedAtUtc = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            EffectiveFrom = new DateOnly(2027, 1, 1),
+                            InsuranceCap = 1800m,
+                            InsuranceRatePercent = 12m,
+                            TaxSchemeId = 1
+                        },
+                        new
+                        {
+                            Id = 3,
+                            CreatedAtUtc = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            EffectiveFrom = new DateOnly(2025, 1, 1),
+                            InsuranceCap = 1500m,
+                            InsuranceRatePercent = 11m,
+                            TaxSchemeId = 2
+                        },
+                        new
+                        {
+                            Id = 4,
+                            CreatedAtUtc = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            EffectiveFrom = new DateOnly(2025, 1, 1),
+                            InsuranceCap = 1500m,
+                            InsuranceRatePercent = 11m,
+                            TaxSchemeId = 3
+                        });
+                });
+
+            modelBuilder.Entity("Payroll.Domain.Payroll.TaxBracket", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("PayrollPolicyId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("RatePercent")
+                        .HasPrecision(5, 2)
+                        .HasColumnType("decimal(5,2)");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("int");
+
+                    b.Property<decimal?>("UpperBound")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PayrollPolicyId", "SortOrder")
+                        .IsUnique();
+
+                    b.ToTable("TaxBrackets", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            PayrollPolicyId = 1,
+                            RatePercent = 0m,
+                            SortOrder = 1,
+                            UpperBound = 5000m
+                        },
+                        new
+                        {
+                            Id = 2,
+                            PayrollPolicyId = 1,
+                            RatePercent = 10m,
+                            SortOrder = 2,
+                            UpperBound = 15000m
+                        },
+                        new
+                        {
+                            Id = 3,
+                            PayrollPolicyId = 1,
+                            RatePercent = 20m,
+                            SortOrder = 3
+                        },
+                        new
+                        {
+                            Id = 4,
+                            PayrollPolicyId = 2,
+                            RatePercent = 0m,
+                            SortOrder = 1,
+                            UpperBound = 6000m
+                        },
+                        new
+                        {
+                            Id = 5,
+                            PayrollPolicyId = 2,
+                            RatePercent = 10m,
+                            SortOrder = 2,
+                            UpperBound = 18000m
+                        },
+                        new
+                        {
+                            Id = 6,
+                            PayrollPolicyId = 2,
+                            RatePercent = 22m,
+                            SortOrder = 3
+                        },
+                        new
+                        {
+                            Id = 7,
+                            PayrollPolicyId = 3,
+                            RatePercent = 15m,
+                            SortOrder = 1
+                        });
+                });
+
+            modelBuilder.Entity("Payroll.Domain.Payroll.TaxScheme", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Method")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.ToTable("TaxSchemes", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Method = 1,
+                            Name = "Standard"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Method = 2,
+                            Name = "Flat Rate"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Method = 3,
+                            Name = "Tax Exempt"
+                        });
+                });
+
             modelBuilder.Entity("Payroll.Domain.Employees.Employee", b =>
                 {
                     b.HasOne("Payroll.Domain.Departments.Department", "Department")
@@ -252,7 +459,15 @@ namespace Payroll.Infrastructure.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("Payroll.Domain.Payroll.TaxScheme", "TaxScheme")
+                        .WithMany()
+                        .HasForeignKey("TaxSchemeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.Navigation("Department");
+
+                    b.Navigation("TaxScheme");
                 });
 
             modelBuilder.Entity("Payroll.Domain.Employees.EmployeePayComponent", b =>
@@ -272,9 +487,32 @@ namespace Payroll.Infrastructure.Persistence.Migrations
                     b.Navigation("PayComponentType");
                 });
 
+            modelBuilder.Entity("Payroll.Domain.Payroll.PayrollPolicy", b =>
+                {
+                    b.HasOne("Payroll.Domain.Payroll.TaxScheme", null)
+                        .WithMany()
+                        .HasForeignKey("TaxSchemeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Payroll.Domain.Payroll.TaxBracket", b =>
+                {
+                    b.HasOne("Payroll.Domain.Payroll.PayrollPolicy", null)
+                        .WithMany("TaxBrackets")
+                        .HasForeignKey("PayrollPolicyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Payroll.Domain.Employees.Employee", b =>
                 {
                     b.Navigation("PayComponents");
+                });
+
+            modelBuilder.Entity("Payroll.Domain.Payroll.PayrollPolicy", b =>
+                {
+                    b.Navigation("TaxBrackets");
                 });
 #pragma warning restore 612, 618
         }

@@ -30,6 +30,13 @@ internal sealed class EmployeeConfiguration : IEntityTypeConfiguration<Employee>
             .HasForeignKey(e => e.DepartmentId)
             .OnDelete(DeleteBehavior.Restrict);
 
+        // Default only for rows that existed before tax schemes (D53); the domain always sets a scheme.
+        builder.Property(e => e.TaxSchemeId).HasDefaultValue(ReferenceData.TaxSchemes.Standard);
+        builder.HasOne(e => e.TaxScheme)
+            .WithMany()
+            .HasForeignKey(e => e.TaxSchemeId)
+            .OnDelete(DeleteBehavior.Restrict);
+
         builder.HasMany(e => e.PayComponents)
             .WithOne()
             .HasForeignKey(c => c.EmployeeId)

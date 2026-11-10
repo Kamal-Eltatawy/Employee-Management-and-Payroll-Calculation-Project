@@ -34,8 +34,8 @@
 | Phase (master plan numbering) | Status |
 |---|---|
 | 1 Setup & skeleton | **done** (waiting for Kamal's last commit) |
-| 2 Employee CRUD backend + tests | build green, **112/112 tests pass**, migration `InitialCreate` created; `dotnet run` failed with SQL login 18456: a local Windows SQL Server owns port 1433. Fixed: compose maps **host 14333** → 1433; `.env.example` and Kamal's `.env` use `localhost,14333`. Swagger check pending |
-| 3 Payroll backend + tests | todo |
+| 2 Employee CRUD backend + tests | **done** (112 tests; Swagger verified). Note: a local Windows SQL Server owns 1433, so compose maps **host 14333** → 1433 and `.env` uses `localhost,14333` |
+| 3 Payroll backend + tests (+ D53 tax schemes) | build OK, migrations `AddPayrollPolicies` + `AddPayrollPoliciesAndTaxSchemes` applied on a fresh DB, API runs; **waiting for test result + Swagger payslip checks + commit** |
 | 4 Angular client + logic tests | todo |
 | 5 Admin APIs (types CRUD + policy writes) + tests | todo |
 | 6 Health + JSON logging | todo |
@@ -56,9 +56,8 @@
 
 ## Next action
 
-1. **Kamal** (if not done) commits Phase 1 leftovers.
-2. **Kamal** runs the Phase 2 block: `dotnet build`, `dotnet test` (3 test projects), `dotnet ef migrations add InitialCreate --project src/Payroll.Infrastructure --startup-project src/Payroll.Api --output-dir Persistence/Migrations`, `dotnet run --project src/Payroll.Api`, then the Swagger checks (list, create, duplicate email → 409 `errors.email`, stale rowVersion → 409, delete → 204 then 404). Pastes the output.
-3. **Claude** fixes what the output shows, then Phase 3.
+1. **Kamal** runs the Phase 3 block: `dotnet build`, `dotnet test`, `dotnet ef migrations add AddPayrollPoliciesAndTaxSchemes ...`, `dotnet run`, Swagger: payslip of employee 1 for 2026-03 → net 15950; employee 5 (inactive) → 422; `month=2026-3` → 400; `/api/payroll-policies` → v1 + v2.
+2. **Claude** fixes what the output shows, then Phase 4 (Angular).
 
 (All previous commits are done. The git history is clean up to `a1284f3`.)
 
@@ -74,4 +73,7 @@
   - Phase 1 done (client `a07590e4`; API 404 problem+json + Swagger verified).
   - Phase 2 written: Domain (`Employee`, `EmployeePayComponent`, `Department`, `PayComponentType`, `Guard`), Application (DTOs, validators, `EmployeeService`, `DepartmentService`, Mapster config, repository abstractions, `ClockExtensions.Today/UtcNow`, `ConflictMessages`), Infrastructure (`AppDbContext` with S6 translation, configurations + `HasData`, 3 repositories, `DevelopmentDataSeeder`, `AddInfrastructure`, `MigrateAndSeedDevelopmentDataAsync`), Api (`EmployeesController`, `DepartmentsController`, Program wiring), tests (new `Payroll.Domain.UnitTests`, `Payroll.Application.UnitTests` with `FakeDatabase`; controller tests).
   - Notes: `Microsoft.EntityFrameworkCore.Design` is referenced by **Api** (the EF startup project needs it), not Infrastructure as §17 says. `SuppressImplicitRequiredAttributeForNonNullableReferenceTypes = true` so FluentValidation produces all required-field errors (camelCase keys). The employees list endpoint binds individual query params (defaults page=1, pageSize=10) and builds `EmployeeSearchRequest`. `ClockExtensions.CurrentMonth` is deferred to Phase 3 (needs `PayrollMonth`).
+  - Phase 2 verified by Kamal (build, 112 tests, migration, Swagger checks all OK).
+  - Phase 3 written: Domain `Payroll/` (`PayrollMonth`, `PayrollPolicy` + `TaxBracket` with in-place bracket replacement, the 4 calculators in `Calculators.cs`, `Payslip`), `Employee.EnsureEligibleForPayslip`; Application `IPayrollPolicyRepository`, `PayslipService` (S11 order, missing month → current month, malformed → 400 on `month`), `PayrollPolicyService` (read side only; writes come in Phase 5, interface extended then), `ClockExtensions.CurrentMonth`, Mapster `Payslip → PayslipResponse`; Infrastructure policy/bracket configurations + `HasData` v1/v2 + `PayrollPolicyRepository`; Api `PayslipController`, `PayrollPoliciesController` (GET). Tests for all of it. Ownership check (S7) is added in Phase 7.
+  - **D53 (Kamal): tax schemes per employee + tax method strategies.** `TaxScheme`/`TaxMethod` (Domain), `Employee.TaxSchemeId` (ctor/UpdateDetails take `taxSchemeId` after `departmentId`), `PayrollPolicy(TaxScheme, ...)` + `Replace(TaxScheme, ...)`, `ITaxCalculator.Method` + `FlatTaxCalculator` + `ExemptTaxCalculator`, `PayrollCalculator(IEnumerable<ITaxCalculator>, ...)`; DTOs: requests + `EmployeeResponse` (`TaxSchemeId`, `TaxSchemeName`), `PayslipResponse` (`TaxSchemeName`, `TaxMethod`), policy request/response (`TaxSchemeId`); repo methods take `taxSchemeId`; `GET /api/tax-schemes`; `GET /api/payroll-policies/effective?taxSchemeId=&month=`. Seed: schemes 1 Standard, 2 Flat Rate (15 %), 3 Tax Exempt; demo Omar → Exempt, Mona → Flat. **Phase 4 must add a tax scheme dropdown to the employee form and show the scheme on the payslip.**
   - NuGet audit (warnings as errors) flagged transitive `System.Security.Cryptography.Pkcs` 9.0.11 (via Microsoft.Data.SqlClient). Fixed with `CentralPackageTransitivePinningEnabled` + a pin to 10.0.14 in `Directory.Packages.props`.

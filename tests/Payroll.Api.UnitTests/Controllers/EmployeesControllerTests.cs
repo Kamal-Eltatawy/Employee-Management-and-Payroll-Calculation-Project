@@ -11,7 +11,7 @@ namespace Payroll.Api.UnitTests.Controllers;
 public sealed class EmployeesControllerTests
 {
     private static readonly EmployeeResponse Ali = new(7, "Ali Hassan", "ali@demo.local", "Developer", 1, "Engineering",
-        new DateOnly(2024, 6, 1), 17000m, EmployeeStatus.Active, [], "AAAAAAAAB9E=");
+        1, "Standard", new DateOnly(2024, 6, 1), 17000m, EmployeeStatus.Active, [], "AAAAAAAAB9E=");
 
     private readonly IEmployeeService _service = Substitute.For<IEmployeeService>();
     private readonly EmployeesController _controller;
@@ -33,7 +33,7 @@ public sealed class EmployeesControllerTests
     [Fact]
     public async Task Create_returns_201_pointing_at_get()
     {
-        var request = new CreateEmployeeRequest(Ali.FullName, Ali.Email, Ali.JobTitle, 1, Ali.HireDate, 17000m,
+        var request = new CreateEmployeeRequest(Ali.FullName, Ali.Email, Ali.JobTitle, 1, 1, Ali.HireDate, 17000m,
             EmployeeStatus.Active, []);
         _service.CreateAsync(request, Arg.Any<CancellationToken>()).Returns(Ali);
 
@@ -48,7 +48,7 @@ public sealed class EmployeesControllerTests
     [Fact]
     public async Task Update_returns_200_with_the_new_row_version()
     {
-        var request = new UpdateEmployeeRequest(Ali.FullName, Ali.Email, Ali.JobTitle, 1, Ali.HireDate, 17000m,
+        var request = new UpdateEmployeeRequest(Ali.FullName, Ali.Email, Ali.JobTitle, 1, 1, Ali.HireDate, 17000m,
             EmployeeStatus.Active, [], "AAAAAAAAB9E=");
         var updated = Ali with { RowVersion = "AAAAAAAAB9I=" };
         _service.UpdateAsync(7, request, Arg.Any<CancellationToken>()).Returns(updated);

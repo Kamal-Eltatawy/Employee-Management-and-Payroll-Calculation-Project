@@ -4,6 +4,7 @@ using Payroll.Application.Employees;
 using Payroll.Application.UnitTests.Fakes;
 using Payroll.Domain.Employees;
 using Payroll.Domain.PayComponents;
+using Payroll.Domain.Payroll;
 
 namespace Payroll.Application.UnitTests.Employees;
 
@@ -18,12 +19,14 @@ public sealed class EmployeeServiceTests
     {
         _db.Departments.Seed(1, "Engineering");
         _db.Departments.Seed(2, "Finance");
+        _db.TaxSchemes.Seed(1, "Standard", TaxMethod.Progressive);
+        _db.TaxSchemes.Seed(2, "Flat Rate", TaxMethod.Flat);
         _transportId = _db.PayComponentTypes.Seed("Transport", PayComponentKind.Allowance).Id;
         _loanId = _db.PayComponentTypes.Seed("Loan Repayment", PayComponentKind.Deduction).Id;
 
         var clock = TestData.Clock();
         _service = new EmployeeService(
-            _db.Employees, _db.Departments, _db.PayComponentTypes, _db.UnitOfWork,
+            _db.Employees, _db.Departments, _db.PayComponentTypes, _db.TaxSchemes, _db.UnitOfWork,
             new CreateEmployeeRequestValidator(clock), new UpdateEmployeeRequestValidator(clock),
             new EmployeeSearchRequestValidator(), clock, MappingConfig.Create());
     }
@@ -42,6 +45,7 @@ public sealed class EmployeeServiceTests
 
         Assert.Equal("ali@demo.local", created.Email);
         Assert.Equal("Engineering", created.DepartmentName);
+        Assert.Equal((1, "Standard"), (created.TaxSchemeId, created.TaxSchemeName));
         var component = Assert.Single(created.PayComponents);
         Assert.Equal(("Transport", PayComponentKind.Allowance, 1000m), (component.Name, component.Kind, component.Amount));
         Assert.NotEmpty(created.RowVersion);
@@ -139,12 +143,12 @@ public sealed class EmployeeServiceTests
         var created = await CreateAsync();
         var request = TestData.UpdateRequest(created, components: [new(_loanId, 500m)]) with
         {
-            FullName = "Ali H.", DepartmentId = 2,
+            FullName = "Ali H.", DepartmentId = 2, TaxSchemeId = 2,
         };
 
         var updated = await _service.UpdateAsync(created.Id, request, Ct);
 
-        Assert.Equal(("Ali H.", "Finance"), (updated.FullName, updated.DepartmentName));
+        Assert.Equal(("Ali H.", "Finance", "Flat Rate"), (updated.FullName, updated.DepartmentName, updated.TaxSchemeName));
         Assert.Equal((_loanId, 500m), (Assert.Single(updated.PayComponents).PayComponentTypeId, updated.PayComponents[0].Amount));
         Assert.NotEqual(created.RowVersion, updated.RowVersion);
     }
@@ -194,4 +198,13 @@ public sealed class EmployeeServiceTests
     public async Task Search_with_invalid_sort_throws_validation() =>
         await Assert.ThrowsAsync<ValidationException>(() =>
             _service.SearchAsync(new EmployeeSearchRequest(null, null, null, "email", null), Ct));
+
+    [Fact]
+    public async Task Create_with_unknown_tax_scheme_throws_validation_error_for_that_field()
+    {
+        var error = await Assert.ThrowsAsync<ValidationException>(() =>
+            _service.CreateAsync(TestData.CreateRequest(taxSchemeId: 9), Ct));
+
+        Assert.Equal("TaxSchemeId", Assert.Single(error.Errors).PropertyName);
+    }
 }

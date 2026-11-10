@@ -1,5 +1,6 @@
 using Payroll.Domain.Common;
 using Payroll.Domain.Departments;
+using Payroll.Domain.Payroll;
 
 namespace Payroll.Domain.Employees;
 
@@ -13,11 +14,11 @@ public sealed class Employee
     private readonly List<EmployeePayComponent> _payComponents = [];
 
     public Employee(
-        string fullName, string email, string jobTitle, int departmentId, DateOnly hireDate,
+        string fullName, string email, string jobTitle, int departmentId, int taxSchemeId, DateOnly hireDate,
         decimal baseMonthlySalary, EmployeeStatus status, DateOnly today, DateTime utcNow)
     {
         FullName = Email = JobTitle = string.Empty;
-        Apply(fullName, email, jobTitle, departmentId, hireDate, baseMonthlySalary, status, today);
+        Apply(fullName, email, jobTitle, departmentId, taxSchemeId, hireDate, baseMonthlySalary, status, today);
         CreatedAtUtc = utcNow;
         UpdatedAtUtc = utcNow;
     }
@@ -40,6 +41,11 @@ public sealed class Employee
 
     public Department? Department { get; private set; }
 
+    /// <summary>Decides which payroll policies and which tax method apply (D53).</summary>
+    public int TaxSchemeId { get; private set; }
+
+    public TaxScheme? TaxScheme { get; private set; }
+
     public DateOnly HireDate { get; private set; }
 
     public decimal BaseMonthlySalary { get; private set; }
@@ -61,10 +67,10 @@ public sealed class Employee
     public static string NormalizeEmail(string email) => email.Trim().ToLowerInvariant();
 
     public void UpdateDetails(
-        string fullName, string email, string jobTitle, int departmentId, DateOnly hireDate,
+        string fullName, string email, string jobTitle, int departmentId, int taxSchemeId, DateOnly hireDate,
         decimal baseMonthlySalary, EmployeeStatus status, DateOnly today, DateTime utcNow)
     {
-        Apply(fullName, email, jobTitle, departmentId, hireDate, baseMonthlySalary, status, today);
+        Apply(fullName, email, jobTitle, departmentId, taxSchemeId, hireDate, baseMonthlySalary, status, today);
         UpdatedAtUtc = utcNow;
     }
 
@@ -112,8 +118,23 @@ public sealed class Employee
         UpdatedAtUtc = utcNow;
     }
 
+    /// <summary>Spec §11.3 checks 4 and 5: the employee must be Active and the month must not be before the hire month.</summary>
+    public void EnsureEligibleForPayslip(PayrollMonth month)
+    {
+        if (Status != EmployeeStatus.Active)
+        {
+            throw new DomainException("Employee is inactive.");
+        }
+
+        var hireMonth = PayrollMonth.From(HireDate);
+        if (month < hireMonth)
+        {
+            throw new DomainException($"Employee was hired in {hireMonth}.");
+        }
+    }
+
     private void Apply(
-        string fullName, string email, string jobTitle, int departmentId, DateOnly hireDate,
+        string fullName, string email, string jobTitle, int departmentId, int taxSchemeId, DateOnly hireDate,
         decimal baseMonthlySalary, EmployeeStatus status, DateOnly today)
     {
         if (hireDate > today)
@@ -125,6 +146,7 @@ public sealed class Employee
         Email = NormalizeEmail(Guard.RequiredText(email, EmailMaxLength, nameof(Email)));
         JobTitle = Guard.RequiredText(jobTitle, JobTitleMaxLength, "Job title");
         DepartmentId = Guard.PositiveId(departmentId, "Department");
+        TaxSchemeId = Guard.PositiveId(taxSchemeId, "Tax scheme");
         HireDate = hireDate;
         BaseMonthlySalary = Guard.Positive(baseMonthlySalary, "Base monthly salary");
         Status = Guard.Defined(status, nameof(Status));

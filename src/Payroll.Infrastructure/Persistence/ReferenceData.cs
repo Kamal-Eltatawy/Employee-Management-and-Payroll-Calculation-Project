@@ -1,4 +1,5 @@
 using Payroll.Domain.PayComponents;
+using Payroll.Domain.Payroll;
 
 namespace Payroll.Infrastructure.Persistence;
 
@@ -14,6 +15,13 @@ public static class ReferenceData
         public const int HumanResources = 3;
         public const int Operations = 4;
         public const int Sales = 5;
+    }
+
+    public static class TaxSchemes
+    {
+        public const int Standard = 1;
+        public const int Flat = 2;
+        public const int Exempt = 3;
     }
 
     public static class PayComponentTypes
@@ -41,6 +49,39 @@ public static class ReferenceData
         PayComponentTypeRow(PayComponentTypes.Meal, "Meal", PayComponentKind.Allowance, isTaxable: true),
         PayComponentTypeRow(PayComponentTypes.LoanRepayment, "Loan Repayment", PayComponentKind.Deduction, isTaxable: false),
         PayComponentTypeRow(PayComponentTypes.MedicalPlan, "Medical Plan", PayComponentKind.Deduction, isTaxable: false),
+    ];
+
+    internal static object[] TaxSchemeRows() =>
+    [
+        new { Id = TaxSchemes.Standard, Name = "Standard", Method = TaxMethod.Progressive },
+        new { Id = TaxSchemes.Flat, Name = "Flat Rate", Method = TaxMethod.Flat },
+        new { Id = TaxSchemes.Exempt, Name = "Tax Exempt", Method = TaxMethod.Exempt },
+    ];
+
+    /// <summary>
+    /// Standard: v1 in force since 2025-01; v2 starts 2027-01 to demonstrate effective dating and previews (D29/D34).
+    /// Flat Rate: 15% on taxable income. Tax Exempt: no brackets, insurance only (D53).
+    /// </summary>
+    internal static object[] PayrollPolicyRows() =>
+    [
+        PolicyRow(1, TaxSchemes.Standard, new DateOnly(2025, 1, 1), 11m, 1500m),
+        PolicyRow(2, TaxSchemes.Standard, new DateOnly(2027, 1, 1), 12m, 1800m),
+        PolicyRow(3, TaxSchemes.Flat, new DateOnly(2025, 1, 1), 11m, 1500m),
+        PolicyRow(4, TaxSchemes.Exempt, new DateOnly(2025, 1, 1), 11m, 1500m),
+    ];
+
+    private static object PolicyRow(int id, int taxSchemeId, DateOnly effectiveFrom, decimal rate, decimal? cap) =>
+        new { Id = id, TaxSchemeId = taxSchemeId, EffectiveFrom = effectiveFrom, InsuranceRatePercent = rate, InsuranceCap = cap, CreatedAtUtc = SeededAtUtc };
+
+    internal static object[] TaxBracketRows() =>
+    [
+        new { Id = 1, PayrollPolicyId = 1, SortOrder = 1, UpperBound = (decimal?)5000m, RatePercent = 0m },
+        new { Id = 2, PayrollPolicyId = 1, SortOrder = 2, UpperBound = (decimal?)15000m, RatePercent = 10m },
+        new { Id = 3, PayrollPolicyId = 1, SortOrder = 3, UpperBound = (decimal?)null, RatePercent = 20m },
+        new { Id = 4, PayrollPolicyId = 2, SortOrder = 1, UpperBound = (decimal?)6000m, RatePercent = 0m },
+        new { Id = 5, PayrollPolicyId = 2, SortOrder = 2, UpperBound = (decimal?)18000m, RatePercent = 10m },
+        new { Id = 6, PayrollPolicyId = 2, SortOrder = 3, UpperBound = (decimal?)null, RatePercent = 22m },
+        new { Id = 7, PayrollPolicyId = 3, SortOrder = 1, UpperBound = (decimal?)null, RatePercent = 15m },
     ];
 
     private static object PayComponentTypeRow(int id, string name, PayComponentKind kind, bool isTaxable) =>
