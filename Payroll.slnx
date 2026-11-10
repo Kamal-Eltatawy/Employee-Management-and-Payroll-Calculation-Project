@@ -6,6 +6,7 @@
     <Project Path="src/Payroll.Infrastructure/Payroll.Infrastructure.csproj" />
   </Folder>
   <Folder Name="/tests/">
+    <Project Path="tests/Payroll.Api.IntegrationTests/Payroll.Api.IntegrationTests.csproj" />
     <Project Path="tests/Payroll.Api.UnitTests/Payroll.Api.UnitTests.csproj" />
     <Project Path="tests/Payroll.Application.UnitTests/Payroll.Application.UnitTests.csproj" />
     <Project Path="tests/Payroll.Domain.UnitTests/Payroll.Domain.UnitTests.csproj" />

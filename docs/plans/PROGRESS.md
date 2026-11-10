@@ -41,7 +41,8 @@
 | 6 Health + JSON logging | **done** |
 | 7 Identity + JWT + refresh tokens (D55) + tests | done (migration `AddIdentity` created; refresh cookie verified in the browser: HttpOnly, Secure, SameSite=Strict, Path=/api/auth) |
 | 8 README + `/ai-usage` | written; **Kamal to review, export session 2 into `ai-usage/`, commit** |
-| 9–10 *(optional)* integration tests, Docker + CI | only if time remains |
+| 9 *(optional)* integration tests | written: `tests/Payroll.Api.IntegrationTests` (Testcontainers `MsSqlBuilder(image)`, assembly fixture, API in Development so migrations + seed run): health anonymous, 401 problem+json, Hr list, Employee own payslip 15,950 / other 403 / HR endpoints 403, inactive login 401, refresh rotation + reuse revokes family, logout revokes, duplicate email 409, unique index → ConflictException(email), stale rowVersion 409, concurrent save → concurrency conflict, soft delete hidden + email reserved + row kept. **Waiting for Kamal's run** |
+| 10 *(optional)* Docker + CI | todo |
 
 ### Phase 1 detail (plan: `docs/plans/01-setup-and-skeleton.md`; code for Tasks 4–6 is already in that file)
 
@@ -56,8 +57,8 @@
 
 ## Next action
 
-1. **Kamal**: run `dotnet test --solution Payroll.slnx` once more (Phase 7 tests), quick checks (Ali sees only his payslip; Youssef 401), review `README.md` + `ai-usage/README.md`, export this chat as `ai-usage/session-02-implementation.*` (and fill the empty `session-01` export), commit.
-2. Optional phases 9–10 only if time remains.
+1. **Kamal**: Docker Desktop running, then `dotnet build` + `dotnet test --solution Payroll.slnx` (first run pulls/starts a SQL Server container). Paste failures. Commit Phases 8 + 9.
+2. **Claude**: Phase 10 (full docker compose + GitHub Actions CI) if time remains.
 
 (All previous commits are done. The git history is clean up to `a1284f3`.)
 

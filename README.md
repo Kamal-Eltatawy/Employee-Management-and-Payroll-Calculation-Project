@@ -4,7 +4,7 @@ A full-stack assessment project: HR manages employees and their allowances/deduc
 
 - **Backend:** ASP.NET Core Web API on **.NET 10**, EF Core 10 on **SQL Server 2022** (Docker), ASP.NET Core Identity + JWT with rotating refresh tokens, FluentValidation, Mapster.
 - **Frontend:** **Angular 22** (standalone components, signals, typed reactive forms), Bootstrap 5.3 from SCSS source.
-- **Tests:** xUnit v3 (Domain, Application, Api) and Angular logic tests (Vitest through the Angular CLI).
+- **Tests:** xUnit v3 unit tests (Domain, Application, Api), integration tests against a real SQL Server in Testcontainers, and Angular logic tests (Vitest through the Angular CLI).
 
 The full design, with every decision and its reasoning (D1–D55), is in [`docs/design/2026-11-09-employee-payroll-design.md`](docs/design/2026-11-09-employee-payroll-design.md).
 
@@ -60,7 +60,8 @@ In Swagger: call `POST /api/auth/login`, click **Authorize**, paste the `accessT
 ### Tests
 
 ```powershell
-dotnet test --solution Payroll.slnx          # Domain, Application and Api unit tests (no DB, no network)
+dotnet test --solution Payroll.slnx          # all .NET tests (integration tests need Docker running)
+dotnet test --project tests/Payroll.Domain.UnitTests   # one project, e.g. unit tests only (no DB, no network)
 cd client; npx ng test --watch=false         # Angular logic tests
 ```
 
@@ -148,9 +149,8 @@ Worked example (spec §11.5, unit-tested): base 17,000, transport 1,000 (non-tax
 
 1. Stored payroll runs with an explicit "close payroll month" step (would replace the current-month rule of D54).
 2. Admin screens for pay component types, payroll policies and tax schemes.
-3. Integration tests with Testcontainers (unique index, rowversion, soft-delete filter, auth end to end).
-4. Full `docker compose up` for API + client and a CI pipeline.
-5. Salary history, termination-month proration, restore for deleted employees.
+3. Full `docker compose up` for API + client and a CI pipeline.
+4. Salary history, termination-month proration, restore for deleted employees.
 
 ---
 
@@ -168,7 +168,8 @@ The committed scope was agreed up front at about **12.25 hours** (D49), split in
 | 6 | Health check + JSON logging | done |
 | 7 | Identity + JWT (backend and client) + tests | done |
 | 8 | README + `/ai-usage` | done |
-| 9–10 | *Optional:* integration tests, full Docker + CI | not done (see Next steps) |
+| 9 | *Optional:* integration tests (Testcontainers SQL Server + `WebApplicationFactory`) | done |
+| 10 | *Optional:* full Docker + CI | not done (see Next steps) |
 
 Scope added during implementation, at my request: tax schemes per employee with pluggable tax methods (D53), keeping the current month open for policy corrections (D54), and rotating refresh tokens (D55). Each addition is recorded in the spec's decision log with its reasoning.
 
