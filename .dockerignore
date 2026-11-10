@@ -1,0 +1,15 @@
+# Context for src/Payroll.Api/Dockerfile: only the backend sources are needed.
+**/bin
+**/obj
+**/node_modules
+**/.angular
+**/dist
+.git
+.vs
+.vscode
+.env
+TestResults
+client
+tests
+docs
+ai-usage

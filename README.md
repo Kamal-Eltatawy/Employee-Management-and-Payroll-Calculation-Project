@@ -41,6 +41,16 @@ npm start
 #    http://localhost:4200  (the dev server proxies /api to http://localhost:5080)
 ```
 
+### Or everything in Docker
+
+```powershell
+Copy-Item .env.example .env     # once, then set the values
+docker compose up --build
+#    App: http://localhost:8080   Swagger: http://localhost:5081/swagger
+```
+
+The API container starts in Development (migrations + demo data + Swagger), and nginx serves the Angular build and proxies `/api` to the API, so the app and API share one origin (no CORS, refresh cookie works). Use only HTTPS outside localhost: the refresh cookie is `Secure`.
+
 > Host port **14333** is used because a local SQL Server often owns 1433 on Windows. Change both `docker-compose.yml` and `ConnectionStrings__Default` if you need another port.
 
 ### Demo accounts
@@ -149,7 +159,7 @@ Worked example (spec §11.5, unit-tested): base 17,000, transport 1,000 (non-tax
 
 1. Stored payroll runs with an explicit "close payroll month" step (would replace the current-month rule of D54).
 2. Admin screens for pay component types, payroll policies and tax schemes.
-3. Full `docker compose up` for API + client and a CI pipeline.
+3. A CI pipeline (build, unit + integration tests, Angular tests) and an HTTPS reverse proxy for non-local deployments.
 4. Salary history, termination-month proration, restore for deleted employees.
 
 ---
@@ -169,7 +179,7 @@ The committed scope was agreed up front at about **12.25 hours** (D49), split in
 | 7 | Identity + JWT (backend and client) + tests | done |
 | 8 | README + `/ai-usage` | done |
 | 9 | *Optional:* integration tests (Testcontainers SQL Server + `WebApplicationFactory`) | done |
-| 10 | *Optional:* full Docker + CI | not done (see Next steps) |
+| 10 | *Optional:* full `docker compose up` (db + API + client) | done; CI pipeline skipped by decision |
 
 Scope added during implementation, at my request: tax schemes per employee with pluggable tax methods (D53), keeping the current month open for policy corrections (D54), and rotating refresh tokens (D55). Each addition is recorded in the spec's decision log with its reasoning.
 

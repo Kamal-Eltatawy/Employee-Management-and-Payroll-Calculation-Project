@@ -1,5 +1,7 @@
 name: payroll
 
+# Local development: `docker compose up -d db` starts only the database (the API and client run from the IDE / CLI).
+# Everything in containers: `docker compose up --build`, then open http://localhost:8080.
 services:
   db:
     image: mcr.microsoft.com/mssql/server:2022-latest
@@ -16,6 +18,29 @@ services:
       timeout: 5s
       retries: 10
       start_period: 20s
+
+  api:
+    build:
+      context: .
+      dockerfile: src/Payroll.Api/Dockerfile
+    env_file: .env   # Jwt__* and Seed__* (secrets stay in .env)
+    environment:
+      # Development: applies the migrations, seeds the demo data and serves Swagger UI. This compose file is for demos.
+      ASPNETCORE_ENVIRONMENT: Development
+      # Inside the compose network the database is "db" on 1433 (overrides the host value from .env).
+      ConnectionStrings__Default: "Server=db,1433;Database=Payroll;User Id=sa;Password=${MSSQL_SA_PASSWORD};Encrypt=True;TrustServerCertificate=True"
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "5081:8080"    # Swagger UI at http://localhost:5081/swagger (5081 so it never clashes with `dotnet run` on 5080)
+
+  web:
+    build: ./client
+    depends_on:
+      - api
+    ports:
+      - "8080:80"      # the app: http://localhost:8080
 
 volumes:
   sqldata:
