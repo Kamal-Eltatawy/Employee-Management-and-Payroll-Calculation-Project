@@ -1,13 +1,13 @@
 # AI Usage
 
-This folder contains the AI chat sessions used to build this project, plus notes on how AI was used. The desktop app offers no usable export, so each session was reconstructed by the assistant at the end of the session: Kamal's messages verbatim, the assistant's replies condensed (see the note at the top of each file).
+This folder contains the AI chat sessions used to build this project, plus notes on how AI was used. The desktop app offers no usable export, so each session was reconstructed by the assistant at the end of the session: Kamal's messages translated from Egyptian Arabic into English, the assistant's replies condensed, and personal remarks unrelated to the project left out and marked (see the note at the top of each file).
 
 ## Sessions
 
 | # | File | Scope |
 |---|---|---|
 | 1 | [`session-01-design-and-setup.md`](session-01-design-and-setup.md) (reconstructed by the assistant: no usable app export) | Requirements analysis, architecture discussion (decisions D1–D52), design spec, implementation plans, Phase 1 (solution skeleton, error handling, API host) |
-| 2 | [`session-02-implementation.md`](session-02-implementation.md) (reconstructed the same way) | Phases 1 (Angular scaffold) to 10: employee CRUD, payroll engine, Angular client, admin APIs, health + logging, Identity + JWT + refresh tokens, README, integration tests, Docker; then Arabic/English, new layout, home dashboards, server-owned session and a backend review. Decisions D53–D62 |
+| 2 | [`session-02-implementation.md`](session-02-implementation.md) (reconstructed the same way) | Phases 1 (Angular scaffold) to 10: employee CRUD, payroll engine, Angular client, admin APIs, health + logging, Identity + JWT + refresh tokens, README, integration tests, Docker; then Arabic/English, new layout, home dashboards, server-owned session and a backend review. Decisions D53–D62; then CI (D63) and published Docker images (D64) |
 
 ## Tools
 
@@ -34,7 +34,7 @@ This folder contains the AI chat sessions used to build this project, plus notes
 
 **Done by me:**
 
-- Every decision. Each open point was asked as one question with options and a recommendation, and I chose (decision log D1–D55 in the spec).
+- Every decision. Each open point was asked as one question with options and a recommendation, and I chose (decision log D1–D64 in the spec).
 - Changes in direction during implementation that came from my own review: tax schemes per employee with pluggable tax methods (D53), keeping the current month open so a policy mistake can be corrected before payroll (D54), and rotating refresh tokens (D55).
 - Running every build, test, migration and container; reporting the output; and testing the UI and Swagger by hand. Problems found this way and then fixed: a vulnerable transitive package (NuGet audit), a C# target-typed `new()` error, a port clash with a local SQL Server, model-binding errors not matching the Problem Details shape, and the network-error toast message.
 - All Git operations. The AI never committed or pushed (D50).

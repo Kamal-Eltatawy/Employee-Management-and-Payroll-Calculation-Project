@@ -57,7 +57,12 @@
 
 ## Next action
 
-1. **Kamal**: commit + push; after CI, make the two packages public (or `docker login ghcr.io`), set `IMAGE_PREFIX` in `.env`, run `.\start.ps1 -FromRegistry`.
+1. **Kamal**: commit + push; run `.\start.ps1 -FromRegistry` (packages are public, `IMAGE_PREFIX` is set in `.env`).
+2. Optional pre-submission fixes: see `study-guide/pre-submission-suggestions.md` (gitignored, personal). Kamal picks which ones, if any.
+
+`ai-usage/` transcripts are now fully English (Kamal's messages translated, personal remarks omitted and marked); session 2 covers D63–D64.
+
+Personal study guide (Arabic PDF, gitignored): `study-guide/Payroll-Study-Guide-AR.pdf`.
 
 (All previous commits are done. The git history is clean up to `a1284f3`.)
 

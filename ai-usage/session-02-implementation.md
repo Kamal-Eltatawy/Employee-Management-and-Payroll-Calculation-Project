@@ -2,10 +2,10 @@
 
 > **About this file.** Like session 1, this transcript was reconstructed by the assistant from its own session context, at the author's request, because the desktop app offers no usable export.
 >
-> - **Kamal's messages and answers are reproduced verbatim** (Egyptian Arabic with English technical terms). Pasted console output and screenshots are summarised in square brackets.
+> - **Kamal's messages and answers were written in Egyptian Arabic** (with English technical terms). They are **translated into English by the assistant**, as close to the original meaning as possible; typing slips are not reproduced. Pasted console output and screenshots are summarised in square brackets.
 > - **The assistant's replies are condensed and written in English** (they were originally in Arabic): same content, decisions and recommendations.
-> - Tool calls (file writes, shell commands in the sandbox) are summarised in square brackets. No secrets appear: `.env` values were only ever checked for presence and consistency, never printed.
-> - Nothing was omitted on purpose.
+> - Tool calls (file writes, shell commands) are summarised in square brackets. No secrets appear: `.env` values were only ever checked for presence and consistency, never printed.
+> - **Omissions:** personal remarks that are not about building the project (schedule, personal accounts, personal study material) are left out. Each place is marked with *[personal remark omitted]* or a bracketed note. Nothing else was omitted.
 >
 > Date: 2026-11-10. Working mode: D52 "fast mode" (one batch of code + tests per phase, one build/test run by Kamal per phase).
 
@@ -15,7 +15,7 @@
 
 **Kamal:**
 
-> كمل
+> Continue.
 
 **Assistant:** [Read `CLAUDE.md`, `PROGRESS.md` and the Task 6 plan. Scaffolded Angular 22.2.6 in `/tmp`, `npm install` + `bootstrap@5.3.8`, copied the app into `client/` without `node_modules`, configured the dev proxy and Sass deprecations, wrote `_tokens.scss`, `styles.scss` and the shell layout, deleted the unused scaffold files (asked for delete permission), verified `ng build` in a sandbox copy.] Two deviations from the plan, recorded in PROGRESS: Bootstrap's partial is `alert` (not `alerts`), and `mixed-decls` is obsolete in current Sass. Gave Kamal the run + commit commands.
 
@@ -30,10 +30,10 @@
 **Kamal:**
 
 > cd ..
-> git status --short client   # node_modules و .angular ممنوع يظهروا هنا
+> git status --short client   # node_modules and .angular must not show up here
 > git add client docs/plans/PROGRESS.md
 > git commit -m "feat(client): scaffold Angular 22 client with Bootstrap SCSS, shell layout and dev proxy"
-> ارن دي في انهي باص
+> Run this from which path?
 
 **Assistant:** From the repository root, in a new PowerShell window (the first one is busy with `npm start`).
 
@@ -94,7 +94,7 @@
 
 **Kamal:**
 
-> تمام كله شغال كمل
+> OK, everything works. Continue.
 
 ---
 
@@ -104,31 +104,31 @@
 
 **Kamal:**
 
-> هو اي paycomponetne  قصد علي ال allowances ?
+> Is "PayComponent" meant for the allowances?
 
 **Assistant:** No. A pay component covers both allowances and deductions (D2). `PayComponentType` is the master table (Name, Kind = Allowance/Deduction, IsTaxable), and `EmployeePayComponent` assigns a type to an employee with an amount. The calculator splits by `Kind`: allowances are prorated and taxable when `IsTaxable`; deductions are taken in full. New items are data, not code.
 
 **Kamal:**
 
-> وكمان عايز يبقي فيه باز انترفيس لكل حاجة عشا نلو ينفع يبقي عنج اكتر من تاككس واكتر من اي حاجة
+> I also want a base interface for everything, so that we can have more than one tax and more than one of anything.
 
 **Assistant:** Asked (one question, three options): a shared `IStatutoryDeduction` interface (recommended), a fully data-driven model, or leave as is.
 
 **Kamal's answer:**
 
-> نفس الكشف بمعني يعين انا مقلا عندي موظفين مختلفين كل واحد ليه نوع ضريبه مختلف نهاءي هل الابلكيشن بيسابورت د ه
+> The same payslip, I mean: say I have different employees, each with a completely different kind of tax. Does the application support that?
 
 **Assistant:** Not supported yet: the effective policy is chosen by date only and applies to everyone. Asked again: tax schemes as data (recommended), schemes plus calculation methods (strategies), or document it as a next step.
 
 **Kamal's answer:**
 
-> أنظمة + طرق حساب
+> Schemes + calculation methods
 
 **Assistant:** Implemented **D53**: `TaxScheme` (Standard / Flat Rate / Tax Exempt) with a `TaxMethod`; every employee has a `TaxSchemeId`; policies belong to a scheme (unique scheme + effective date); `ITaxCalculator.Method` with Progressive, Flat and Exempt implementations, all registered, and `PayrollCalculator` receives all of them and picks by the scheme's method; per-method bracket shapes; `GET /api/tax-schemes`; payslip and policy responses carry the scheme. Updated every test and added new ones. Recorded D53 in the spec.
 
 **Kamal:**
 
-> الاستندر اقدر اضيف شرايح علي زي م انا عايز ؟
+> In Standard, can I add as many brackets as I want?
 
 **Assistant:** Yes, any number of brackets: upper bounds strictly ascending, only the last open-ended, rates 0–100. The write API comes in Phase 5 (example JSON with 5 bands). A policy in effect is not edited; a new one is added from a future month.
 
@@ -150,7 +150,7 @@
 
 **Kamal:**
 
-> لا مظهرش عملت القولت عليه وكله تمام وضفت موظف وظبط الدنيتا
+> No, it didn't show up. I did what you said, everything is fine; I added an employee and set things up.
 
 **Assistant:** [Reproduced in the sandbox: the dev proxy answers 502. Added an interceptor test proving a 502 produces an error toast and 4xx does not; changed the 502–504 message to "The server cannot be reached." 23 client tests green.] Probably the toast appeared and auto-dismissed after 5 seconds.
 
@@ -162,25 +162,25 @@
 
 **Kamal:**
 
-> مش فكره سياسو سارية بس ولكن تكون مستخدمه كمان
+> Not just the idea of a policy being in effect, but of it being used, too.
 
 **Assistant:** Asked: payslips are computed, not stored, so "used" can only mean a preview. Options: in effect = used (recommended), lock on first payslip, or lock only through stored payroll runs.
 
 **Kamal's answer:**
 
-> اصل تخيل اان عملت سياسية وحيت اتلغبطت وعايز اعدلها هترفض
+> Imagine I created a policy, got it wrong, and want to edit it. Will it be rejected?
 
 **Assistant:** No: a policy that has not started yet can be edited or deleted freely; only once its month starts is it locked (D31), with the correction path being a new policy.
 
 **Kamal:**
 
-> تخيل انا طلعت مثلا حاجاة ولقيت السياسة فيها مشكلة  كده بقي انا هطر اطلع كل المرتبات علط
+> Imagine I ran something and found that the policy has a problem. Then I'd have to issue all the salaries wrong.
 
 **Assistant:** Agreed, this is a real gap. Asked: keep the current month open (recommended), a manual "close payroll month", or keep D31.
 
 **Kamal's answer:**
 
-> الشهر الحالي مفتوح (Recommended)
+> Current month open (Recommended)
 
 **Assistant:** Implemented **D54**: a policy is modifiable while it starts in the current month or later; past months are closed; a long-running policy is corrected by a new policy from the 1st of this month. Updated domain, validator, service messages, tests and the spec.
 
@@ -199,13 +199,13 @@
 
 **Kamal:**
 
-> تمام اعمل ايه
+> OK, what do I do?
 
 **Assistant:** [Phase 6 in the same batch: `/health` with a DbContext check, JSON console logging, a 500 logged with its `traceId`.] One build + test run, Swagger checks, then commit Phases 4–6.
 
 **Kamal:**
 
-> تمام
+> OK.
 
 ---
 
@@ -215,7 +215,7 @@
 
 **Kamal:**
 
-> قل م اجرب زود ريفرش توكن وظبط الدنيا كده
+> Before I test, add a refresh token and set everything up.
 
 **Assistant:** Asked where the refresh token should live: HttpOnly cookie (recommended) or JSON body + sessionStorage. Common to both: hashed in the database, rotation, reuse detection, revoked on logout, refused for inactive employees, 15-minute access token.
 
@@ -239,23 +239,23 @@
 
 **Kamal:**
 
-> تمام كمل
+> OK, continue.
 
 **Assistant:** [Optional Phase 9: `tests/Payroll.Api.IntegrationTests` with a Testcontainers SQL Server (checked the 4.16 source: the parameterless `MsSqlBuilder` constructor is obsolete) and `WebApplicationFactory`: auth end to end, refresh rotation and reuse, unique index, rowversion, concurrent save, soft-delete filter.]
 
 **Kamal:**
 
-> تمام انا عملت كومت شوف كده هنعمل ايه سيبك من نقطة ci عي  جت هب اكشن
+> OK, I made a commit. See what we do next. Skip the CI / GitHub Actions point.
 
 **Assistant:** [Phase 10 without CI: API Dockerfile, client Dockerfile + nginx (same origin, `/api` proxied), `.dockerignore` files, compose services `api` (5081) and `web` (8080).]
 
 **Kamal:** [screenshot: "My payslip" for Ali, November 2026, using a test policy with very small rates; the taxable/non-taxable badges are empty.]
 
-> في حاجات غلط في الاوت وكمان عايز لوكلايزيشن وكمان اللاوت مش عاجبني  وقبل ده كله صدر الشت واعمل الحاجات القولي عليها واتش الاول ان session 1 فاضي
+> There are wrong things in the output. I also want localization, and I don't like the layout. Before all that, export the chat, do the things I told you about, and first check that session 1 is empty.
 
 **Assistant:** [Found that `session-01-design-and-setup.md` is no longer empty: it was filled at the end of session 1 and committed in `1c20b44`. Wrote this file.] The empty badges were a missing Bootstrap `helpers` import (fixed); the odd November numbers came from Kamal's own test policy. Asked three questions: how to localize, whether server messages are translated too, and the new layout.
 
-**Kamal's answers:** "Angular i18n الرسمي" · "الواجهة + السيرفر (Recommended)" · "Sidebar + كشف رسمي (Recommended)"
+**Kamal's answers:** "The official Angular i18n" · "UI + server (Recommended)" · "Sidebar + formal payslip (Recommended)"
 
 ---
 
@@ -265,17 +265,17 @@
 
 **Kamal:**
 
-> فش مشكلة في العين بتاعت الباسورد بتاعت الفور بتاع اللوجن
+> There's a problem with the password eye (show/hide) in the login form.
 
 **Assistant:** [Replaced the browser's (Edge) password reveal with an own show/hide button that never overlaps the validation state, in LTR and RTL.]
 
 **Kamal:** [screenshots: the Arabic and English payslip.]
 
-> مش احسن حاجة وهتلاقي الارقا مش مظبوطف في العربي وكمان الرقم الموظف في العربي وحاجات تانية مش مظبوطه ةكمان عايز لاي اوقت حلو وعايز حاجة للهوم فيها شوية احصائيات لو انت ات ار لو انت موظف يبقي في هوم قم تقدر تخش علي الباي سليب بتاعك وكمان عايزها ريسبونسف في كل حاجة وكمان عايز تظبط بقي الدوكر بعد م عملنا كل ده وكمان عايز الدوكر يظهر الادريس بتاع  كل حاجة بعد نعمل كومبوس الابي اي والعربي والانجليزي
+> Not the best. You'll find the numbers aren't right in Arabic, the employee number in Arabic too, and other things aren't right. I also want a nice layout, and something for the home page with some statistics if you are HR; if you are an employee, a home from which you can open your payslip. I want it responsive everywhere. And I want you to set Docker up properly now that we have done all this, and I want Docker to show the address of everything after we run compose: the API, the Arabic and the English app.
 
 **Assistant:** Asked how to translate master data names and what the home page shows.
 
-**Kamal's answers:** "عمود NameAr (Recommended)" · "إحصائيات + رواتب الشهر (Recommended)"
+**Kamal's answers:** "NameAr column (Recommended)" · "Statistics + this month's payroll (Recommended)"
 
 **Assistant:** [**D58** Arabic names for departments, pay component types and tax schemes, picked by request language. **D59** `/home`: HR dashboard (`GET /api/dashboard`: counts, distributions, the month's payroll computed with the real engine) and an employee home. **D60** Docker: web health check through `/health`, a `urls` service and `start.ps1` that print every address. Client fixes: `<bdi>` for ids, dates and emails; own month picker (the native one showed English); responsive top bar with a menu button.]
 
@@ -285,10 +285,10 @@
 
 **Kamal:** [screenshots: home and payslip in both languages.]
 
-> مش عاجبني فكره اني اعمل لوجن كل شوية لو حولت اللغة وكمان في مشكلة لو انا كنت داخل بموظف عادي في النسخة الانليزي ودخلت بالنسخة العربي بالاتش ار وحلوت انحليزي هيفتح علي الموظف   ومسمهاش قسيمة رؤاتبي اسمها الراتب
-> وكمان عايزك تراجع كده الباك اند وتشوف هل فيه حاجاتا ممكن تتنفذ احسن بكتير وتبقي مكبقة قواعد السولد اكتر والو او بي اكتر وتبقي اسكالابول
+> I don't like having to log in every time I switch the language. There's also a problem: if I was logged in as a normal employee in the English version, then logged in as HR in the Arabic version and switched to English, it opens as the employee. And don't call the page "my payslip"; call it "Salary".
+> I also want you to review the backend and see whether some things can be done much better, apply the SOLID principles more, more OOP, and make it scalable.
 
-**Assistant:** Agreed it was a design flaw: each build kept its own `sessionStorage` while the refresh cookie is shared. **D61**: the server owns the session (app initializer calls `/api/auth/refresh`, access token in memory only, `email` in the login response, rotation separated from revocation with a 30-second grace window for simultaneous refreshes). Arabic label "الراتب". Then presented the backend review as two multi-choice questions.
+**Assistant:** Agreed it was a design flaw: each build kept its own `sessionStorage` while the refresh cookie is shared. **D61**: the server owns the session (app initializer calls `/api/auth/refresh`, access token in memory only, `email` in the login response, rotation separated from revocation with a 30-second grace window for simultaneous refreshes). Renamed the Arabic menu label to "Salary". Then presented the backend review as two multi-choice questions.
 
 **Kamal's answers:** all eight items: payslip lines by id · reference checks in their own class · dashboard in SQL · exception registry · rate limiting · cache + DbContext pooling · refresh token cleanup · index-friendly search.
 
@@ -300,6 +300,52 @@
 
 **Kamal:** [attached the assessment PDF again]
 
-> تمام كده هل ناقص حاجة
+> OK, is anything missing now?
 
 **Assistant:** [Checked every PDF requirement against the repository; completed this transcript, the AI-usage tool list and the README scope note.]
+
+---
+
+## 10. GitHub, CI (D63) and published images (D64)
+
+**Kamal:** [personal remark omitted: setting up his own GitHub account for the repository. The assistant explained a repository-local Git identity and credential setup; Kamal pushed the repository himself.]
+
+> Thanks, all good. Let's do the last point.
+
+**Assistant:** [**D63**: `.github/workflows/ci.yml` with three jobs: `backend` (restore, Release build, `dotnet test --solution Payroll.slnx`, including the Testcontainers integration tests), `frontend` (`npm ci`, `ng build`, `ng test`) and `docker` (builds both images after the other two pass).]
+
+**Kamal:**
+
+> Everything is green now. How do I see the production publish from the CI?
+
+**Assistant:** Explained that CI only builds and tests; nothing is deployed yet. Asked: publish the images to GitHub Container Registry (recommended), deploy to a cloud host, or leave CI as build-only.
+
+**Kamal's answer:** "Publish the images to GHCR (Recommended)"
+
+**Assistant:** [**D64**: on a push to `main` the `docker` job logs in with `GITHUB_TOKEN` and pushes `-api` and `-web` images tagged `latest` and the commit SHA (pull requests only build). Added `docker-compose.prod.yml` (images instead of builds), `start.ps1 -FromRegistry`, and `IMAGE_PREFIX` / `IMAGE_TAG` in `.env.example`.] Asked Kamal to make the two packages public.
+
+**Kamal:**
+
+> I made them public. What do I do next?
+
+**Assistant:** [Added `IMAGE_PREFIX` and `IMAGE_TAG` to Kamal's `.env`.] Run `docker compose down`, then `.\start.ps1 -FromRegistry`, and open the printed addresses.
+
+**Kamal:**
+
+> I don't understand what we did. Will it run from the internet or locally?
+
+**Assistant:** Locally. The images are stored on GHCR, and `-FromRegistry` downloads them and runs them on the same machine. A public URL would need a hosting service, which the assessment does not ask for.
+
+**Kamal:**
+
+> I haven't pushed the latest changes yet. If the reviewer has no internet access, what happens when he runs docker compose?
+
+**Assistant:** Any Docker setup needs the internet the first time (base images, NuGet and npm packages). After that, `docker compose up` without `--build` runs offline from the local images. `-FromRegistry` always needs the internet because it pulls first.
+
+**Kamal:** asked for improvement suggestions before submission. [personal remark omitted: a request for personal study material.]
+
+**Assistant:** [Reviewed the code in parallel read-only passes and listed possible improvements with effort and files. None was applied; Kamal decides which ones, if any.]
+
+**Kamal:** asked that both transcripts be fully in English and that personal remarks be left out.
+
+**Assistant:** [Translated Kamal's messages in both session files into English, marked every omission, and updated the note at the top of each file and `ai-usage/README.md`.]
