@@ -7,7 +7,8 @@ This folder contains the AI chat sessions used to build this project, plus notes
 | # | File | Scope |
 |---|---|---|
 | 1 | [`session-01-design-and-setup.md`](session-01-design-and-setup.md) (reconstructed by the assistant: no usable app export) | Requirements analysis, architecture discussion (decisions D1–D52), design spec, implementation plans, Phase 1 (solution skeleton, error handling, API host) |
-| 2 | [`session-02-implementation.md`](session-02-implementation.md) (reconstructed the same way) | Phases 1 (Angular scaffold) to 10: employee CRUD, payroll engine, Angular client, admin APIs, health + logging, Identity + JWT + refresh tokens, README, integration tests, Docker; then Arabic/English, new layout, home dashboards, server-owned session and a backend review. Decisions D53–D62; then CI (D63) and published Docker images (D64) |
+| 2 | [`session-02-implementation.md`](session-02-implementation.md) (reconstructed the same way) | Phases 1 (Angular scaffold) to 10: employee CRUD, payroll engine, Angular client, admin APIs, health + logging, Identity + JWT + refresh tokens, README, integration tests, Docker; then Arabic/English, new layout, home dashboards, server-owned session and a backend review. Decisions D53–D62 |
+| 3 | [`session-03-review-and-submission.md`](session-03-review-and-submission.md) (last part of the session-2 conversation) | CI (D63), published Docker images (D64), a read-only review of the whole solution by parallel sub-agents, English-only transcripts, and the review applied: decisions D65–D69 (multi-role users, lockout, coded domain errors, squashed migrations, Playwright smoke test in CI), plus a Swagger 401 fix |
 
 ## Tools
 
@@ -19,6 +20,7 @@ This folder contains the AI chat sessions used to build this project, plus notes
 | Web fetch | Checking the NuGet catalogue for a patched version of a vulnerable transitive package |
 | Skills (session 1) | `superpowers:using-superpowers` (pick the right process skill), `superpowers:brainstorming` (requirements and design discussion before any code), `superpowers:writing-plans` (the master and phase plans in `docs/plans/`), `superpowers:executing-plans` (step-by-step execution with checkpoints) |
 | Skills (session 2) | None loaded: the lean "fast mode" (D52) used the spec and master plan directly |
+| Sub-agents (session 3) | Parallel read-only review agents (one per area of the solution) and one agent that applied the Angular changes and verified them in a sandbox copy |
 | Custom instructions | [`CLAUDE.md`](../CLAUDE.md) at the repository root: language rules, "ask, then record every decision", "the AI never commits", fast mode, and the execution split (Kamal runs .NET/Docker). It is read automatically at the start of every session |
 | Continuity files | [`docs/plans/PROGRESS.md`](../docs/plans/PROGRESS.md): the exact state and the next action, updated after every step |
 | Desktop app tools | Multiple-choice questions (every decision), the session-history tool (to reconstruct the session-1 and session-2 transcripts), web fetch (NuGet catalogue, Testcontainers source for an API change) |
@@ -34,9 +36,9 @@ This folder contains the AI chat sessions used to build this project, plus notes
 
 **Done by me:**
 
-- Every decision. Each open point was asked as one question with options and a recommendation, and I chose (decision log D1–D64 in the spec).
-- Changes in direction during implementation that came from my own review: tax schemes per employee with pluggable tax methods (D53), keeping the current month open so a policy mistake can be corrected before payroll (D54), and rotating refresh tokens (D55).
-- Running every build, test, migration and container; reporting the output; and testing the UI and Swagger by hand. Problems found this way and then fixed: a vulnerable transitive package (NuGet audit), a C# target-typed `new()` error, a port clash with a local SQL Server, model-binding errors not matching the Problem Details shape, and the network-error toast message.
+- Every decision. Each open point was asked as one question with options and a recommendation, and I chose (decision log D1–D69 in the spec).
+- Changes in direction during implementation that came from my own review: tax schemes per employee with pluggable tax methods (D53), keeping the current month open so a policy mistake can be corrected before payroll (D54), rotating refresh tokens (D55), and, after a full review, multi-role users, account lockout and the other review items (D65–D69).
+- Running every build, test, migration and container; reporting the output; and testing the UI and Swagger by hand. Problems found this way and then fixed: a vulnerable transitive package (NuGet audit), a C# target-typed `new()` error, a port clash with a local SQL Server, model-binding errors not matching the Problem Details shape, the network-error toast message, and Swagger UI answering 401 under the fallback authorization policy.
 - All Git operations. The AI never committed or pushed (D50).
 
 ## Author's note: working across several sessions

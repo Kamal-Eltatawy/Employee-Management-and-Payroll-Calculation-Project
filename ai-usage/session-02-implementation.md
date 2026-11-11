@@ -304,48 +304,4 @@
 
 **Assistant:** [Checked every PDF requirement against the repository; completed this transcript, the AI-usage tool list and the README scope note.]
 
----
-
-## 10. GitHub, CI (D63) and published images (D64)
-
-**Kamal:** [personal remark omitted: setting up his own GitHub account for the repository. The assistant explained a repository-local Git identity and credential setup; Kamal pushed the repository himself.]
-
-> Thanks, all good. Let's do the last point.
-
-**Assistant:** [**D63**: `.github/workflows/ci.yml` with three jobs: `backend` (restore, Release build, `dotnet test --solution Payroll.slnx`, including the Testcontainers integration tests), `frontend` (`npm ci`, `ng build`, `ng test`) and `docker` (builds both images after the other two pass).]
-
-**Kamal:**
-
-> Everything is green now. How do I see the production publish from the CI?
-
-**Assistant:** Explained that CI only builds and tests; nothing is deployed yet. Asked: publish the images to GitHub Container Registry (recommended), deploy to a cloud host, or leave CI as build-only.
-
-**Kamal's answer:** "Publish the images to GHCR (Recommended)"
-
-**Assistant:** [**D64**: on a push to `main` the `docker` job logs in with `GITHUB_TOKEN` and pushes `-api` and `-web` images tagged `latest` and the commit SHA (pull requests only build). Added `docker-compose.prod.yml` (images instead of builds), `start.ps1 -FromRegistry`, and `IMAGE_PREFIX` / `IMAGE_TAG` in `.env.example`.] Asked Kamal to make the two packages public.
-
-**Kamal:**
-
-> I made them public. What do I do next?
-
-**Assistant:** [Added `IMAGE_PREFIX` and `IMAGE_TAG` to Kamal's `.env`.] Run `docker compose down`, then `.\start.ps1 -FromRegistry`, and open the printed addresses.
-
-**Kamal:**
-
-> I don't understand what we did. Will it run from the internet or locally?
-
-**Assistant:** Locally. The images are stored on GHCR, and `-FromRegistry` downloads them and runs them on the same machine. A public URL would need a hosting service, which the assessment does not ask for.
-
-**Kamal:**
-
-> I haven't pushed the latest changes yet. If the reviewer has no internet access, what happens when he runs docker compose?
-
-**Assistant:** Any Docker setup needs the internet the first time (base images, NuGet and npm packages). After that, `docker compose up` without `--build` runs offline from the local images. `-FromRegistry` always needs the internet because it pulls first.
-
-**Kamal:** asked for improvement suggestions before submission. [personal remark omitted: a request for personal study material.]
-
-**Assistant:** [Reviewed the code in parallel read-only passes and listed possible improvements with effort and files. None was applied; Kamal decides which ones, if any.]
-
-**Kamal:** asked that both transcripts be fully in English and that personal remarks be left out.
-
-**Assistant:** [Translated Kamal's messages in both session files into English, marked every omission, and updated the note at the top of each file and `ai-usage/README.md`.]
+*The rest of this desktop conversation (GitHub, CI, the pre-submission review and submission prep) is in [`session-03-review-and-submission.md`](session-03-review-and-submission.md).*

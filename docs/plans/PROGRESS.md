@@ -57,7 +57,8 @@
 
 ## Next action
 
-1. **Kamal**: the pre-submission review (D65–D69, all 34 suggestions) is written but not built yet. Migrations were squashed (old files deleted), so: `docker compose down -v`, then `dotnet ef migrations add InitialCreate --project src/Payroll.Infrastructure --startup-project src/Payroll.Api --output-dir Persistence/Migrations`, build, `dotnet test --solution Payroll.slnx`, `cd client; npm ci; npm run lint; npx ng test --watch=false; npx ng build`, then `.\start.ps1` and a manual check. Paste the output; then commit + push and check the new CI `e2e` job.
+0. Done since: review applied and verified (309 .NET / 81 Angular tests), Swagger 401 fixed (commit `c7ab6cf`); `ai-usage/session-03-review-and-submission.md` added (GitHub/CI part moved there from session 2); README limitations/next steps refreshed. **Kamal**: commit + push, then watch the first CI `e2e` run.
+1. (Done) The pre-submission review (D65–D69, all 34 suggestions) was written, then built and tested by Kamal. Migrations were squashed (old files deleted), so: `docker compose down -v`, then `dotnet ef migrations add InitialCreate --project src/Payroll.Infrastructure --startup-project src/Payroll.Api --output-dir Persistence/Migrations`, build, `dotnet test --solution Payroll.slnx`, `cd client; npm ci; npm run lint; npx ng test --watch=false; npx ng build`, then `.\start.ps1` and a manual check. Paste the output; then commit + push and check the new CI `e2e` job.
 
 `ai-usage/` transcripts are now fully English (Kamal's messages translated, personal remarks omitted and marked); session 2 covers D63–D64.
 

@@ -185,13 +185,21 @@ Worked example (spec §11.5, unit-tested): base 17,000, transport 1,000 (non-tax
 - Employee search matches the start of the name or email (index-friendly), not words in the middle of a name.
 - No restore endpoint for soft-deleted employees. Proration only covers the hire month (there is no termination date).
 - Displayed lines can differ from the displayed net by 0.01, because each value is rounded once for display.
+- Users and roles come from the seed: there is no screen to create users, link them to an employee, assign several roles (D67) or unlock an account.
+- Lockout is per account (D66), so someone who knows an email can lock that account for 5 minutes; the per-IP rate limit only slows this down.
+- The "accepted once inside the grace window" check for refresh tokens is not atomic: two reuses at exactly the same moment could both pass.
+- Error responses (400/404/409/422) are not described in the OpenAPI document, only the success codes.
+- Migrations and demo data are applied at API start-up in Development only; there is no production migration step yet.
 
 ## 5. Next steps
 
 1. Stored payroll runs with an explicit "close payroll month" step (would replace the current-month rule of D54).
-2. Admin screens for pay component types, payroll policies and tax schemes.
-3. An HTTPS reverse proxy and a deployment stage in CI for non-local environments (the Playwright smoke test already runs against the Docker stack in CI).
+2. Admin screens for pay component types, payroll policies and tax schemes, and a user screen (create, link to an employee, roles, unlock).
+3. Production readiness: an HTTPS reverse proxy with HSTS, a separate migration step in the pipeline, `ValidateOnStart` for every options class, secrets from a vault, and a deployment stage in CI.
 4. Salary history, termination-month proration, restore for deleted employees.
+5. Document every error response in OpenAPI (`ProducesProblem`) and add API versioning before a second client depends on the API.
+6. Observability: OpenTelemetry traces and metrics next to the existing JSON logs and `traceId`.
+7. More end-to-end coverage (create and edit an employee, policy changes, the employee role) and visual checks of the RTL layout; today the Playwright smoke test covers login, the employee list and a payslip in both languages.
 
 ---
 
