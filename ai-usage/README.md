@@ -8,7 +8,7 @@ This folder contains the AI chat sessions used to build this project, plus notes
 |---|---|---|
 | 1 | [`session-01-design-and-setup.md`](session-01-design-and-setup.md) (reconstructed by the assistant: no usable app export) | Requirements analysis, architecture discussion (decisions D1–D52), design spec, implementation plans, Phase 1 (solution skeleton, error handling, API host) |
 | 2 | [`session-02-implementation.md`](session-02-implementation.md) (reconstructed the same way) | Phases 1 (Angular scaffold) to 10: employee CRUD, payroll engine, Angular client, admin APIs, health + logging, Identity + JWT + refresh tokens, README, integration tests, Docker; then Arabic/English, new layout, home dashboards, server-owned session and a backend review. Decisions D53–D62 |
-| 3 | [`session-03-review-and-submission.md`](session-03-review-and-submission.md) (last part of the session-2 conversation) | CI (D63), published Docker images (D64), a read-only review of the whole solution by parallel sub-agents, English-only transcripts, and the review applied: decisions D65–D69 (multi-role users, lockout, coded domain errors, squashed migrations, Playwright smoke test in CI), plus a Swagger 401 fix |
+| 3 | [`session-03-review-and-submission.md`](session-03-review-and-submission.md) (last part of the session-2 conversation) | CI (D63), published Docker images (D64), a read-only review of the whole solution by parallel sub-agents, English-only transcripts, and the review applied: decisions D65–D69 (multi-role users, lockout, coded domain errors, squashed migrations, Playwright smoke test in CI), a Swagger 401 fix, then HR screens for pay items and payroll policies (D70) and an editable pay item kind while unused (D71) |
 
 ## Tools
 
@@ -36,8 +36,8 @@ This folder contains the AI chat sessions used to build this project, plus notes
 
 **Done by me:**
 
-- Every decision. Each open point was asked as one question with options and a recommendation, and I chose (decision log D1–D69 in the spec).
-- Changes in direction during implementation that came from my own review: tax schemes per employee with pluggable tax methods (D53), keeping the current month open so a policy mistake can be corrected before payroll (D54), rotating refresh tokens (D55), and, after a full review, multi-role users, account lockout and the other review items (D65–D69).
+- Every decision. Each open point was asked as one question with options and a recommendation, and I chose (decision log D1–D71 in the spec).
+- Changes in direction during implementation that came from my own review: tax schemes per employee with pluggable tax methods (D53), keeping the current month open so a policy mistake can be corrected before payroll (D54), rotating refresh tokens (D55), after a full review, multi-role users, account lockout and the other review items (D65–D69), and HR screens for pay items and policies with an editable kind while an item is unused (D70–D71).
 - Running every build, test, migration and container; reporting the output; and testing the UI and Swagger by hand. Problems found this way and then fixed: a vulnerable transitive package (NuGet audit), a C# target-typed `new()` error, a port clash with a local SQL Server, model-binding errors not matching the Problem Details shape, the network-error toast message, and Swagger UI answering 401 under the fallback authorization policy.
 - All Git operations. The AI never committed or pushed (D50).
 

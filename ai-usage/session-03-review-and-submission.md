@@ -120,8 +120,56 @@ Gave one command block: recreate the database, generate the migration, build, te
 
 ---
 
-## 6. This file
+## 6. Checking the repository and the GitHub description
 
-**Kamal:** asked for a session-3 file in the same style (English only, personal remarks left out), an update of the review list, and an update of the README's next steps.
+**Kamal:** asked how to make sure everything works from the repository, then asked the assistant to try it in a new folder.
 
-**Assistant:** [Moved the GitHub/CI part from the end of `session-02-implementation.md` into this file, wrote the rest, refreshed the review list with what is done and what remains, and updated the README's limitations and next steps.]
+**Assistant:** It cannot create folders outside the project or run Docker/.NET. [Cloned the public repository in the sandbox: latest commit present, one `InitialCreate` migration, no `.env`, `study-guide/` or `dist/` committed; `npm ci`, lint, 81/81 Angular tests, both locale builds and `playwright test --list` passed. Read the public Actions page: the last CI runs, including the new `e2e` job, completed successfully.] Gave a PowerShell block for a fresh clone under `C:\Proje`.
+
+**Kamal:** asked for a GitHub description, then for shorter versions. [The assistant counted the characters in the sandbox.]
+
+---
+
+## 7. HR screens for pay items and payroll policies (D70)
+
+**Kamal:**
+
+> When do we make the pay items part into a page where HR can manage them, and the same for the tax brackets?
+
+**Assistant:** Pointed out that this reverses D4 (no screen, API + Swagger only) and asked: both screens fully (recommended), view only, or pay items only.
+
+**Kamal's answer:** "Both screens fully (Recommended)"
+
+**Assistant:** [**D70**, client only, on the existing APIs, written by a sub-agent and verified in a sandbox copy: `/pay-items` (list, create/edit, delete with confirm, "taxable" locked for deductions) and `/payroll-policies` (one tab per tax scheme, in-effect / upcoming / read-only markers, a tax-bracket editor with the server's shape rules per method and a live preview, server errors placed on the right bracket row), translated titles and sidebar links, 34 new tests, and both pages added to the Playwright smoke test. Lint clean, 115 tests, both locales built.] Reported a backend gap: pay items and policies have no `rowVersion`, so the last save wins; recorded in the README limitations.
+
+**Kamal:** [pasted output: the client built; `docker compose up -d --build web` failed with "container payroll-db-1 is unhealthy".]
+
+**Assistant:** Most likely cause: the Compose project name is fixed (`payroll`), so the clone made for checking and the main folder share the `payroll_sqldata` volume. The database had been created with the `sa` password from `.env.example`, while the main folder's `.env` has another one, so the health check could not log in. Fix: `docker compose down -v`, then `.\start.ps1`.
+
+---
+
+## 8. Pay item kind (D71)
+
+**Kamal:**
+
+> Why can't we change the item's kind after it is created?
+
+**Assistant:** D2 keeps the kind fixed because payslips are not stored but recalculated from current data: turning a used allowance into a deduction would change every past payslip of every employee who has it, and the taxable rule depends on the kind. The safe path is a new item. Offered to allow the change only while no employee uses the item.
+
+**Kamal:**
+
+> So it's because we don't store payslips. Why don't we store them?
+
+**Assistant:** The assessment asks for a payslip calculated for a month, not a payroll system. Stored payslips need payroll runs with states, frozen copies of every input, a "close month" step, adjustments for closed months and approvals, roughly the size of the whole project. Computing on demand keeps one source of truth; the trade-off is documented (closed policies D31/D54, fixed kind D2, README limitations, stored payroll runs as the first next step). Recommended not adding it a day before submission.
+
+**Kamal:** "Do that [allow changing the kind while unused], and add this explanation to the note, including the reason that we don't store payslips."
+
+**Assistant:** [**D71**: `PUT /api/pay-component-types/{id}` accepts an optional `kind`; a new kind is accepted only while no employee uses the item, deleted employees included, otherwise 409 `PayComponentType.KindInUse` on `kind` with an English and Arabic message that gives the reason; responses carry `isInUse`; a failed domain update keeps the old kind. The form keeps the kind editable for an unused item and, for a used one, locks it with a note explaining that payslips are recalculated, not stored. New tests in Domain, Application and Angular. Client verified in a sandbox copy: lint clean, 117 tests, both locales built. D2 refined in the spec.]
+
+---
+
+## 9. This file and the README
+
+**Kamal:** asked for a session-3 file in the same style (English only, personal remarks left out), an update of the review list, and later a full pass over the README and the other files for everything added.
+
+**Assistant:** [Moved the GitHub/CI part from the end of `session-02-implementation.md` into this file and wrote the rest. Updated the README (summary, stack, tests, architecture map, design choices, API overview, a note about the shared Docker volume, limitations, next steps, scope), `ai-usage/README.md` and `PROGRESS.md`.]
