@@ -1,5 +1,5 @@
 import { AbstractControl, FormArray, ValidationErrors, ValidatorFn } from '@angular/forms';
-import { toIsoDate } from '../util/dates';
+import { toIsoDate, toIsoMonth } from '../util/dates';
 
 /** The date (yyyy-MM-dd) must not be after today in the browser's local time. Mirrors the server rule. */
 export function notInFuture(today: () => Date = () => new Date()): ValidatorFn {
@@ -56,5 +56,37 @@ export function noDuplicateType(key = 'payComponentTypeId'): ValidatorFn {
     });
 
     return duplicates.length > 0 ? { duplicateType: duplicates } : null;
+  };
+}
+
+/** A percentage between 0 and 100 inclusive (the server's InclusiveBetween(0, 100)). Empty values are left to `required`. */
+export function percentRange(): ValidatorFn {
+  return (control: AbstractControl): ValidationErrors | null => {
+    const value: unknown = control.value;
+    if (typeof value !== 'number' || !Number.isFinite(value)) {
+      return null;
+    }
+
+    return value < 0 || value > 100 ? { percentRange: true } : null;
+  };
+}
+
+/** Zero or more (e.g. an insurance cap, where 0 is a real cap). Empty values are allowed. */
+export function nonNegative(): ValidatorFn {
+  return (control: AbstractControl): ValidationErrors | null => {
+    const value: unknown = control.value;
+    return typeof value === 'number' && value < 0 ? { nonNegative: true } : null;
+  };
+}
+
+/** A month (yyyy-MM) in the current month or later: past months are closed (D54). Mirrors the server rule. */
+export function notBeforeCurrentMonth(today: () => Date = () => new Date()): ValidatorFn {
+  return (control: AbstractControl): ValidationErrors | null => {
+    const value: unknown = control.value;
+    if (typeof value !== 'string' || value === '') {
+      return null;
+    }
+
+    return value < toIsoMonth(today()) ? { closedMonth: true } : null;
   };
 }

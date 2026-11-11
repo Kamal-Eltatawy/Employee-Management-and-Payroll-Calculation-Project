@@ -33,6 +33,7 @@ public static class ErrorCodes
     public const string DeductionNotTaxable = DomainErrorCodes.DeductionNotTaxable;
     public const string PayComponentTypeNameTaken = "PayComponentType.NameTaken";
     public const string PayComponentTypeInUse = "PayComponentType.InUse";
+    public const string PayComponentTypeKindInUse = "PayComponentType.KindInUse";
 
     public const string NoPolicyForMonth = "Policy.NoneForMonth";
     public const string PolicyFirstDay = DomainErrorCodes.PolicyFirstDay;

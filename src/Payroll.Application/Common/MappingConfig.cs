@@ -34,7 +34,8 @@ public static class MappingConfig
             .Map(dest => dest.Name, src => LocalizedName.Pick(src.Name, src.NameAr));
         config.NewConfig<PayComponentType, PayComponentTypeResponse>()
             .Map(dest => dest.Name, src => LocalizedName.Pick(src.Name, src.NameAr))
-            .Map(dest => dest.NameEn, src => src.Name);
+            .Map(dest => dest.NameEn, src => src.Name)
+            .Ignore(dest => dest.IsInUse); // set by the service from a usage query (D71)
 
         config.NewConfig<PayslipLine, PayslipLineResponse>();
         config.NewConfig<Payslip, PayslipResponse>()

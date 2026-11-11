@@ -1,0 +1,108 @@
+<header class="page-header">
+  <div>
+    <h1 i18n="@@policies.title">Payroll policies</h1>
+    <p class="subtitle" i18n="@@policies.subtitle">Social insurance and income tax rules per tax scheme, effective from a month.</p>
+  </div>
+  <div class="actions">
+    <a class="btn btn-primary d-inline-flex align-items-center gap-2" routerLink="/payroll-policies/new"
+       [queryParams]="{ scheme: selectedScheme()?.id }">
+      <app-icon name="plus" />
+      <span i18n="@@policies.new">New policy</span>
+    </a>
+  </div>
+</header>
+
+<section class="surface">
+  <ul class="nav nav-tabs scheme-tabs" aria-label="Tax schemes" i18n-aria-label="@@policies.schemes">
+    @for (item of schemes(); track item.id) {
+      <li class="nav-item">
+        <button type="button" class="nav-link" [class.active]="item.id === selectedScheme()?.id"
+                [attr.aria-current]="item.id === selectedScheme()?.id ? 'page' : null" (click)="selectScheme(item.id)">
+          {{ item.name }}
+        </button>
+      </li>
+    }
+  </ul>
+
+  @if (selectedScheme(); as current) {
+    <p class="scheme-method">
+      <span i18n="@@policies.method">Tax method:</span> {{ methodLabel(current.method) }}
+    </p>
+  }
+
+  @if (error()) {
+    <div class="alert alert-danger m-3" role="alert">{{ error() }}</div>
+  }
+
+  <div class="table-responsive">
+    <table class="table align-middle mb-0">
+      <thead>
+        <tr>
+          <th scope="col" i18n="@@policies.colEffectiveFrom">Effective from</th>
+          <th scope="col" i18n="@@policies.colInsurance">Social insurance</th>
+          <th scope="col" class="d-none d-md-table-cell" i18n="@@payslip.incomeTax">Income tax</th>
+          <th scope="col"><span class="visually-hidden" i18n="@@employees.colActions">Actions</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        @if (loading() && schemePolicies().length === 0) {
+          <tr><td colspan="4" class="empty" i18n="@@common.loading">Loading…</td></tr>
+        }
+        @for (policy of schemePolicies(); track policy.id) {
+          <tr [class.in-effect]="policy.id === inEffectId()">
+            <td>
+              <span class="month">{{ month(policy) }}</span>
+              <span class="pills">
+                @if (policy.id === inEffectId()) {
+                  <span class="pill pill-success" i18n="@@policies.inEffect">In effect this month</span>
+                } @else if (isUpcoming(policy)) {
+                  <span class="pill pill-info" i18n="@@policies.upcoming">Upcoming</span>
+                }
+                @if (!policy.isModifiable) {
+                  <span class="pill pill-muted" i18n="@@policies.readOnly">Read-only</span>
+                }
+              </span>
+            </td>
+            <td>
+              <span class="amount-inline">{{ percent(policy.insuranceRatePercent) }}</span>
+              <span class="muted">
+                @if (policy.insuranceCap === null) {
+                  · <ng-container i18n="@@policies.noCap">no cap</ng-container>
+                } @else {
+                  · <ng-container i18n="@@policies.capOf">cap</ng-container> <bdi>{{ policy.insuranceCap | money }}</bdi>
+                }
+              </span>
+            </td>
+            <td class="d-none d-md-table-cell"><bdi>{{ taxSummary(policy) }}</bdi></td>
+            <td>
+              <div class="row-actions">
+                @if (policy.isModifiable) {
+                  <a class="btn btn-light icon-button" [routerLink]="['/payroll-policies', policy.id]"
+                     title="Edit" i18n-title="@@employees.actionEdit" aria-label="Edit" i18n-aria-label="@@employees.actionEdit">
+                    <app-icon name="edit" />
+                  </a>
+                  <button type="button" class="btn btn-light icon-button text-danger" (click)="confirmDelete(policy)"
+                          title="Delete" i18n-title="@@employees.actionDelete" aria-label="Delete" i18n-aria-label="@@employees.actionDelete">
+                    <app-icon name="trash" />
+                  </button>
+                } @else {
+                  <a class="btn btn-light icon-button" [routerLink]="['/payroll-policies', policy.id]"
+                     title="View" i18n-title="@@policies.actionView" aria-label="View" i18n-aria-label="@@policies.actionView">
+                    <app-icon name="eye" />
+                  </a>
+                }
+              </div>
+            </td>
+          </tr>
+        } @empty {
+          @if (!loading()) {
+            <tr><td colspan="4" class="empty" i18n="@@policies.empty">This scheme has no payroll policies yet.</td></tr>
+          }
+        }
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<app-confirm-dialog title="Delete payroll policy" i18n-title="@@policies.deleteTitle"
+                    confirmLabel="Delete" i18n-confirmLabel="@@employees.actionDelete" />

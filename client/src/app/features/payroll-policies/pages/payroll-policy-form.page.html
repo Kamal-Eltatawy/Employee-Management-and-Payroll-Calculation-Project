@@ -1,0 +1,117 @@
+<header class="page-header">
+  <div>
+    <a class="back-link" routerLink="/payroll-policies" [queryParams]="{ scheme: form.controls.taxSchemeId.value || null }">
+      <app-icon name="back" [size]="16" [flip]="true" />
+      <span i18n="@@policies.backToList">Payroll policies</span>
+    </a>
+    <h1>
+      @if (readOnly()) {
+        <ng-container i18n="@@policyForm.viewTitle">Payroll policy</ng-container>
+      } @else if (isEdit) {
+        <ng-container i18n="@@policyForm.editTitle">Edit payroll policy</ng-container>
+      } @else {
+        <ng-container i18n="@@policyForm.newTitle">New payroll policy</ng-container>
+      }
+    </h1>
+  </div>
+</header>
+
+@if (formError()) {
+  <div class="alert alert-danger" role="alert">{{ formError() }}</div>
+}
+
+@if (readOnly()) {
+  <div class="alert alert-secondary d-flex align-items-center gap-2" role="status">
+    <app-icon name="lock" />
+    <span i18n="@@policyForm.readOnlyNotice">This policy covers closed months, so it is read-only. To correct the current month, create a policy effective from this month.</span>
+  </div>
+}
+
+@if (loading()) {
+  <p class="text-body-secondary" i18n="@@common.loading">Loading…</p>
+} @else {
+  <form class="surface" [formGroup]="form" (ngSubmit)="save()" novalidate>
+    <section class="form-section">
+      <div class="section-intro">
+        <h2 class="section-title" i18n="@@policyForm.scope">Scheme and month</h2>
+        <p i18n="@@policyForm.scopeHint">A policy applies from the first day of its month until the next policy of the same scheme. Past months are closed.</p>
+      </div>
+      <div class="row g-3">
+        <div class="col-md-6">
+          <label class="form-label" for="taxSchemeId" i18n="@@field.taxScheme">Tax scheme</label>
+          <select id="taxSchemeId" class="form-select" formControlName="taxSchemeId"
+                  [class.is-invalid]="form.controls.taxSchemeId.invalid && form.controls.taxSchemeId.touched">
+            <option [ngValue]="0" disabled i18n="@@employeeForm.selectTaxScheme">Select a tax scheme…</option>
+            @for (item of schemes(); track item.id) {
+              <option [ngValue]="item.id">{{ item.name }} · {{ methodLabel(item.method) }}</option>
+            }
+          </select>
+          <app-field-errors [control]="form.controls.taxSchemeId" label="Tax scheme" i18n-label="@@field.taxScheme"
+                            selectMessage="Please select a tax scheme." i18n-selectMessage="@@validation.selectTaxScheme" />
+        </div>
+        <div class="col-md-6">
+          <span class="form-label d-block" i18n="@@field.effectiveMonth">Effective from (month)</span>
+          @if (readOnly()) {
+            <p class="form-control-plaintext">{{ monthLabel() }}</p>
+          } @else {
+            <app-month-picker [value]="form.controls.effectiveFrom.value" (valueChange)="changeMonth($event)" />
+          }
+          <app-field-errors [control]="form.controls.effectiveFrom" label="Effective month" i18n-label="@@field.effectiveMonthLabel" />
+        </div>
+      </div>
+    </section>
+
+    <section class="form-section">
+      <div class="section-intro">
+        <h2 class="section-title" i18n="@@payslip.socialInsurance">Social insurance</h2>
+        <p i18n="@@policyForm.insuranceHint">The rate applies to gross pay. Leave the cap empty for no cap; 0 is a real cap.</p>
+      </div>
+      <div class="row g-3">
+        <div class="col-md-6">
+          <label class="form-label" for="insuranceRatePercent" i18n="@@field.insuranceRate">Insurance rate %</label>
+          <input id="insuranceRatePercent" class="form-control" type="number" min="0" max="100" step="0.01"
+                 formControlName="insuranceRatePercent"
+                 [class.is-invalid]="form.controls.insuranceRatePercent.invalid && form.controls.insuranceRatePercent.touched" />
+          <app-field-errors [control]="form.controls.insuranceRatePercent" label="Insurance rate" i18n-label="@@field.insuranceRateLabel" />
+        </div>
+        <div class="col-md-6">
+          <label class="form-label" for="insuranceCap" i18n="@@field.insuranceCap">Monthly insurance cap (optional)</label>
+          <input id="insuranceCap" class="form-control" type="number" min="0" step="0.01" formControlName="insuranceCap"
+                 placeholder="No cap" i18n-placeholder="@@policies.noCapPlaceholder"
+                 [class.is-invalid]="form.controls.insuranceCap.invalid && form.controls.insuranceCap.touched" />
+          <app-field-errors [control]="form.controls.insuranceCap" label="Insurance cap" i18n-label="@@field.insuranceCapLabel" />
+        </div>
+      </div>
+    </section>
+
+    <section class="form-section">
+      <div class="section-intro">
+        <h2 class="section-title" i18n="@@payslip.incomeTax">Income tax</h2>
+        <p i18n="@@policyForm.taxHint">The brackets must fit the scheme's tax method.</p>
+      </div>
+      <div>
+        @if (method()) {
+          <app-tax-brackets-editor [array]="form.controls.taxBrackets" [method]="method()" [readOnly]="readOnly()" />
+        } @else {
+          <p class="text-body-secondary" i18n="@@policyForm.chooseScheme">Select a tax scheme to set its tax brackets.</p>
+        }
+      </div>
+    </section>
+
+    <div class="surface-footer">
+      @if (readOnly()) {
+        <a class="btn btn-outline-secondary" routerLink="/payroll-policies" [queryParams]="{ scheme: form.controls.taxSchemeId.value }"
+           i18n="@@policyForm.close">Close</a>
+      } @else {
+        <a class="btn btn-outline-secondary" routerLink="/payroll-policies" i18n="@@common.cancel">Cancel</a>
+        <button type="submit" class="btn btn-primary" [disabled]="saving()">
+          @if (saving()) {
+            <ng-container i18n="@@common.saving">Saving…</ng-container>
+          } @else {
+            <ng-container i18n="@@common.save">Save</ng-container>
+          }
+        </button>
+      }
+    </div>
+  </form>
+}

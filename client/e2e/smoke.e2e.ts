@@ -5,8 +5,20 @@ const HR_EMAIL = 'hr@payroll.local';
 const SEEDED_EMPLOYEE = 'Ali Hassan';
 
 const languages = {
-  en: { dir: 'ltr', employeesTitle: 'Employees · Payroll', payslipTitle: 'Payslip · Payroll' },
-  ar: { dir: 'rtl', employeesTitle: 'الموظفون · الرواتب', payslipTitle: 'الراتب · الرواتب' },
+  en: {
+    dir: 'ltr',
+    employeesTitle: 'Employees · Payroll',
+    payslipTitle: 'Payslip · Payroll',
+    payItemsTitle: 'Pay items · Payroll',
+    policiesTitle: 'Payroll policies · Payroll',
+  },
+  ar: {
+    dir: 'rtl',
+    employeesTitle: 'الموظفون · الرواتب',
+    payslipTitle: 'الراتب · الرواتب',
+    payItemsTitle: 'أنواع البنود · الرواتب',
+    policiesTitle: 'سياسات الرواتب · الرواتب',
+  },
 } as const;
 
 async function signInAsHr(page: Page, language: keyof typeof languages): Promise<void> {
@@ -39,5 +51,23 @@ for (const language of Object.keys(languages) as (keyof typeof languages)[]) {
     await expect(page).toHaveURL(new RegExp(`/${language}/employees/\\d+/payslip`));
     await expect(page).toHaveTitle(texts.payslipTitle);
     await expect(page.locator('article.payslip')).toContainText(SEEDED_EMPLOYEE);
+  });
+}
+
+for (const language of Object.keys(languages) as (keyof typeof languages)[]) {
+  test(`HR opens the pay items and payroll policies screens (/${language}/)`, async ({ page }) => {
+    const texts = languages[language];
+    await signInAsHr(page, language);
+
+    // Read-only: no data is created or changed.
+    await page.locator('nav a[href$="/pay-items"]').click();
+    await expect(page).toHaveURL(new RegExp(`/${language}/pay-items`));
+    await expect(page).toHaveTitle(texts.payItemsTitle);
+    await expect(page.locator('tbody tr').first()).toBeVisible();
+
+    await page.locator('nav a[href$="/payroll-policies"]').click();
+    await expect(page).toHaveURL(new RegExp(`/${language}/payroll-policies`));
+    await expect(page).toHaveTitle(texts.policiesTitle);
+    await expect(page.locator('.scheme-tabs button').first()).toBeVisible();
   });
 }

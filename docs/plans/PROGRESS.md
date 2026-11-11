@@ -68,6 +68,8 @@ Personal study guide (Arabic PDF, gitignored): `study-guide/Payroll-Study-Guide-
 
 ## Log
 
+- 2026-11-11: **D71** pay item kind editable while unused (`isInUse` in responses, 409 `PayComponentType.KindInUse`, form hint explaining that payslips are recalculated, not stored). Client verified in a sandbox copy: lint clean, 117 tests, both locales built. .NET not built yet (Kamal).
+
 - **2026-11-09:** spec approved (D1–D51); master plan + Phase 1 plan written; `git init` done; continuity files created.
 - **2026-11-10:**
   - P1 Tasks 1–3 done.
@@ -101,3 +103,4 @@ Personal study guide (Arabic PDF, gitignored): `study-guide/Payroll-Study-Guide-
   - Kamal pushed the repository to his personal GitHub. **D63:** `.github/workflows/ci.yml` (backend build + all tests, frontend build en/ar + tests, Docker image build). README and spec updated.
   - CI green on GitHub (Kamal). **D64:** images published to GHCR on push to main; `docker-compose.prod.yml`; `start.ps1 -FromRegistry`; `IMAGE_PREFIX`/`IMAGE_TAG` in `.env.example`.
   - NuGet audit (warnings as errors) flagged transitive `System.Security.Cryptography.Pkcs` 9.0.11 (via Microsoft.Data.SqlClient). Fixed with `CentralPackageTransitivePinningEnabled` + a pin to 10.0.14 in `Directory.Packages.props`.
+  - **D70 (Kamal): pay items + payroll policies screens** (client only, no backend change): `features/pay-component-types` (`/pay-items`) and `features/payroll-policies` (`/payroll-policies`), shared validators `percentRange`/`nonNegative`/`notBeforeCurrentMonth` + messages, icons `tag`/`sliders`/`lock`, `ReferenceDataApiService.invalidatePayComponentTypes()`, sidebar links, 262 i18n messages (en + ar), e2e smoke step for both pages. Sandbox: lint clean, 115 client tests green, `ng build` en + ar, 4 Playwright tests listed. **Kamal:** `cd client; npm ci; npm run lint; npx ng test --watch=false; npx ng build`, `.\start.ps1`, manual check of both screens in en/ar, then commit.

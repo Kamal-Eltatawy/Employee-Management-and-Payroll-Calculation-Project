@@ -119,7 +119,7 @@ Payroll.Domain             entities · value objects · payroll calculators · b
 |---|---|
 | Domain model | Rich entities with private setters and guard clauses (`DomainException`); validators give field-level UX errors first (D15/D16) |
 | Interfaces | Every behaviour class is consumed through an interface (services, calculators, repositories, UoW, current user, token generator); data types are concrete (D39) |
-| Pay components | One concept for allowances **and** deductions: a `PayComponentType` master table (`Kind`, `IsTaxable`) plus per-employee amounts. New types are data, not code (D2/D26) |
+| Pay components | One concept for allowances **and** deductions: a `PayComponentType` master table (`Kind`, `IsTaxable`) plus per-employee amounts. New types are data, not code (D2/D26). A type's kind can change only while no employee uses it, because payslips are recalculated, not stored (D71) |
 | Tax schemes | Each employee belongs to a `TaxScheme` (Progressive / Flat / Exempt). `ITaxCalculator` has one implementation per method; all are registered and `PayrollCalculator` picks by the scheme's method (strategy, D53) |
 | Payroll policies | Brackets + insurance rate/cap are effective-dated data per scheme. The latest policy on or before the month applies (D29). Past months are closed; the current month stays open for corrections (D54) |
 | Money | `decimal` everywhere, **no rounding in the domain**; the API returns full precision and only the Angular `MoneyPipe` rounds for display (2 decimals, half away from zero) (D32/D33) |
@@ -180,7 +180,8 @@ Worked example (spec §11.5, unit-tested): base 17,000, transport 1,000 (non-tax
 ## 4. Known limitations
 
 - No salary history and no stored payroll runs, so a past payslip combines the historical policy with the current salary data.
-- Pay component types and payroll policies have an API but no admin screen; departments and tax schemes are read-only seed data.
+- Departments and tax schemes are read-only seed data (pay items and payroll policies have HR screens, D70).
+- Pay items and payroll policies have no concurrency token: if two HR users edit the same record, the last save wins (employees use `rowVersion`).
 - An access token issued before an employee is deactivated stays valid until it expires (at most 15 minutes); the next refresh is refused.
 - Employee search matches the start of the name or email (index-friendly), not words in the middle of a name.
 - No restore endpoint for soft-deleted employees. Proration only covers the hire month (there is no termination date).
@@ -194,7 +195,7 @@ Worked example (spec §11.5, unit-tested): base 17,000, transport 1,000 (non-tax
 ## 5. Next steps
 
 1. Stored payroll runs with an explicit "close payroll month" step (would replace the current-month rule of D54).
-2. Admin screens for pay component types, payroll policies and tax schemes, and a user screen (create, link to an employee, roles, unlock).
+2. Screens for departments and tax schemes, a user screen (create, link to an employee, roles, unlock), and `rowVersion` on pay items and policies.
 3. Production readiness: an HTTPS reverse proxy with HSTS, a separate migration step in the pipeline, `ValidateOnStart` for every options class, secrets from a vault, and a deployment stage in CI.
 4. Salary history, termination-month proration, restore for deleted employees.
 5. Document every error response in OpenAPI (`ProducesProblem`) and add API versioning before a second client depends on the API.

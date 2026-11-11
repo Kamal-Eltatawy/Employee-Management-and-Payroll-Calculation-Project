@@ -51,4 +51,19 @@ public sealed class PayComponentTypeTests
     [Fact]
     public void Department_name_is_required() =>
         Assert.Throws<DomainException>(() => new Department(1, " "));
+
+    [Fact]
+    public void Update_can_change_the_kind_and_a_failed_update_keeps_it()
+    {
+        var type = new PayComponentType("Uniform", PayComponentKind.Allowance, true, UtcNow);
+
+        Assert.Throws<DomainException>(() => type.Update("Uniform", true, UtcNow, kind: PayComponentKind.Deduction));
+        Assert.Equal((PayComponentKind.Allowance, true), (type.Kind, type.IsTaxable));
+
+        type.Update("Uniform", false, UtcNow, kind: PayComponentKind.Deduction);
+        Assert.Equal((PayComponentKind.Deduction, false), (type.Kind, type.IsTaxable));
+
+        type.Update("Uniform fee", false, UtcNow);
+        Assert.Equal(PayComponentKind.Deduction, type.Kind);
+    }
 }

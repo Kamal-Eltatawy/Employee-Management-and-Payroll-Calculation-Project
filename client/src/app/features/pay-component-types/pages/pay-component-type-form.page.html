@@ -1,0 +1,88 @@
+<header class="page-header">
+  <div>
+    <a class="back-link" routerLink="/pay-items">
+      <app-icon name="back" [size]="16" [flip]="true" />
+      <span i18n="@@payItems.backToList">Pay items</span>
+    </a>
+    <h1>
+      @if (isEdit) {
+        <ng-container i18n="@@payItemForm.editTitle">Edit pay item</ng-container>
+      } @else {
+        <ng-container i18n="@@payItemForm.newTitle">New pay item</ng-container>
+      }
+    </h1>
+  </div>
+</header>
+
+@if (formError()) {
+  <div class="alert alert-danger" role="alert">{{ formError() }}</div>
+}
+
+@if (loading()) {
+  <p class="text-body-secondary" i18n="@@common.loading">Loading…</p>
+} @else {
+  <form class="surface" [formGroup]="form" (ngSubmit)="save()" novalidate>
+    <section class="form-section">
+      <div class="section-intro">
+        <h2 class="section-title" i18n="@@payItemForm.names">Names</h2>
+        <p i18n="@@payItemForm.namesHint">The English name must be unique. The Arabic name is optional; the English name is shown when it is empty.</p>
+      </div>
+      <div class="row g-3">
+        <div class="col-md-6">
+          <label class="form-label" for="name" i18n="@@field.nameEn">Name (English)</label>
+          <input id="name" class="form-control" formControlName="name" maxlength="100" dir="ltr"
+                 [class.is-invalid]="form.controls.name.invalid && form.controls.name.touched" />
+          <app-field-errors [control]="form.controls.name" label="Name" i18n-label="@@field.name" />
+        </div>
+        <div class="col-md-6">
+          <label class="form-label" for="nameAr" i18n="@@field.nameAr">Name (Arabic)</label>
+          <input id="nameAr" class="form-control" formControlName="nameAr" maxlength="100" dir="rtl" lang="ar"
+                 [class.is-invalid]="form.controls.nameAr.invalid && form.controls.nameAr.touched" />
+          <app-field-errors [control]="form.controls.nameAr" label="Arabic name" i18n-label="@@field.nameArLabel" />
+        </div>
+      </div>
+    </section>
+
+    <section class="form-section">
+      <div class="section-intro">
+        <h2 class="section-title" i18n="@@payItemForm.behaviour">Kind and tax</h2>
+        <p i18n="@@payItemForm.behaviourHint">Deductions are never taxable. The kind can change only while no employee uses the item.</p>
+      </div>
+      <div class="row g-3">
+        <div class="col-md-6">
+          <label class="form-label" for="kind" i18n="@@field.kind">Kind</label>
+          <select id="kind" class="form-select" formControlName="kind" aria-describedby="kindHint"
+                  [class.is-invalid]="form.controls.kind.invalid && form.controls.kind.touched">
+            <option value="Allowance" i18n="@@kind.allowance">Allowance</option>
+            <option value="Deduction" i18n="@@kind.deduction">Deduction</option>
+          </select>
+          <app-field-errors [control]="form.controls.kind" label="Kind" i18n-label="@@field.kind" />
+          @if (isEdit && isInUse()) {
+            <div id="kindHint" class="form-text" i18n="@@payItemForm.kindLocked">This item is assigned to employees, so its kind cannot change. Payslips are not stored: they are recalculated from current data, so a new kind would change past payslips. Create a new pay item instead.</div>
+          } @else if (isEdit) {
+            <div id="kindHint" class="form-text" i18n="@@payItemForm.kindEditable">No employee uses this item yet, so its kind can still change.</div>
+          }
+        </div>
+        <div class="col-md-6 d-flex align-items-end">
+          <div class="form-check mb-2">
+            <input id="isTaxable" class="form-check-input" type="checkbox" formControlName="isTaxable"
+                   [class.is-invalid]="form.controls.isTaxable.invalid && form.controls.isTaxable.touched" />
+            <label class="form-check-label" for="isTaxable" i18n="@@field.isTaxable">Taxable (added to taxable income)</label>
+            <app-field-errors [control]="form.controls.isTaxable" label="Taxable" i18n-label="@@payItems.taxable" />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="surface-footer">
+      <a class="btn btn-outline-secondary" routerLink="/pay-items" i18n="@@common.cancel">Cancel</a>
+      <button type="submit" class="btn btn-primary" [disabled]="saving()">
+        @if (saving()) {
+          <ng-container i18n="@@common.saving">Saving…</ng-container>
+        } @else {
+          <ng-container i18n="@@common.save">Save</ng-container>
+        }
+      </button>
+    </div>
+  </form>
+}

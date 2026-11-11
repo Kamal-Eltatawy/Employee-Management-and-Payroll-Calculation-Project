@@ -62,4 +62,5 @@
   <data name="Domain.InvalidMonth" xml:space="preserve"><value>{0} ليس شهراً صحيحاً.</value></data>
   <data name="Employee.Deleted" xml:space="preserve"><value>هذا الموظف محذوف.</value></data>
   <data name="Policy.InsuranceCapNegative" xml:space="preserve"><value>الحد الأقصى للتأمينات لا يمكن أن يكون سالباً.</value></data>
+  <data name="PayComponentType.KindInUse" xml:space="preserve"><value>البند '{0}' مستخدم لدى موظف واحد على الأقل (بما في ذلك الموظفون المحذوفون)، لذلك لا يمكن تغيير نوعه: قسائم الرواتب لا تُخزَّن بل يُعاد حسابها من البيانات الحالية، والتغيير سيعدّل قسائم شهور سابقة. أنشئ بندًا جديدًا بدلًا من ذلك.</value></data>
 </root>

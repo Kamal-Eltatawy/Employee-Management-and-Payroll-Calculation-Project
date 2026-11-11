@@ -23,6 +23,16 @@ export const routes: Routes = [
     loadChildren: () => import('./features/employees/employees.routes').then((m) => m.EMPLOYEE_ROUTES),
   },
   {
+    path: 'pay-items',
+    canActivate: [authGuard, roleGuard('Hr')],
+    loadChildren: () => import('./features/pay-component-types/pay-component-types.routes').then((m) => m.PAY_COMPONENT_TYPE_ROUTES),
+  },
+  {
+    path: 'payroll-policies',
+    canActivate: [authGuard, roleGuard('Hr')],
+    loadChildren: () => import('./features/payroll-policies/payroll-policies.routes').then((m) => m.PAYROLL_POLICY_ROUTES),
+  },
+  {
     path: 'my-payslip',
     title: $localize`:@@title.myPayslip:My payslip · Payroll`,
     canActivate: [authGuard, roleGuard('Employee')],

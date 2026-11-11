@@ -1,0 +1,62 @@
+.scheme-tabs {
+  padding: 0.75rem 1.25rem 0;
+  border-block-end: 1px solid var(--app-border);
+
+  .nav-link {
+    background: none;
+  }
+}
+
+.scheme-method {
+  margin: 0;
+  padding: 0.75rem 1.25rem;
+  color: var(--app-muted);
+  font-size: 0.9rem;
+}
+
+thead th {
+  background: #f9fafb;
+  color: var(--app-muted);
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+  text-align: start;
+}
+
+.in-effect td {
+  background: #f6fef9;
+}
+
+.month {
+  font-weight: 600;
+  margin-inline-end: 0.5rem;
+}
+
+.pills {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.amount-inline {
+  font-variant-numeric: tabular-nums;
+}
+
+.muted {
+  color: var(--app-muted);
+  font-size: 0.9rem;
+}
+
+.row-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.25rem;
+}
+
+.empty {
+  text-align: center;
+  color: var(--app-muted);
+  padding: 2.5rem 1rem;
+}

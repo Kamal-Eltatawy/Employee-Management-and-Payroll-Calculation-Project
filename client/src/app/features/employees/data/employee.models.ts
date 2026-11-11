@@ -90,6 +90,8 @@ export interface PayComponentType {
   isTaxable: boolean;
   nameEn: string;
   nameAr: string | null;
+  /** Assigned to at least one employee (deleted ones too): its kind cannot change and it cannot be deleted (D71). */
+  isInUse?: boolean;
 }
 
 export interface TaxScheme {

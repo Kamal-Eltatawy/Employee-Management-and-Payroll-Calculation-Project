@@ -20,7 +20,7 @@
         <source>My payslip · Payroll</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.routes.ts</context>
-          <context context-type="linenumber">27</context>
+          <context context-type="linenumber">37</context>
         </context-group>
       </trans-unit>
       <trans-unit id="login.heading" datatype="html">
@@ -183,32 +183,46 @@
           <context context-type="linenumber">27,29</context>
         </context-group>
       </trans-unit>
+      <trans-unit id="nav.payItems" datatype="html">
+        <source>Pay items</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/core/layout/shell.component.html</context>
+          <context context-type="linenumber">31,33</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="nav.payrollPolicies" datatype="html">
+        <source>Payroll policies</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/core/layout/shell.component.html</context>
+          <context context-type="linenumber">35,37</context>
+        </context-group>
+      </trans-unit>
       <trans-unit id="nav.myPayslip" datatype="html">
         <source>My payslip</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/core/layout/shell.component.html</context>
-          <context context-type="linenumber">33,35</context>
+          <context context-type="linenumber">41,43</context>
         </context-group>
       </trans-unit>
       <trans-unit id="role.hr" datatype="html">
         <source>HR</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/core/layout/shell.component.html</context>
-          <context context-type="linenumber">50,51</context>
+          <context context-type="linenumber">58,59</context>
         </context-group>
       </trans-unit>
       <trans-unit id="role.employee" datatype="html">
         <source>Employee</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/core/layout/shell.component.html</context>
-          <context context-type="linenumber">52,53</context>
+          <context context-type="linenumber">60,61</context>
         </context-group>
       </trans-unit>
       <trans-unit id="nav.signOut" datatype="html">
         <source>Sign out</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/core/layout/shell.component.html</context>
-          <context context-type="linenumber">63,64</context>
+          <context context-type="linenumber">71,72</context>
         </context-group>
       </trans-unit>
       <trans-unit id="toast.dismiss" datatype="html">
@@ -291,6 +305,22 @@
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/home/pages/home.page.html</context>
           <context context-type="linenumber">28,31</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/pay-component-types/pages/pay-component-type-form.page.html</context>
+          <context context-type="linenumber">22,24</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/pay-component-types/pages/pay-component-type-list.page.html</context>
+          <context context-type="linenumber">32,34</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/payroll-policies/pages/payroll-policy-form.page.html</context>
+          <context context-type="linenumber">31,33</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/payroll-policies/pages/payroll-policy-list.page.html</context>
+          <context context-type="linenumber">49,51</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/payslip/pages/payslip.page.html</context>
@@ -443,6 +473,14 @@
           <context context-type="linenumber">145,146</context>
         </context-group>
         <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/payroll-policies/pages/payroll-policy-form.page.html</context>
+          <context context-type="linenumber">41,42</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/payroll-policies/pages/payroll-policy-form.page.html</context>
+          <context context-type="linenumber">49</context>
+        </context-group>
+        <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/payslip/pages/payslip.page.html</context>
           <context context-type="linenumber">77,78</context>
         </context-group>
@@ -453,12 +491,20 @@
           <context context-type="sourcefile">src/app/features/employees/pages/employee-form.page.html</context>
           <context context-type="linenumber">93,94</context>
         </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/payroll-policies/pages/payroll-policy-form.page.html</context>
+          <context context-type="linenumber">44,45</context>
+        </context-group>
       </trans-unit>
       <trans-unit id="validation.selectTaxScheme" datatype="html">
         <source>Please select a tax scheme.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/employees/pages/employee-form.page.html</context>
           <context context-type="linenumber">99</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/payroll-policies/pages/payroll-policy-form.page.html</context>
+          <context context-type="linenumber">50</context>
         </context-group>
       </trans-unit>
       <trans-unit id="employeeForm.pay" datatype="html">
@@ -493,6 +539,14 @@
           <context context-type="linenumber">123,124</context>
         </context-group>
         <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/pay-component-types/pages/pay-component-type-form.page.html</context>
+          <context context-type="linenumber">74,75</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/payroll-policies/pages/payroll-policy-form.page.html</context>
+          <context context-type="linenumber">106,107</context>
+        </context-group>
+        <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/ui/confirm-dialog.component.ts</context>
           <context context-type="linenumber">11,12</context>
         </context-group>
@@ -503,12 +557,28 @@
           <context context-type="sourcefile">src/app/features/employees/pages/employee-form.page.html</context>
           <context context-type="linenumber">126,127</context>
         </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/pay-component-types/pages/pay-component-type-form.page.html</context>
+          <context context-type="linenumber">77,78</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/payroll-policies/pages/payroll-policy-form.page.html</context>
+          <context context-type="linenumber">109,110</context>
+        </context-group>
       </trans-unit>
       <trans-unit id="common.save" datatype="html">
         <source>Save</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/employees/pages/employee-form.page.html</context>
           <context context-type="linenumber">128,130</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/pay-component-types/pages/pay-component-type-form.page.html</context>
+          <context context-type="linenumber">79,81</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/payroll-policies/pages/payroll-policy-form.page.html</context>
+          <context context-type="linenumber">111,112</context>
         </context-group>
       </trans-unit>
       <trans-unit id="employees.saved" datatype="html">
@@ -633,6 +703,14 @@
           <context context-type="sourcefile">src/app/features/employees/pages/employee-list.page.html</context>
           <context context-type="linenumber">64,66</context>
         </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/pay-component-types/pages/pay-component-type-list.page.html</context>
+          <context context-type="linenumber">27,29</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/payroll-policies/pages/payroll-policy-list.page.html</context>
+          <context context-type="linenumber">44,46</context>
+        </context-group>
       </trans-unit>
       <trans-unit id="employees.actionPayslip" datatype="html">
         <source>Payslip</source>
@@ -655,6 +733,22 @@
           <context context-type="sourcefile">src/app/features/employees/pages/employee-list.page.html</context>
           <context context-type="linenumber">100</context>
         </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/pay-component-types/pages/pay-component-type-list.page.html</context>
+          <context context-type="linenumber">60</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/pay-component-types/pages/pay-component-type-list.page.html</context>
+          <context context-type="linenumber">60</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/payroll-policies/pages/payroll-policy-list.page.html</context>
+          <context context-type="linenumber">81</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/payroll-policies/pages/payroll-policy-list.page.html</context>
+          <context context-type="linenumber">81</context>
+        </context-group>
       </trans-unit>
       <trans-unit id="employees.actionDelete" datatype="html">
         <source>Delete</source>
@@ -669,6 +763,30 @@
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/employees/pages/employee-list.page.html</context>
           <context context-type="linenumber">129</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/pay-component-types/pages/pay-component-type-list.page.html</context>
+          <context context-type="linenumber">64</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/pay-component-types/pages/pay-component-type-list.page.html</context>
+          <context context-type="linenumber">64</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/pay-component-types/pages/pay-component-type-list.page.html</context>
+          <context context-type="linenumber">81</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/payroll-policies/pages/payroll-policy-list.page.html</context>
+          <context context-type="linenumber">85</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/payroll-policies/pages/payroll-policy-list.page.html</context>
+          <context context-type="linenumber">85</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/payroll-policies/pages/payroll-policy-list.page.html</context>
+          <context context-type="linenumber">108</context>
         </context-group>
       </trans-unit>
       <trans-unit id="employees.empty" datatype="html">
@@ -973,6 +1091,14 @@
           <context context-type="linenumber">66</context>
         </context-group>
         <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/payroll-policies/pages/payroll-policy-form.page.html</context>
+          <context context-type="linenumber">89,90</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/payroll-policies/pages/payroll-policy-list.page.html</context>
+          <context context-type="linenumber">43,44</context>
+        </context-group>
+        <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/payslip/pages/payslip.page.html</context>
           <context context-type="linenumber">138</context>
         </context-group>
@@ -986,6 +1112,10 @@
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/home/pages/home.page.ts</context>
           <context context-type="linenumber">69</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/payroll-policies/pages/payroll-policy-form.page.html</context>
+          <context context-type="linenumber">66,67</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/payslip/pages/payslip.page.html</context>
@@ -1008,6 +1138,731 @@
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/home/pages/home.page.ts</context>
           <context context-type="linenumber">75</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="payItems.backToList" datatype="html">
+        <source>Pay items</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/pay-component-types/pages/pay-component-type-form.page.html</context>
+          <context context-type="linenumber">5,8</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="payItemForm.editTitle" datatype="html">
+        <source>Edit pay item</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/pay-component-types/pages/pay-component-type-form.page.html</context>
+          <context context-type="linenumber">9,11</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="payItemForm.newTitle" datatype="html">
+        <source>New pay item</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/pay-component-types/pages/pay-component-type-form.page.html</context>
+          <context context-type="linenumber">11,14</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="payItemForm.names" datatype="html">
+        <source>Names</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/pay-component-types/pages/pay-component-type-form.page.html</context>
+          <context context-type="linenumber">27,28</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="payItemForm.namesHint" datatype="html">
+        <source>The English name must be unique. The Arabic name is optional; the English name is shown when it is empty.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/pay-component-types/pages/pay-component-type-form.page.html</context>
+          <context context-type="linenumber">28,30</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="field.nameEn" datatype="html">
+        <source>Name (English)</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/pay-component-types/pages/pay-component-type-form.page.html</context>
+          <context context-type="linenumber">32,33</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="field.name" datatype="html">
+        <source>Name</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/pay-component-types/pages/pay-component-type-form.page.html</context>
+          <context context-type="linenumber">35</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="field.nameAr" datatype="html">
+        <source>Name (Arabic)</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/pay-component-types/pages/pay-component-type-form.page.html</context>
+          <context context-type="linenumber">38,39</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="field.nameArLabel" datatype="html">
+        <source>Arabic name</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/pay-component-types/pages/pay-component-type-form.page.html</context>
+          <context context-type="linenumber">41</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="payItemForm.behaviour" datatype="html">
+        <source>Kind and tax</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/pay-component-types/pages/pay-component-type-form.page.html</context>
+          <context context-type="linenumber">48,49</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="payItemForm.behaviourHint" datatype="html">
+        <source>Deductions are never taxable. The kind can change only while no employee uses the item.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/pay-component-types/pages/pay-component-type-form.page.html</context>
+          <context context-type="linenumber">49,51</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="field.kind" datatype="html">
+        <source>Kind</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/pay-component-types/pages/pay-component-type-form.page.html</context>
+          <context context-type="linenumber">53,54</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="kind.allowance" datatype="html">
+        <source>Allowance</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/pay-component-types/pages/pay-component-type-form.page.html</context>
+          <context context-type="linenumber">55,56</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/pay-component-types/pages/pay-component-type-list.page.html</context>
+          <context context-type="linenumber">45,46</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="kind.deduction" datatype="html">
+        <source>Deduction</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/pay-component-types/pages/pay-component-type-form.page.html</context>
+          <context context-type="linenumber">56,57</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/pay-component-types/pages/pay-component-type-list.page.html</context>
+          <context context-type="linenumber">47,49</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="payItemForm.kindLocked" datatype="html">
+        <source>This item is assigned to employees, so its kind cannot change. Payslips are not stored: they are recalculated from current data, so a new kind would change past payslips. Create a new pay item instead.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/pay-component-types/pages/pay-component-type-form.page.html</context>
+          <context context-type="linenumber">60,66</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="payItemForm.kindEditable" datatype="html">
+        <source>No employee uses this item yet, so its kind can still change.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/pay-component-types/pages/pay-component-type-form.page.html</context>
+          <context context-type="linenumber">60,66</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="field.isTaxable" datatype="html">
+        <source>Taxable (added to taxable income)</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/pay-component-types/pages/pay-component-type-form.page.html</context>
+          <context context-type="linenumber">66,67</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="payItems.taxable" datatype="html">
+        <source>Taxable</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/pay-component-types/pages/pay-component-type-form.page.html</context>
+          <context context-type="linenumber">67</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/pay-component-types/pages/pay-component-type-list.page.html</context>
+          <context context-type="linenumber">52,53</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="payItems.saved" datatype="html">
+        <source><x id="name" equiv-text="type.name"/> was saved.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/pay-component-types/pages/pay-component-type-form.page.ts</context>
+          <context context-type="linenumber">92</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="payItems.title" datatype="html">
+        <source>Pay items</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/pay-component-types/pages/pay-component-type-list.page.html</context>
+          <context context-type="linenumber">3,4</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="payItems.subtitle" datatype="html">
+        <source>The allowance and deduction types you can assign to employees.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/pay-component-types/pages/pay-component-type-list.page.html</context>
+          <context context-type="linenumber">4,6</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="payItems.new" datatype="html">
+        <source>New pay item</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/pay-component-types/pages/pay-component-type-list.page.html</context>
+          <context context-type="linenumber">9,12</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="payItems.colName" datatype="html">
+        <source>Name</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/pay-component-types/pages/pay-component-type-list.page.html</context>
+          <context context-type="linenumber">23,24</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="payItems.colOtherName" datatype="html">
+        <source>Name (English / Arabic)</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/pay-component-types/pages/pay-component-type-list.page.html</context>
+          <context context-type="linenumber">24,25</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="payItems.colKind" datatype="html">
+        <source>Kind</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/pay-component-types/pages/pay-component-type-list.page.html</context>
+          <context context-type="linenumber">25,26</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="payItems.colTax" datatype="html">
+        <source>Tax</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/pay-component-types/pages/pay-component-type-list.page.html</context>
+          <context context-type="linenumber">27</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="payItems.notTaxable" datatype="html">
+        <source>Not taxable</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/pay-component-types/pages/pay-component-type-list.page.html</context>
+          <context context-type="linenumber">54,56</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="payItems.empty" datatype="html">
+        <source>No pay items yet.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/pay-component-types/pages/pay-component-type-list.page.html</context>
+          <context context-type="linenumber">72,74</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="payItems.deleteTitle" datatype="html">
+        <source>Delete pay item</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/pay-component-types/pages/pay-component-type-list.page.html</context>
+          <context context-type="linenumber">80</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="payItems.deleteConfirm" datatype="html">
+        <source>Delete <x id="name" equiv-text="type.name"/>? This is only possible while no employee (including deleted ones) uses it.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/pay-component-types/pages/pay-component-type-list.page.ts</context>
+          <context context-type="linenumber">32</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="payItems.deleted" datatype="html">
+        <source><x id="name" equiv-text="type.name"/> was deleted.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/pay-component-types/pages/pay-component-type-list.page.ts</context>
+          <context context-type="linenumber">40</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="title.payItems" datatype="html">
+        <source>Pay items · Payroll</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/pay-component-types/pay-component-types.routes.ts</context>
+          <context context-type="linenumber">6</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="title.newPayItem" datatype="html">
+        <source>New pay item · Payroll</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/pay-component-types/pay-component-types.routes.ts</context>
+          <context context-type="linenumber">11</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="title.editPayItem" datatype="html">
+        <source>Edit pay item · Payroll</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/pay-component-types/pay-component-types.routes.ts</context>
+          <context context-type="linenumber">16</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="policies.backToList" datatype="html">
+        <source>Payroll policies</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/payroll-policies/pages/payroll-policy-form.page.html</context>
+          <context context-type="linenumber">5,8</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="policyForm.viewTitle" datatype="html">
+        <source>Payroll policy</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/payroll-policies/pages/payroll-policy-form.page.html</context>
+          <context context-type="linenumber">9,10</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="policyForm.editTitle" datatype="html">
+        <source>Edit payroll policy</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/payroll-policies/pages/payroll-policy-form.page.html</context>
+          <context context-type="linenumber">11,13</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="policyForm.newTitle" datatype="html">
+        <source>New payroll policy</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/payroll-policies/pages/payroll-policy-form.page.html</context>
+          <context context-type="linenumber">13,16</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="policyForm.readOnlyNotice" datatype="html">
+        <source>This policy covers closed months, so it is read-only. To correct the current month, create a policy effective from this month.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/payroll-policies/pages/payroll-policy-form.page.html</context>
+          <context context-type="linenumber">26,31</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="policyForm.scope" datatype="html">
+        <source>Scheme and month</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/payroll-policies/pages/payroll-policy-form.page.html</context>
+          <context context-type="linenumber">36,37</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="policyForm.scopeHint" datatype="html">
+        <source>A policy applies from the first day of its month until the next policy of the same scheme. Past months are closed.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/payroll-policies/pages/payroll-policy-form.page.html</context>
+          <context context-type="linenumber">37,39</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="field.effectiveMonth" datatype="html">
+        <source>Effective from (month)</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/payroll-policies/pages/payroll-policy-form.page.html</context>
+          <context context-type="linenumber">53,54</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="field.effectiveMonthLabel" datatype="html">
+        <source>Effective month</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/payroll-policies/pages/payroll-policy-form.page.html</context>
+          <context context-type="linenumber">59</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="policyForm.insuranceHint" datatype="html">
+        <source>The rate applies to gross pay. Leave the cap empty for no cap; 0 is a real cap.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/payroll-policies/pages/payroll-policy-form.page.html</context>
+          <context context-type="linenumber">67,69</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="field.insuranceRate" datatype="html">
+        <source>Insurance rate %</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/payroll-policies/pages/payroll-policy-form.page.html</context>
+          <context context-type="linenumber">71,72</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="field.insuranceRateLabel" datatype="html">
+        <source>Insurance rate</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/payroll-policies/pages/payroll-policy-form.page.html</context>
+          <context context-type="linenumber">75</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="field.insuranceCap" datatype="html">
+        <source>Monthly insurance cap (optional)</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/payroll-policies/pages/payroll-policy-form.page.html</context>
+          <context context-type="linenumber">78,79</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="policies.noCapPlaceholder" datatype="html">
+        <source>No cap</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/payroll-policies/pages/payroll-policy-form.page.html</context>
+          <context context-type="linenumber">80</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="field.insuranceCapLabel" datatype="html">
+        <source>Insurance cap</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/payroll-policies/pages/payroll-policy-form.page.html</context>
+          <context context-type="linenumber">82</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="policyForm.taxHint" datatype="html">
+        <source>The brackets must fit the scheme&apos;s tax method.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/payroll-policies/pages/payroll-policy-form.page.html</context>
+          <context context-type="linenumber">90,93</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="policyForm.chooseScheme" datatype="html">
+        <source>Select a tax scheme to set its tax brackets.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/payroll-policies/pages/payroll-policy-form.page.html</context>
+          <context context-type="linenumber">96,99</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="policyForm.close" datatype="html">
+        <source>Close</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/payroll-policies/pages/payroll-policy-form.page.html</context>
+          <context context-type="linenumber">104,106</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="policies.saved" datatype="html">
+        <source>The policy effective from <x id="month" equiv-text="month"/> was saved.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/payroll-policies/pages/payroll-policy-form.page.ts</context>
+          <context context-type="linenumber">147</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="policies.title" datatype="html">
+        <source>Payroll policies</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/payroll-policies/pages/payroll-policy-list.page.html</context>
+          <context context-type="linenumber">3,4</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="policies.subtitle" datatype="html">
+        <source>Social insurance and income tax rules per tax scheme, effective from a month.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/payroll-policies/pages/payroll-policy-list.page.html</context>
+          <context context-type="linenumber">4,6</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="policies.new" datatype="html">
+        <source>New policy</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/payroll-policies/pages/payroll-policy-list.page.html</context>
+          <context context-type="linenumber">10,13</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="policies.schemes" datatype="html">
+        <source>Tax schemes</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/payroll-policies/pages/payroll-policy-list.page.html</context>
+          <context context-type="linenumber">16</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="policies.method" datatype="html">
+        <source>Tax method:</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/payroll-policies/pages/payroll-policy-list.page.html</context>
+          <context context-type="linenumber">29</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="policies.colEffectiveFrom" datatype="html">
+        <source>Effective from</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/payroll-policies/pages/payroll-policy-list.page.html</context>
+          <context context-type="linenumber">41,42</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="policies.colInsurance" datatype="html">
+        <source>Social insurance</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/payroll-policies/pages/payroll-policy-list.page.html</context>
+          <context context-type="linenumber">42,43</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="policies.inEffect" datatype="html">
+        <source>In effect this month</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/payroll-policies/pages/payroll-policy-list.page.html</context>
+          <context context-type="linenumber">57,58</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="policies.upcoming" datatype="html">
+        <source>Upcoming</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/payroll-policies/pages/payroll-policy-list.page.html</context>
+          <context context-type="linenumber">59,61</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="policies.readOnly" datatype="html">
+        <source>Read-only</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/payroll-policies/pages/payroll-policy-list.page.html</context>
+          <context context-type="linenumber">62,64</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="policies.noCap" datatype="html">
+        <source>no cap</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/payroll-policies/pages/payroll-policy-list.page.html</context>
+          <context context-type="linenumber">70,71</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="policies.capOf" datatype="html">
+        <source>cap</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/payroll-policies/pages/payroll-policy-list.page.html</context>
+          <context context-type="linenumber">72</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="policies.actionView" datatype="html">
+        <source>View</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/payroll-policies/pages/payroll-policy-list.page.html</context>
+          <context context-type="linenumber">90</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/payroll-policies/pages/payroll-policy-list.page.html</context>
+          <context context-type="linenumber">90</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="policies.empty" datatype="html">
+        <source>This scheme has no payroll policies yet.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/payroll-policies/pages/payroll-policy-list.page.html</context>
+          <context context-type="linenumber">99,101</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="policies.deleteTitle" datatype="html">
+        <source>Delete payroll policy</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/payroll-policies/pages/payroll-policy-list.page.html</context>
+          <context context-type="linenumber">107</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="policies.noIncomeTax" datatype="html">
+        <source>No income tax</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/payroll-policies/pages/payroll-policy-list.page.ts</context>
+          <context context-type="linenumber">88</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="policies.bracketSummary" datatype="html">
+        <source><x id="count" equiv-text="count"/> brackets, top rate <x id="top" equiv-text="top"/></source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/payroll-policies/pages/payroll-policy-list.page.ts</context>
+          <context context-type="linenumber">94</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="policies.deleteConfirm" datatype="html">
+        <source>Delete the policy effective from <x id="month" equiv-text="month"/>? Months it covered fall back to the previous policy.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/payroll-policies/pages/payroll-policy-list.page.ts</context>
+          <context context-type="linenumber">102</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="policies.deleted" datatype="html">
+        <source>The policy effective from <x id="month" equiv-text="month"/> was deleted.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/payroll-policies/pages/payroll-policy-list.page.ts</context>
+          <context context-type="linenumber">110</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="title.payrollPolicies" datatype="html">
+        <source>Payroll policies · Payroll</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/payroll-policies/payroll-policies.routes.ts</context>
+          <context context-type="linenumber">6</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="title.newPayrollPolicy" datatype="html">
+        <source>New payroll policy · Payroll</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/payroll-policies/payroll-policies.routes.ts</context>
+          <context context-type="linenumber">11</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="title.payrollPolicy" datatype="html">
+        <source>Payroll policy · Payroll</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/payroll-policies/payroll-policies.routes.ts</context>
+          <context context-type="linenumber">16</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="brackets.title" datatype="html">
+        <source>Tax brackets (monthly taxable income)</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/payroll-policies/ui/tax-brackets-editor.component.ts</context>
+          <context context-type="linenumber">17,18</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="brackets.add" datatype="html">
+        <source>Add bracket</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/payroll-policies/ui/tax-brackets-editor.component.ts</context>
+          <context context-type="linenumber">21,22</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="brackets.exemptHint" datatype="html">
+        <source>This scheme is tax exempt: no income tax and no brackets. Social insurance still applies.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/payroll-policies/ui/tax-brackets-editor.component.ts</context>
+          <context context-type="linenumber">28,30</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="brackets.flatHint" datatype="html">
+        <source>A flat tax applies one rate to all taxable income.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/payroll-policies/ui/tax-brackets-editor.component.ts</context>
+          <context context-type="linenumber">31,33</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="brackets.progressiveHint" datatype="html">
+        <source>Each rate applies to the part of income inside its band. Upper bounds go up row by row; leave the last one empty.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/payroll-policies/ui/tax-brackets-editor.component.ts</context>
+          <context context-type="linenumber">34,38</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="brackets.upperBound" datatype="html">
+        <source>Up to (empty = no limit)</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/payroll-policies/ui/tax-brackets-editor.component.ts</context>
+          <context context-type="linenumber">43,44</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="brackets.lastOpen" datatype="html">
+        <source>Leave the upper bound of the last bracket empty.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/payroll-policies/ui/tax-brackets-editor.component.ts</context>
+          <context context-type="linenumber">49,51</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="brackets.onlyLastOpen" datatype="html">
+        <source>Only the last bracket can have no upper bound.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/payroll-policies/ui/tax-brackets-editor.component.ts</context>
+          <context context-type="linenumber">52,54</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="brackets.ascending" datatype="html">
+        <source>Must be greater than the previous upper bound.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/payroll-policies/ui/tax-brackets-editor.component.ts</context>
+          <context context-type="linenumber">55,57</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="brackets.upperBoundLabel" datatype="html">
+        <source>Upper bound</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/payroll-policies/ui/tax-brackets-editor.component.ts</context>
+          <context context-type="linenumber">58</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="brackets.rate" datatype="html">
+        <source>Rate %</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/payroll-policies/ui/tax-brackets-editor.component.ts</context>
+          <context context-type="linenumber">62,63</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="brackets.rateLabel" datatype="html">
+        <source>Rate</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/payroll-policies/ui/tax-brackets-editor.component.ts</context>
+          <context context-type="linenumber">65</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="brackets.remove" datatype="html">
+        <source>Remove bracket</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/payroll-policies/ui/tax-brackets-editor.component.ts</context>
+          <context context-type="linenumber">69</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/payroll-policies/ui/tax-brackets-editor.component.ts</context>
+          <context context-type="linenumber">69</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="brackets.empty" datatype="html">
+        <source>No brackets yet.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/payroll-policies/ui/tax-brackets-editor.component.ts</context>
+          <context context-type="linenumber">75,78</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="brackets.shapeProgressive" datatype="html">
+        <source>A progressive tax needs at least one bracket.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/payroll-policies/ui/tax-brackets-editor.component.ts</context>
+          <context context-type="linenumber">82,84</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="brackets.shapeFlat" datatype="html">
+        <source>A flat tax needs exactly one bracket without an upper bound.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/payroll-policies/ui/tax-brackets-editor.component.ts</context>
+          <context context-type="linenumber">85,87</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="brackets.preview" datatype="html">
+        <source>Preview</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/payroll-policies/ui/tax-brackets-editor.component.ts</context>
+          <context context-type="linenumber">98,100</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="brackets.noLimit" datatype="html">
+        <source>No limit</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/payroll-policies/ui/tax-brackets-editor.component.ts</context>
+          <context context-type="linenumber">127</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="brackets.bandRange" datatype="html">
+        <source><x id="lower" equiv-text="lower"/> – <x id="upper" equiv-text="upper"/>: <x id="rate" equiv-text="rate"/></source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/payroll-policies/ui/tax-brackets.ts</context>
+          <context context-type="linenumber">104</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="brackets.bandAll" datatype="html">
+        <source>All taxable income: <x id="rate" equiv-text="rate"/></source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/payroll-policies/ui/tax-brackets.ts</context>
+          <context context-type="linenumber">106</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="brackets.bandAbove" datatype="html">
+        <source>Above <x id="lower" equiv-text="lower"/>: <x id="rate" equiv-text="rate"/></source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/payroll-policies/ui/tax-brackets.ts</context>
+          <context context-type="linenumber">108</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="taxMethod.progressive" datatype="html">
+        <source>Progressive brackets</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/payroll-policies/ui/tax-brackets.ts</context>
+          <context context-type="linenumber">118</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/payslip/pages/payslip.page.ts</context>
+          <context context-type="linenumber">90</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="taxMethod.flat" datatype="html">
+        <source>Flat rate</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/payroll-policies/ui/tax-brackets.ts</context>
+          <context context-type="linenumber">120</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/payslip/pages/payslip.page.ts</context>
+          <context context-type="linenumber">92</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="taxMethod.exempt" datatype="html">
+        <source>Tax exempt</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/payroll-policies/ui/tax-brackets.ts</context>
+          <context context-type="linenumber">122</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/payslip/pages/payslip.page.ts</context>
+          <context context-type="linenumber">94</context>
         </context-group>
       </trans-unit>
       <trans-unit id="payslip.title" datatype="html">
@@ -1161,27 +2016,6 @@
           <context context-type="linenumber">150,154</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="taxMethod.progressive" datatype="html">
-        <source>Progressive brackets</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/features/payslip/pages/payslip.page.ts</context>
-          <context context-type="linenumber">90</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="taxMethod.flat" datatype="html">
-        <source>Flat rate</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/features/payslip/pages/payslip.page.ts</context>
-          <context context-type="linenumber">92</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="taxMethod.exempt" datatype="html">
-        <source>Tax exempt</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/features/payslip/pages/payslip.page.ts</context>
-          <context context-type="linenumber">94</context>
-        </context-group>
-      </trans-unit>
       <trans-unit id="confirm.title" datatype="html">
         <source>Are you sure?</source>
         <context-group purpose="location">
@@ -1252,11 +2086,32 @@
           <context context-type="linenumber">55</context>
         </context-group>
       </trans-unit>
+      <trans-unit id="validation.percentRange" datatype="html">
+        <source><x id="label" equiv-text="label"/> must be between 0 and 100.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/shared/ui/field-errors.component.ts</context>
+          <context context-type="linenumber">57</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="validation.nonNegative" datatype="html">
+        <source><x id="label" equiv-text="label"/> cannot be negative.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/shared/ui/field-errors.component.ts</context>
+          <context context-type="linenumber">59</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="validation.closedMonth" datatype="html">
+        <source><x id="label" equiv-text="label"/> cannot be before the current month; past months are closed.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/shared/ui/field-errors.component.ts</context>
+          <context context-type="linenumber">61</context>
+        </context-group>
+      </trans-unit>
       <trans-unit id="validation.invalid" datatype="html">
         <source><x id="label" equiv-text="label"/> is not valid.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/ui/field-errors.component.ts</context>
-          <context context-type="linenumber">59</context>
+          <context context-type="linenumber">65</context>
         </context-group>
       </trans-unit>
       <trans-unit id="payslip.month" datatype="html">

@@ -156,6 +156,10 @@ public sealed class InMemoryPayComponentTypeRepository(FakeDatabase db) : IPayCo
     public Task<bool> IsInUseAsync(int id, CancellationToken ct) =>
         Task.FromResult(db.Employees.AllIncludingDeleted.Any(e => e.PayComponents.Any(c => c.PayComponentTypeId == id)));
 
+    public Task<IReadOnlySet<int>> GetUsedIdsAsync(CancellationToken ct) =>
+        Task.FromResult<IReadOnlySet<int>>(db.Employees.AllIncludingDeleted
+            .SelectMany(e => e.PayComponents).Select(c => c.PayComponentTypeId).ToHashSet());
+
     public void Add(PayComponentType type)
     {
         PrivateSetter.Set(type, nameof(PayComponentType.Id), _nextId++);

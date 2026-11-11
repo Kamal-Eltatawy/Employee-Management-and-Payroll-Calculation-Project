@@ -53,6 +53,12 @@ export class FieldErrorsComponent {
           return $localize`:@@validation.notInFuture:${label}:label: cannot be in the future.`;
         case 'maxTwoDecimals':
           return $localize`:@@validation.twoDecimals:${label}:label: can have at most two decimal places.`;
+        case 'percentRange':
+          return $localize`:@@validation.percentRange:${label}:label: must be between 0 and 100.`;
+        case 'nonNegative':
+          return $localize`:@@validation.nonNegative:${label}:label: cannot be negative.`;
+        case 'closedMonth':
+          return $localize`:@@validation.closedMonth:${label}:label: cannot be before the current month; past months are closed.`;
         case 'server':
           return String(value);
         default:

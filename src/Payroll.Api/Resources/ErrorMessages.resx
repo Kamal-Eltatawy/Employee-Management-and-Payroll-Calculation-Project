@@ -62,4 +62,5 @@
   <data name="Domain.InvalidMonth" xml:space="preserve"><value>{0} is not a valid month.</value></data>
   <data name="Employee.Deleted" xml:space="preserve"><value>The employee is deleted.</value></data>
   <data name="Policy.InsuranceCapNegative" xml:space="preserve"><value>Insurance cap cannot be negative.</value></data>
+  <data name="PayComponentType.KindInUse" xml:space="preserve"><value>Pay item '{0}' is assigned to at least one employee (including deleted employees), so its kind cannot change: payslips are recalculated from current data, and the change would alter past payslips. Create a new pay item instead.</value></data>
 </root>

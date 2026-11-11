@@ -26,6 +26,14 @@
               <app-icon name="users" />
               <span i18n="@@nav.employees">Employees</span>
             </a>
+            <a routerLink="/pay-items" routerLinkActive="active">
+              <app-icon name="tag" />
+              <span i18n="@@nav.payItems">Pay items</span>
+            </a>
+            <a routerLink="/payroll-policies" routerLinkActive="active">
+              <app-icon name="sliders" />
+              <span i18n="@@nav.payrollPolicies">Payroll policies</span>
+            </a>
           }
           @if (auth.canSeeOwnPayslip()) {
             <a routerLink="/my-payslip" routerLinkActive="active">

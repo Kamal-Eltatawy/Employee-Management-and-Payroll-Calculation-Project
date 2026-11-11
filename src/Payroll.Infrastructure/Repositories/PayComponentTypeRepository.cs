@@ -23,6 +23,9 @@ public sealed class PayComponentTypeRepository(AppDbContext db) : IPayComponentT
     public Task<bool> IsInUseAsync(int id, CancellationToken ct) =>
         db.EmployeePayComponents.AnyAsync(c => c.PayComponentTypeId == id, ct);
 
+    public async Task<IReadOnlySet<int>> GetUsedIdsAsync(CancellationToken ct) =>
+        (await db.EmployeePayComponents.Select(c => c.PayComponentTypeId).Distinct().ToListAsync(ct)).ToHashSet();
+
     public void Add(PayComponentType type) => db.PayComponentTypes.Add(type);
 
     public void Remove(PayComponentType type) => db.PayComponentTypes.Remove(type);

@@ -27,7 +27,10 @@ public sealed class PayComponentType
     /// <summary>Optional Arabic name; the API falls back to <see cref="Name"/> (D58).</summary>
     public string? NameAr { get; private set; }
 
-    /// <summary>Immutable after creation (D2).</summary>
+    /// <summary>
+    /// Can change only while no employee uses the type (D71): payslips are not stored but recalculated from current data,
+    /// so changing the kind of a used type would silently change past payslips. The caller checks the usage.
+    /// </summary>
     public PayComponentKind Kind { get; private set; }
 
     /// <summary>Only an allowance can be taxable (D26).</summary>
@@ -37,9 +40,21 @@ public sealed class PayComponentType
 
     public DateTime UpdatedAtUtc { get; private set; }
 
-    public void Update(string name, bool isTaxable, DateTime utcNow, string? nameAr = null)
+    /// <summary><paramref name="kind"/> null keeps the current kind.</summary>
+    public void Update(string name, bool isTaxable, DateTime utcNow, string? nameAr = null, PayComponentKind? kind = null)
     {
-        Apply(name, isTaxable, nameAr);
+        var previousKind = Kind;
+        Kind = kind is { } newKind ? Guard.Defined(newKind, nameof(Kind)) : Kind;
+        try
+        {
+            Apply(name, isTaxable, nameAr);
+        }
+        catch (DomainException)
+        {
+            Kind = previousKind; // a failed update leaves the type unchanged (D69)
+            throw;
+        }
+
         UpdatedAtUtc = utcNow;
     }
 
