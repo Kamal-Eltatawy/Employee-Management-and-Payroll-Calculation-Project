@@ -1,9 +1,8 @@
-import { Component, DestroyRef, LOCALE_ID, computed, inject, input, signal } from '@angular/core';
-import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
+import { Component, LOCALE_ID, computed, inject, input, linkedSignal } from '@angular/core';
+import { rxResource } from '@angular/core/rxjs-interop';
 import { Router, RouterLink } from '@angular/router';
-import { EMPTY, catchError, switchMap, tap } from 'rxjs';
 import { AuthService } from '../../../core/auth/auth.service';
-import { ApiError } from '../../../core/http/api-error';
+import { inlineMessage, resourceApiError } from '../../../core/http/api-error';
 import { MoneyPipe } from '../../../shared/pipes/money.pipe';
 import { IconComponent } from '../../../shared/ui/icon.component';
 import { MonthPickerComponent } from '../../../shared/ui/month-picker.component';
@@ -33,45 +32,49 @@ export class PayslipPage {
   private readonly router = inject(Router);
   private readonly auth = inject(AuthService);
 
-  protected readonly isHr = this.auth.isHr;
+  /** /employees/:id/payslip is the Hr view; /my-payslip is the signed-in employee's own payslip. */
+  protected readonly isOwn = computed(() => !this.id());
   private readonly locale = inject(LOCALE_ID);
-  private readonly employeeId = computed(() => Number(this.id() ?? this.auth.currentUser()?.employeeId ?? 0));
+  /** Null when the account is not linked to an employee record (item 11): nothing is requested. */
+  private readonly employeeId = computed(() => {
+    const id = Number(this.id() ?? this.auth.currentUser()?.employeeId ?? 0);
+    return Number.isInteger(id) && id > 0 ? id : null;
+  });
+  protected readonly noEmployeeRecord = computed(() => this.employeeId() === null);
 
   protected readonly selectedMonth = computed(() => {
     const month = this.month();
     return month && MONTH_PATTERN.test(month) ? month : toIsoMonth(new Date());
   });
-  protected readonly payslip = signal<Payslip | null>(null);
-  protected readonly loading = signal(true);
-  /** 422 (inactive, before hire, no policy) is a business answer, shown as a warning. */
-  protected readonly warning = signal<string | null>(null);
-  protected readonly error = signal<string | null>(null);
 
-  constructor() {
-    toObservable(computed(() => ({ id: this.employeeId(), month: this.selectedMonth() })))
-      .pipe(
-        tap(() => {
-          this.loading.set(true);
-          this.warning.set(null);
-          this.error.set(null);
-        }),
-        switchMap(({ id, month }) =>
-          this.api.get(id, month).pipe(
-            catchError((error: ApiError) => {
-              this.payslip.set(null);
-              (error.status === 422 ? this.warning : this.error).set(error.detail ?? error.title);
-              this.loading.set(false);
-              return EMPTY;
-            }),
-          ),
-        ),
-        takeUntilDestroyed(inject(DestroyRef)),
-      )
-      .subscribe((payslip) => {
-        this.payslip.set(payslip);
-        this.loading.set(false);
-      });
-  }
+  private readonly slip = rxResource({
+    params: () => {
+      const id = this.employeeId();
+      return id === null ? undefined : { id, month: this.selectedMonth() };
+    },
+    stream: ({ params }) => this.api.get(params.id, params.month),
+  });
+
+  private readonly failure = computed(() => resourceApiError(this.slip.error()));
+  /** The shown payslip: kept while another month loads, cleared when a request fails (as before). */
+  protected readonly payslip = linkedSignal<{ value: Payslip | undefined; failed: boolean }, Payslip | null>({
+    source: () => ({
+      value: this.slip.hasValue() ? this.slip.value() : undefined,
+      failed: this.failure() !== null || this.noEmployeeRecord(),
+    }),
+    computation: ({ value, failed }, previous) => value ?? (failed ? null : (previous?.value ?? null)),
+  });
+  protected readonly loading = this.slip.isLoading;
+  /** 422 (inactive, before hire, no policy) is a business answer, shown as a warning. */
+  protected readonly warning = computed(() => {
+    const failure = this.failure();
+    return failure?.status === 422 ? (failure.detail ?? failure.title) : null;
+  });
+  /** Other 4xx inline; network failures and 5xx are already a toast (problemDetailsInterceptor). */
+  protected readonly error = computed(() => {
+    const failure = this.failure();
+    return failure?.status === 422 ? null : inlineMessage(failure);
+  });
 
   /** "2026-11" → "November 2026" / "نوفمبر 2026", Latin digits in every language. */
   protected readonly monthLabel = computed(() => formatMonth(this.selectedMonth(), this.locale));

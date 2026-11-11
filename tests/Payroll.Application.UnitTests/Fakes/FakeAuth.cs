@@ -18,8 +18,10 @@ public sealed class FakeCredentialStore : IUserCredentialStore
 {
     private readonly Dictionary<string, (string Password, UserCredentials User)> _users = new(StringComparer.OrdinalIgnoreCase);
 
-    public void Add(string email, string password, string role, int? employeeId = null) =>
-        _users[email] = (password, new UserCredentials(_users.Count + 1, email, role, employeeId));
+    public void Add(string email, string password, string role, int? employeeId = null) => Add(email, password, [role], employeeId);
+
+    public void Add(string email, string password, IReadOnlyList<string> roles, int? employeeId = null) =>
+        _users[email] = (password, new UserCredentials(_users.Count + 1, email, roles, employeeId));
 
     public Task<UserCredentials?> ValidateAsync(string email, string password, CancellationToken ct) =>
         Task.FromResult(_users.TryGetValue(email, out var entry) && entry.Password == password ? entry.User : null);
@@ -62,6 +64,16 @@ public sealed class FakeRefreshTokenStore : IRefreshTokenStore
         return Task.CompletedTask;
     }
 
+    public Task MarkGraceUsedAsync(Guid tokenId, DateTime utcNow, CancellationToken ct)
+    {
+        foreach (var key in _tokens.Where(pair => pair.Value.Id == tokenId).Select(pair => pair.Key).ToList())
+        {
+            _tokens[key] = _tokens[key] with { GraceUsedAtUtc = _tokens[key].GraceUsedAtUtc ?? utcNow };
+        }
+
+        return Task.CompletedTask;
+    }
+
     public Task RevokeFamilyAsync(Guid familyId, DateTime utcNow, CancellationToken ct)
     {
         foreach (var key in _tokens.Where(pair => pair.Value.FamilyId == familyId && pair.Value.RevokedAtUtc is null)
@@ -77,11 +89,11 @@ public sealed class FakeRefreshTokenStore : IRefreshTokenStore
 /// <summary>Records what was put in the token, so tests can check the claims without parsing a JWT.</summary>
 public sealed class FakeTokenGenerator : ITokenGenerator
 {
-    public (int UserId, string Email, string Role, int? EmployeeId)? LastIssued { get; private set; }
+    public (int UserId, string Email, IReadOnlyList<string> Roles, int? EmployeeId)? LastIssued { get; private set; }
 
-    public AccessToken Generate(int userId, string email, string role, int? employeeId)
+    public AccessToken Generate(int userId, string email, IReadOnlyList<string> roles, int? employeeId)
     {
-        LastIssued = (userId, email, role, employeeId);
+        LastIssued = (userId, email, roles, employeeId);
         return new AccessToken($"token-for-{email}", new DateTime(2026, 3, 15, 10, 0, 0, DateTimeKind.Utc));
     }
 }

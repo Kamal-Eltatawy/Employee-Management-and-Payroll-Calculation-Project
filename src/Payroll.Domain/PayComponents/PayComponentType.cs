@@ -47,7 +47,7 @@ public sealed class PayComponentType
     {
         if (Kind == PayComponentKind.Deduction && isTaxable)
         {
-            throw new DomainException("A deduction cannot be taxable.");
+            throw new DomainException(DomainErrorCodes.DeductionNotTaxable, "A deduction cannot be taxable.");
         }
 
         Name = Guard.RequiredText(name, NameMaxLength, nameof(Name));

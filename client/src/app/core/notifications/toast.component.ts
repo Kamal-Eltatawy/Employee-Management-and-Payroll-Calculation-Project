@@ -4,9 +4,12 @@ import { NotificationService } from './notification.service';
 @Component({
   selector: 'app-toasts',
   template: `
-    <div class="toast-stack" aria-live="polite">
+    <div class="toast-stack">
       @for (toast of notifications.toasts(); track toast.id) {
-        <div class="toast-item" [class.error]="toast.kind === 'error'" role="status">
+        <!-- Errors interrupt the screen reader (assertive); success and info wait their turn (polite). -->
+        <div class="toast-item" [class.error]="toast.kind === 'error'" [class.info]="toast.kind === 'info'"
+             [attr.role]="toast.kind === 'error' ? 'alert' : 'status'"
+             [attr.aria-live]="toast.kind === 'error' ? 'assertive' : 'polite'" aria-atomic="true">
           <span class="flex-grow-1">{{ toast.message }}</span>
           <button type="button" class="close" (click)="notifications.dismiss(toast.id)"
                   aria-label="Dismiss" i18n-aria-label="@@toast.dismiss">×</button>
@@ -20,6 +23,7 @@ import { NotificationService } from './notification.service';
     .toast-item { display: flex; align-items: flex-start; gap: .75rem; padding: .85rem 1rem; border-radius: .6rem;
       background: #ecfdf3; color: #054f31; border: 1px solid #abefc6; box-shadow: var(--app-card-shadow); }
     .toast-item.error { background: #fef3f2; color: #7a271a; border-color: #fecdca; }
+    .toast-item.info { background: #eff8ff; color: #194185; border-color: #b2ddff; }
     .close { border: 0; background: none; font-size: 1.25rem; line-height: 1; opacity: .6; color: inherit; }
     .close:hover { opacity: 1; }
     @media print { .toast-stack { display: none; } }

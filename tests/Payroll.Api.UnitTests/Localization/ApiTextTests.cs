@@ -2,6 +2,7 @@ using System.Globalization;
 using System.Reflection;
 using Payroll.Api.Localization;
 using Payroll.Application.Common;
+using Payroll.Domain.Common;
 using Payroll.Domain.Payroll;
 
 namespace Payroll.Api.UnitTests.Localization;
@@ -13,9 +14,11 @@ public sealed class ApiTextTests
     private static IEnumerable<string> AllCodes()
     {
         var codes = typeof(ErrorCodes).GetFields(BindingFlags.Public | BindingFlags.Static)
+            .Concat(typeof(DomainErrorCodes).GetFields(BindingFlags.Public | BindingFlags.Static))
             .Where(field => field.IsLiteral)
             .Select(field => (string)field.GetValue(null)!)
             .Where(code => code != ErrorCodes.BracketShape)
+            .Distinct()
             .ToList();
         codes.AddRange(Enum.GetNames<TaxMethod>().Select(method => $"{ErrorCodes.BracketShape}.{method}"));
         codes.AddRange(["NotFound.Employee", "NotFound.PayComponentType", "NotFound.PayrollPolicy"]);
@@ -63,5 +66,6 @@ public sealed class ApiTextTests
         Assert.Equal("Full name", InCulture("en", () => Text.FieldName("FullName")));
         Assert.Equal("الاسم الكامل", InCulture("ar", () => Text.FieldName("FullName")));
         Assert.Null(Text.FieldName("NoSuchField"));
+        Assert.Equal("الاسم بالعربية", InCulture("ar", () => Text.FieldName("NameAr")));
     }
 }

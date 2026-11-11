@@ -29,4 +29,7 @@
   <data name="UpperBound" xml:space="preserve"><value>Upper bound</value></data>
   <data name="RatePercent" xml:space="preserve"><value>Rate</value></data>
   <data name="Password" xml:space="preserve"><value>Password</value></data>
+  <data name="NameAr" xml:space="preserve"><value>Arabic name</value></data>
+  <data name="Method" xml:space="preserve"><value>Tax method</value></data>
+  <data name="Id" xml:space="preserve"><value>Id</value></data>
 </root>

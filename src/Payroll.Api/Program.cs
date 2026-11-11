@@ -61,15 +61,23 @@ app.UseRequestLocalization(new RequestLocalizationOptions
 });
 app.UseExceptionHandler();
 app.UseStatusCodePages(); // empty 401/403 from the auth middleware become problem+json too
+
+if (app.Environment.IsDevelopment())
+{
+    await app.Services.MigrateAndSeedDevelopmentDataAsync();
+
+    // Before authorization: Swagger UI is a static page served by middleware (no endpoint), so the fallback
+    // "authenticated users only" policy would otherwise answer 401. The API calls it makes still need a token.
+    app.UseSwaggerUI(options => options.SwaggerEndpoint("/openapi/v1.json", "Payroll API v1"));
+}
+
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseRateLimiter();
 
 if (app.Environment.IsDevelopment())
 {
-    await app.Services.MigrateAndSeedDevelopmentDataAsync();
     app.MapOpenApi().AllowAnonymous();
-    app.UseSwaggerUI(options => options.SwaggerEndpoint("/openapi/v1.json", "Payroll API v1"));
 }
 
 app.MapControllers();

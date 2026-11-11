@@ -1,6 +1,5 @@
-import '@angular/localize/init';
 import { HttpErrorResponse } from '@angular/common/http';
-import { toApiError } from './api-error';
+import { ApiError, inlineMessage, resourceApiError, toApiError } from './api-error';
 
 describe('toApiError', () => {
   it('reads a validation problem with field errors', () => {
@@ -49,5 +48,30 @@ describe('toApiError', () => {
 
     expect(toApiError(apiError)).toBe(apiError);
     expect(toApiError(new Error('boom'))).toEqual({ status: 0, title: 'An unexpected error occurred.', fieldErrors: {} });
+  });
+});
+
+describe('inlineMessage', () => {
+  const error = (status: number): ApiError => ({ status, title: 'Title.', detail: 'Detail.', fieldErrors: {} });
+
+  it('shows 4xx inline', () => {
+    expect(inlineMessage(error(404))).toBe('Detail.');
+    expect(inlineMessage({ ...error(403), detail: undefined })).toBe('Title.');
+  });
+
+  it('leaves network failures and 5xx to the global toast', () => {
+    expect(inlineMessage(error(0))).toBeNull();
+    expect(inlineMessage(error(500))).toBeNull();
+    expect(inlineMessage(error(503))).toBeNull();
+    expect(inlineMessage(null)).toBeNull();
+  });
+});
+
+describe('resourceApiError', () => {
+  it('unwraps the ApiError a resource keeps as the cause', () => {
+    const apiError: ApiError = { status: 404, title: 'Not found.', fieldErrors: {} };
+
+    expect(resourceApiError(new Error('wrapped', { cause: apiError }))).toBe(apiError);
+    expect(resourceApiError(undefined)).toBeNull();
   });
 });

@@ -68,7 +68,7 @@ public sealed class InMemoryPayrollPolicyRepository : IPayrollPolicyRepository
             brackets.Length > 0 || scheme.Method == TaxMethod.Exempt
                 ? brackets
                 : new TaxBracketDefinition[] { new(5000m, 0m), new(15000m, 10m), new(null, 20m) },
-            DateTime.UtcNow);
+            PayrollMonth.From(effectiveFrom), DateTime.UtcNow);
         Add(policy);
         return policy;
     }

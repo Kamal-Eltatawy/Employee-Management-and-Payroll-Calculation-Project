@@ -2,6 +2,30 @@
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
   <file source-language="en" target-language="ar" datatype="plaintext" original="ng2.template">
     <body>
+      <trans-unit id="title.login" datatype="html">
+        <source>Sign in · Payroll</source>
+        <target>تسجيل الدخول · الرواتب</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/app.routes.ts</context>
+          <context context-type="linenumber">10</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="title.home" datatype="html">
+        <source>Home · Payroll</source>
+        <target>الرئيسية · الرواتب</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/app.routes.ts</context>
+          <context context-type="linenumber">16</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="title.myPayslip" datatype="html">
+        <source>My payslip · Payroll</source>
+        <target>الراتب · الرواتب</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/app.routes.ts</context>
+          <context context-type="linenumber">27</context>
+        </context-group>
+      </trans-unit>
       <trans-unit id="login.heading" datatype="html">
         <source>Payroll</source>
         <target>الرواتب</target>
@@ -31,7 +55,7 @@
         <target>استخدم بريد العمل وكلمة المرور.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/core/auth/login.page.ts</context>
-          <context context-type="linenumber">21,23</context>
+          <context context-type="linenumber">21,22</context>
         </context-group>
       </trans-unit>
       <trans-unit id="field.email" datatype="html">
@@ -47,11 +71,11 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/employees/pages/employee-form.page.html</context>
-          <context context-type="linenumber">38,39</context>
+          <context context-type="linenumber">44,45</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/employees/pages/employee-form.page.html</context>
-          <context context-type="linenumber">41</context>
+          <context context-type="linenumber">47</context>
         </context-group>
       </trans-unit>
       <trans-unit id="field.password" datatype="html">
@@ -139,7 +163,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/payslip/pages/payslip.page.html</context>
-          <context context-type="linenumber">50,51</context>
+          <context context-type="linenumber">57,58</context>
         </context-group>
       </trans-unit>
       <trans-unit id="app.tagline" datatype="html">
@@ -187,7 +211,7 @@
         <target>الراتب</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/core/layout/shell.component.html</context>
-          <context context-type="linenumber">32,34</context>
+          <context context-type="linenumber">33,35</context>
         </context-group>
       </trans-unit>
       <trans-unit id="role.hr" datatype="html">
@@ -195,7 +219,7 @@
         <target>الموارد البشرية</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/core/layout/shell.component.html</context>
-          <context context-type="linenumber">48,49</context>
+          <context context-type="linenumber">50,51</context>
         </context-group>
       </trans-unit>
       <trans-unit id="role.employee" datatype="html">
@@ -203,7 +227,7 @@
         <target>موظف</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/core/layout/shell.component.html</context>
-          <context context-type="linenumber">50,51</context>
+          <context context-type="linenumber">52,53</context>
         </context-group>
       </trans-unit>
       <trans-unit id="nav.signOut" datatype="html">
@@ -211,7 +235,7 @@
         <target>تسجيل الخروج</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/core/layout/shell.component.html</context>
-          <context context-type="linenumber">57,58</context>
+          <context context-type="linenumber">63,64</context>
         </context-group>
       </trans-unit>
       <trans-unit id="toast.dismiss" datatype="html">
@@ -219,7 +243,39 @@
         <target>إغلاق</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/core/notifications/toast.component.ts</context>
-          <context context-type="linenumber">12</context>
+          <context context-type="linenumber">15</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="title.employees" datatype="html">
+        <source>Employees · Payroll</source>
+        <target>الموظفون · الرواتب</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/employees/employees.routes.ts</context>
+          <context context-type="linenumber">6</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="title.newEmployee" datatype="html">
+        <source>New employee · Payroll</source>
+        <target>موظف جديد · الرواتب</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/employees/employees.routes.ts</context>
+          <context context-type="linenumber">11</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="title.editEmployee" datatype="html">
+        <source>Edit employee · Payroll</source>
+        <target>تعديل موظف · الرواتب</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/employees/employees.routes.ts</context>
+          <context context-type="linenumber">16</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="title.payslip" datatype="html">
+        <source>Payslip · Payroll</source>
+        <target>الراتب · الرواتب</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/employees/employees.routes.ts</context>
+          <context context-type="linenumber">21</context>
         </context-group>
       </trans-unit>
       <trans-unit id="employees.backToList" datatype="html">
@@ -250,12 +306,20 @@
           <context context-type="linenumber">11,14</context>
         </context-group>
       </trans-unit>
+      <trans-unit id="employeeForm.reloadLatest" datatype="html">
+        <source>Reload latest</source>
+        <target>تحميل أحدث نسخة</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/employees/pages/employee-form.page.html</context>
+          <context context-type="linenumber">22,27</context>
+        </context-group>
+      </trans-unit>
       <trans-unit id="common.loading" datatype="html">
         <source>Loading…</source>
         <target>جارٍ التحميل…</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/employees/pages/employee-form.page.html</context>
-          <context context-type="linenumber">22,24</context>
+          <context context-type="linenumber">28,30</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/employees/pages/employee-list.page.html</context>
@@ -263,11 +327,11 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/home/pages/home.page.html</context>
-          <context context-type="linenumber">23,26</context>
+          <context context-type="linenumber">28,31</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/payslip/pages/payslip.page.html</context>
-          <context context-type="linenumber">35,38</context>
+          <context context-type="linenumber">42,45</context>
         </context-group>
       </trans-unit>
       <trans-unit id="employeeForm.personal" datatype="html">
@@ -275,7 +339,7 @@
         <target>البيانات الشخصية</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/employees/pages/employee-form.page.html</context>
-          <context context-type="linenumber">27,28</context>
+          <context context-type="linenumber">33,34</context>
         </context-group>
       </trans-unit>
       <trans-unit id="employeeForm.personalHint" datatype="html">
@@ -283,7 +347,7 @@
         <target>يجب أن يكون البريد الإلكتروني فريداً، ويظل محجوزاً بعد الحذف.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/employees/pages/employee-form.page.html</context>
-          <context context-type="linenumber">28,30</context>
+          <context context-type="linenumber">34,36</context>
         </context-group>
       </trans-unit>
       <trans-unit id="field.fullName" datatype="html">
@@ -291,11 +355,11 @@
         <target>الاسم الكامل</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/employees/pages/employee-form.page.html</context>
-          <context context-type="linenumber">32,33</context>
+          <context context-type="linenumber">38,39</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/employees/pages/employee-form.page.html</context>
-          <context context-type="linenumber">35</context>
+          <context context-type="linenumber">41</context>
         </context-group>
       </trans-unit>
       <trans-unit id="employeeForm.employment" datatype="html">
@@ -303,7 +367,7 @@
         <target>بيانات التوظيف</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/employees/pages/employee-form.page.html</context>
-          <context context-type="linenumber">48,49</context>
+          <context context-type="linenumber">54,55</context>
         </context-group>
       </trans-unit>
       <trans-unit id="employeeForm.employmentHint" datatype="html">
@@ -311,7 +375,7 @@
         <target>يحدد النظام الضريبي سياسة الرواتب وطريقة حساب الضريبة المطبقة.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/employees/pages/employee-form.page.html</context>
-          <context context-type="linenumber">49,51</context>
+          <context context-type="linenumber">55,57</context>
         </context-group>
       </trans-unit>
       <trans-unit id="field.jobTitle" datatype="html">
@@ -319,11 +383,11 @@
         <target>المسمى الوظيفي</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/employees/pages/employee-form.page.html</context>
-          <context context-type="linenumber">53,54</context>
+          <context context-type="linenumber">59,60</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/employees/pages/employee-form.page.html</context>
-          <context context-type="linenumber">56</context>
+          <context context-type="linenumber">62</context>
         </context-group>
       </trans-unit>
       <trans-unit id="field.department" datatype="html">
@@ -331,11 +395,11 @@
         <target>القسم</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/employees/pages/employee-form.page.html</context>
-          <context context-type="linenumber">59,60</context>
+          <context context-type="linenumber">65,66</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/employees/pages/employee-form.page.html</context>
-          <context context-type="linenumber">67</context>
+          <context context-type="linenumber">73</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/employees/pages/employee-list.page.html</context>
@@ -347,7 +411,15 @@
         <target>اختر القسم…</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/employees/pages/employee-form.page.html</context>
-          <context context-type="linenumber">62,63</context>
+          <context context-type="linenumber">68,69</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="validation.selectDepartment" datatype="html">
+        <source>Please select a department.</source>
+        <target>يرجى اختيار القسم.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/employees/pages/employee-form.page.html</context>
+          <context context-type="linenumber">74</context>
         </context-group>
       </trans-unit>
       <trans-unit id="field.hireDate" datatype="html">
@@ -355,11 +427,11 @@
         <target>تاريخ التعيين</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/employees/pages/employee-form.page.html</context>
-          <context context-type="linenumber">70,71</context>
+          <context context-type="linenumber">77,78</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/employees/pages/employee-form.page.html</context>
-          <context context-type="linenumber">73</context>
+          <context context-type="linenumber">80</context>
         </context-group>
       </trans-unit>
       <trans-unit id="field.status" datatype="html">
@@ -367,7 +439,7 @@
         <target>الحالة</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/employees/pages/employee-form.page.html</context>
-          <context context-type="linenumber">76,77</context>
+          <context context-type="linenumber">83,84</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/employees/pages/employee-list.page.html</context>
@@ -379,7 +451,7 @@
         <target>نشط</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/employees/pages/employee-form.page.html</context>
-          <context context-type="linenumber">78,79</context>
+          <context context-type="linenumber">85,86</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/employees/pages/employee-list.page.html</context>
@@ -395,7 +467,7 @@
         <target>غير نشط</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/employees/pages/employee-form.page.html</context>
-          <context context-type="linenumber">79,81</context>
+          <context context-type="linenumber">86,88</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/employees/pages/employee-list.page.html</context>
@@ -411,19 +483,35 @@
         <target>النظام الضريبي</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/employees/pages/employee-form.page.html</context>
-          <context context-type="linenumber">83,84</context>
+          <context context-type="linenumber">90,91</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/employees/pages/employee-form.page.html</context>
-          <context context-type="linenumber">90</context>
+          <context context-type="linenumber">98</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/home/pages/home.page.html</context>
-          <context context-type="linenumber">140,141</context>
+          <context context-type="linenumber">145,146</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/payslip/pages/payslip.page.html</context>
-          <context context-type="linenumber">70,71</context>
+          <context context-type="linenumber">77,78</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="employeeForm.selectTaxScheme" datatype="html">
+        <source>Select a tax scheme…</source>
+        <target>اختر النظام الضريبي…</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/employees/pages/employee-form.page.html</context>
+          <context context-type="linenumber">93,94</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="validation.selectTaxScheme" datatype="html">
+        <source>Please select a tax scheme.</source>
+        <target>يرجى اختيار النظام الضريبي.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/employees/pages/employee-form.page.html</context>
+          <context context-type="linenumber">99</context>
         </context-group>
       </trans-unit>
       <trans-unit id="employeeForm.pay" datatype="html">
@@ -431,7 +519,7 @@
         <target>الراتب</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/employees/pages/employee-form.page.html</context>
-          <context context-type="linenumber">98</context>
+          <context context-type="linenumber">107</context>
         </context-group>
       </trans-unit>
       <trans-unit id="employeeForm.payHint" datatype="html">
@@ -439,7 +527,7 @@
         <target>تُحسب البدلات بنسبة الأيام في شهر التعيين، وتُخصم الاستقطاعات كاملة.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/employees/pages/employee-form.page.html</context>
-          <context context-type="linenumber">98,100</context>
+          <context context-type="linenumber">107,109</context>
         </context-group>
       </trans-unit>
       <trans-unit id="field.baseSalary" datatype="html">
@@ -447,11 +535,11 @@
         <target>الراتب الأساسي الشهري</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/employees/pages/employee-form.page.html</context>
-          <context context-type="linenumber">102,103</context>
+          <context context-type="linenumber">111,112</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/employees/pages/employee-form.page.html</context>
-          <context context-type="linenumber">105</context>
+          <context context-type="linenumber">114</context>
         </context-group>
       </trans-unit>
       <trans-unit id="common.cancel" datatype="html">
@@ -459,7 +547,7 @@
         <target>إلغاء</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/employees/pages/employee-form.page.html</context>
-          <context context-type="linenumber">114,115</context>
+          <context context-type="linenumber">123,124</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/ui/confirm-dialog.component.ts</context>
@@ -471,7 +559,7 @@
         <target>جارٍ الحفظ…</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/employees/pages/employee-form.page.html</context>
-          <context context-type="linenumber">117,118</context>
+          <context context-type="linenumber">126,127</context>
         </context-group>
       </trans-unit>
       <trans-unit id="common.save" datatype="html">
@@ -479,7 +567,7 @@
         <target>حفظ</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/employees/pages/employee-form.page.html</context>
-          <context context-type="linenumber">119,121</context>
+          <context context-type="linenumber">128,130</context>
         </context-group>
       </trans-unit>
       <trans-unit id="employees.saved" datatype="html">
@@ -487,7 +575,15 @@
         <target>تم حفظ <x id="name" equiv-text="employee.fullName"/>.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/employees/pages/employee-form.page.ts</context>
-          <context context-type="linenumber">97</context>
+          <context context-type="linenumber">102</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="employeeForm.reloaded" datatype="html">
+        <source>The latest saved version was loaded.</source>
+        <target>تم تحميل أحدث نسخة محفوظة.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/employees/pages/employee-form.page.ts</context>
+          <context context-type="linenumber">132</context>
         </context-group>
       </trans-unit>
       <trans-unit id="employees.title" datatype="html">
@@ -511,7 +607,7 @@
         <target>موظف جديد</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/employees/pages/employee-list.page.html</context>
-          <context context-type="linenumber">9,12</context>
+          <context context-type="linenumber">9,11</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/home/pages/home.page.html</context>
@@ -675,7 +771,7 @@
         <target>هل تريد حذف <x id="name" equiv-text="employee.fullName"/>؟ لن يظهر الموظف في القوائم بعد ذلك.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/employees/pages/employee-list.page.ts</context>
-          <context context-type="linenumber">127</context>
+          <context context-type="linenumber">115</context>
         </context-group>
       </trans-unit>
       <trans-unit id="employees.deleted" datatype="html">
@@ -683,7 +779,7 @@
         <target>تم حذف <x id="name" equiv-text="employee.fullName"/>.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/employees/pages/employee-list.page.ts</context>
-          <context context-type="linenumber">135</context>
+          <context context-type="linenumber">123</context>
         </context-group>
       </trans-unit>
       <trans-unit id="payComponents.title" datatype="html">
@@ -691,7 +787,7 @@
         <target>البدلات والاستقطاعات</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/employees/ui/pay-components-editor.component.ts</context>
-          <context context-type="linenumber">16,17</context>
+          <context context-type="linenumber">18,19</context>
         </context-group>
       </trans-unit>
       <trans-unit id="payComponents.add" datatype="html">
@@ -699,7 +795,7 @@
         <target>إضافة بند</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/employees/ui/pay-components-editor.component.ts</context>
-          <context context-type="linenumber">19,21</context>
+          <context context-type="linenumber">21,23</context>
         </context-group>
       </trans-unit>
       <trans-unit id="payComponents.empty" datatype="html">
@@ -707,7 +803,7 @@
         <target>لا توجد بدلات أو استقطاعات.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/employees/ui/pay-components-editor.component.ts</context>
-          <context context-type="linenumber">24,27</context>
+          <context context-type="linenumber">26,29</context>
         </context-group>
       </trans-unit>
       <trans-unit id="field.type" datatype="html">
@@ -715,11 +811,11 @@
         <target>النوع</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/employees/ui/pay-components-editor.component.ts</context>
-          <context context-type="linenumber">30,31</context>
+          <context context-type="linenumber">32,33</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/employees/ui/pay-components-editor.component.ts</context>
-          <context context-type="linenumber">41</context>
+          <context context-type="linenumber">43</context>
         </context-group>
       </trans-unit>
       <trans-unit id="payComponents.selectType" datatype="html">
@@ -727,7 +823,7 @@
         <target>اختر النوع…</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/employees/ui/pay-components-editor.component.ts</context>
-          <context context-type="linenumber">33,34</context>
+          <context context-type="linenumber">35,36</context>
         </context-group>
       </trans-unit>
       <trans-unit id="payComponents.duplicate" datatype="html">
@@ -735,7 +831,15 @@
         <target>هذا النوع موجود بالفعل في القائمة.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/employees/ui/pay-components-editor.component.ts</context>
-          <context context-type="linenumber">39,41</context>
+          <context context-type="linenumber">41,43</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="validation.selectType" datatype="html">
+        <source>Please select a type.</source>
+        <target>يرجى اختيار النوع.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/employees/ui/pay-components-editor.component.ts</context>
+          <context context-type="linenumber">44</context>
         </context-group>
       </trans-unit>
       <trans-unit id="field.amount" datatype="html">
@@ -743,11 +847,11 @@
         <target>المبلغ</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/employees/ui/pay-components-editor.component.ts</context>
-          <context context-type="linenumber">44,45</context>
+          <context context-type="linenumber">47,48</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/employees/ui/pay-components-editor.component.ts</context>
-          <context context-type="linenumber">47</context>
+          <context context-type="linenumber">50</context>
         </context-group>
       </trans-unit>
       <trans-unit id="payComponents.remove" datatype="html">
@@ -755,11 +859,11 @@
         <target>حذف</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/employees/ui/pay-components-editor.component.ts</context>
-          <context context-type="linenumber">50</context>
+          <context context-type="linenumber">53</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/employees/ui/pay-components-editor.component.ts</context>
-          <context context-type="linenumber">50</context>
+          <context context-type="linenumber">53</context>
         </context-group>
       </trans-unit>
       <trans-unit id="payComponents.kindDeduction" datatype="html">
@@ -767,7 +871,7 @@
         <target>استقطاع</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/employees/ui/pay-components-editor.component.ts</context>
-          <context context-type="linenumber">80</context>
+          <context context-type="linenumber">95</context>
         </context-group>
       </trans-unit>
       <trans-unit id="payComponents.kindTaxable" datatype="html">
@@ -775,7 +879,7 @@
         <target>بدل خاضع للضريبة</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/employees/ui/pay-components-editor.component.ts</context>
-          <context context-type="linenumber">84</context>
+          <context context-type="linenumber">99</context>
         </context-group>
       </trans-unit>
       <trans-unit id="payComponents.kindNonTaxable" datatype="html">
@@ -783,7 +887,7 @@
         <target>بدل غير خاضع للضريبة</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/employees/ui/pay-components-editor.component.ts</context>
-          <context context-type="linenumber">85</context>
+          <context context-type="linenumber">100</context>
         </context-group>
       </trans-unit>
       <trans-unit id="home.welcome" datatype="html">
@@ -802,12 +906,20 @@
           <context context-type="linenumber">10,11</context>
         </context-group>
       </trans-unit>
+      <trans-unit id="home.noEmployeeRecord" datatype="html">
+        <source> Your account is not linked to an employee record yet, so there is no payslip to show. Please contact HR. </source>
+        <target> حسابك غير مرتبط بسجل موظف بعد، لذلك لا يوجد راتب لعرضه. يرجى التواصل مع الموارد البشرية. </target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/home/pages/home.page.html</context>
+          <context context-type="linenumber">21,25</context>
+        </context-group>
+      </trans-unit>
       <trans-unit id="home.activeEmployees" datatype="html">
         <source>Active employees</source>
         <target>الموظفون النشطون</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/home/pages/home.page.html</context>
-          <context context-type="linenumber">29,30</context>
+          <context context-type="linenumber">34,35</context>
         </context-group>
       </trans-unit>
       <trans-unit id="home.ofTotal" datatype="html">
@@ -815,7 +927,7 @@
         <target>من <x id="INTERPOLATION" equiv-text="{{ d.totalEmployees }}"/> موظفاً</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/home/pages/home.page.html</context>
-          <context context-type="linenumber">31,32</context>
+          <context context-type="linenumber">36,37</context>
         </context-group>
       </trans-unit>
       <trans-unit id="home.hiredThisMonth" datatype="html">
@@ -823,7 +935,7 @@
         <target>معيّنون هذا الشهر</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/home/pages/home.page.html</context>
-          <context context-type="linenumber">34,35</context>
+          <context context-type="linenumber">39,40</context>
         </context-group>
       </trans-unit>
       <trans-unit id="home.prorated" datatype="html">
@@ -831,7 +943,7 @@
         <target>يُحسب أجرهم بعدد الأيام</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/home/pages/home.page.html</context>
-          <context context-type="linenumber">36,38</context>
+          <context context-type="linenumber">41,43</context>
         </context-group>
       </trans-unit>
       <trans-unit id="home.inactive" datatype="html">
@@ -839,7 +951,7 @@
         <target>غير نشطين</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/home/pages/home.page.html</context>
-          <context context-type="linenumber">39,40</context>
+          <context context-type="linenumber">44,45</context>
         </context-group>
       </trans-unit>
       <trans-unit id="home.notPaid" datatype="html">
@@ -847,7 +959,7 @@
         <target>لا يدخلون في الرواتب</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/home/pages/home.page.html</context>
-          <context context-type="linenumber">41,43</context>
+          <context context-type="linenumber">46,48</context>
         </context-group>
       </trans-unit>
       <trans-unit id="home.netPayroll" datatype="html">
@@ -855,7 +967,7 @@
         <target>صافي رواتب هذا الشهر</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/home/pages/home.page.html</context>
-          <context context-type="linenumber">44,45</context>
+          <context context-type="linenumber">49,50</context>
         </context-group>
       </trans-unit>
       <trans-unit id="home.paidCount" datatype="html">
@@ -863,7 +975,7 @@
         <target><x id="INTERPOLATION" equiv-text="{{ d.payroll.employeesPaid }}"/> كشف راتب</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/home/pages/home.page.html</context>
-          <context context-type="linenumber">46,47</context>
+          <context context-type="linenumber">51,52</context>
         </context-group>
       </trans-unit>
       <trans-unit id="home.negativeAlert" datatype="html">
@@ -871,7 +983,7 @@
         <target><x id="INTERPOLATION" equiv-text="{{ d.payroll.negativeNetCount }}"/> موظف صافي راتبهم بالسالب هذا الشهر. راجع استقطاعاتهم.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/home/pages/home.page.html</context>
-          <context context-type="linenumber">52,55</context>
+          <context context-type="linenumber">57,60</context>
         </context-group>
       </trans-unit>
       <trans-unit id="home.noPolicyAlert" datatype="html">
@@ -879,7 +991,7 @@
         <target><x id="INTERPOLATION" equiv-text="{{ d.payroll.withoutPolicy }}"/> موظف ليس لنظامهم الضريبي سياسة رواتب سارية هذا الشهر.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/home/pages/home.page.html</context>
-          <context context-type="linenumber">57,61</context>
+          <context context-type="linenumber">62,66</context>
         </context-group>
       </trans-unit>
       <trans-unit id="home.payrollTitle" datatype="html">
@@ -887,7 +999,7 @@
         <target>رواتب هذا الشهر</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/home/pages/home.page.html</context>
-          <context context-type="linenumber">63,65</context>
+          <context context-type="linenumber">68,70</context>
         </context-group>
       </trans-unit>
       <trans-unit id="payslip.gross" datatype="html">
@@ -895,19 +1007,19 @@
         <target>إجمالي المستحقات</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/home/pages/home.page.html</context>
-          <context context-type="linenumber">65,66</context>
+          <context context-type="linenumber">70,71</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/home/pages/home.page.html</context>
-          <context context-type="linenumber">121</context>
+          <context context-type="linenumber">126</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/payslip/pages/payslip.page.html</context>
-          <context context-type="linenumber">90,91</context>
+          <context context-type="linenumber">97,98</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/payslip/pages/payslip.page.html</context>
-          <context context-type="linenumber">122</context>
+          <context context-type="linenumber">129</context>
         </context-group>
       </trans-unit>
       <trans-unit id="home.breakdownLabel" datatype="html">
@@ -915,7 +1027,7 @@
         <target>توزيع إجمالي المستحقات</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/home/pages/home.page.html</context>
-          <context context-type="linenumber">69</context>
+          <context context-type="linenumber">74</context>
         </context-group>
       </trans-unit>
       <trans-unit id="home.byDepartment" datatype="html">
@@ -923,7 +1035,7 @@
         <target>الموظفون النشطون حسب القسم</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/home/pages/home.page.html</context>
-          <context context-type="linenumber">87,89</context>
+          <context context-type="linenumber">92,94</context>
         </context-group>
       </trans-unit>
       <trans-unit id="pagination.none" datatype="html">
@@ -931,7 +1043,7 @@
         <target>لا توجد نتائج</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/home/pages/home.page.html</context>
-          <context context-type="linenumber">96,100</context>
+          <context context-type="linenumber">101,105</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/ui/pagination.component.ts</context>
@@ -943,7 +1055,7 @@
         <target>حسب النظام الضريبي</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/home/pages/home.page.html</context>
-          <context context-type="linenumber">100,102</context>
+          <context context-type="linenumber">105,107</context>
         </context-group>
       </trans-unit>
       <trans-unit id="home.yourNet" datatype="html">
@@ -951,7 +1063,7 @@
         <target>صافي راتبك عن <x id="INTERPOLATION" equiv-text="{{ monthLabel }}"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/home/pages/home.page.html</context>
-          <context context-type="linenumber">118,119</context>
+          <context context-type="linenumber">123,124</context>
         </context-group>
       </trans-unit>
       <trans-unit id="home.viewPayslip" datatype="html">
@@ -959,11 +1071,11 @@
         <target>عرض الراتب</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/home/pages/home.page.html</context>
-          <context context-type="linenumber">126,130</context>
+          <context context-type="linenumber">131,135</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/home/pages/home.page.html</context>
-          <context context-type="linenumber">148,150</context>
+          <context context-type="linenumber">153,155</context>
         </context-group>
       </trans-unit>
       <trans-unit id="payslip.incomeTax" datatype="html">
@@ -971,15 +1083,15 @@
         <target>ضريبة الدخل</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/home/pages/home.page.html</context>
-          <context context-type="linenumber">132,133</context>
+          <context context-type="linenumber">137,138</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/home/pages/home.page.ts</context>
-          <context context-type="linenumber">44</context>
+          <context context-type="linenumber">66</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/payslip/pages/payslip.page.html</context>
-          <context context-type="linenumber">131</context>
+          <context context-type="linenumber">138</context>
         </context-group>
       </trans-unit>
       <trans-unit id="payslip.socialInsurance" datatype="html">
@@ -987,15 +1099,15 @@
         <target>التأمينات الاجتماعية</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/home/pages/home.page.html</context>
-          <context context-type="linenumber">136,137</context>
+          <context context-type="linenumber">141,142</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/home/pages/home.page.ts</context>
-          <context context-type="linenumber">47</context>
+          <context context-type="linenumber">69</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/payslip/pages/payslip.page.html</context>
-          <context context-type="linenumber">132</context>
+          <context context-type="linenumber">139</context>
         </context-group>
       </trans-unit>
       <trans-unit id="payslip.net" datatype="html">
@@ -1003,11 +1115,11 @@
         <target>صافي الراتب</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/home/pages/home.page.ts</context>
-          <context context-type="linenumber">43</context>
+          <context context-type="linenumber">65</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/payslip/pages/payslip.page.html</context>
-          <context context-type="linenumber">98,99</context>
+          <context context-type="linenumber">105,106</context>
         </context-group>
       </trans-unit>
       <trans-unit id="home.otherDeductions" datatype="html">
@@ -1015,7 +1127,7 @@
         <target>استقطاعات أخرى</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/home/pages/home.page.ts</context>
-          <context context-type="linenumber">53</context>
+          <context context-type="linenumber">75</context>
         </context-group>
       </trans-unit>
       <trans-unit id="payslip.title" datatype="html">
@@ -1039,7 +1151,15 @@
         <target>طباعة</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/payslip/pages/payslip.page.html</context>
-          <context context-type="linenumber">22,24</context>
+          <context context-type="linenumber">24,26</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="payslip.noEmployeeRecord" datatype="html">
+        <source> Your account is not linked to an employee record, so there is no payslip to show. Please contact HR. </source>
+        <target> حسابك غير مرتبط بسجل موظف، لذلك لا يوجد راتب لعرضه. يرجى التواصل مع الموارد البشرية. </target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/payslip/pages/payslip.page.html</context>
+          <context context-type="linenumber">32,36</context>
         </context-group>
       </trans-unit>
       <trans-unit id="payslip.negativeNet" datatype="html">
@@ -1047,7 +1167,7 @@
         <target>الاستقطاعات هذا الشهر أكبر من المستحقات، فصافي الراتب بالسالب. راجع الاستقطاعات قبل الصرف.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/payslip/pages/payslip.page.html</context>
-          <context context-type="linenumber">41,45</context>
+          <context context-type="linenumber">48,52</context>
         </context-group>
       </trans-unit>
       <trans-unit id="payslip.document" datatype="html">
@@ -1055,7 +1175,7 @@
         <target>كشف الراتب</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/payslip/pages/payslip.page.html</context>
-          <context context-type="linenumber">51,53</context>
+          <context context-type="linenumber">58,60</context>
         </context-group>
       </trans-unit>
       <trans-unit id="payslip.period" datatype="html">
@@ -1063,7 +1183,7 @@
         <target>فترة الراتب</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/payslip/pages/payslip.page.html</context>
-          <context context-type="linenumber">55,56</context>
+          <context context-type="linenumber">62,63</context>
         </context-group>
       </trans-unit>
       <trans-unit id="payslip.employee" datatype="html">
@@ -1071,7 +1191,7 @@
         <target>الموظف</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/payslip/pages/payslip.page.html</context>
-          <context context-type="linenumber">62,63</context>
+          <context context-type="linenumber">69,70</context>
         </context-group>
       </trans-unit>
       <trans-unit id="payslip.employeeNo" datatype="html">
@@ -1079,7 +1199,7 @@
         <target>رقم الموظف</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/payslip/pages/payslip.page.html</context>
-          <context context-type="linenumber">66,67</context>
+          <context context-type="linenumber">73,74</context>
         </context-group>
       </trans-unit>
       <trans-unit id="payslip.policy" datatype="html">
@@ -1087,7 +1207,7 @@
         <target>سياسة الرواتب من</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/payslip/pages/payslip.page.html</context>
-          <context context-type="linenumber">74,75</context>
+          <context context-type="linenumber">81,82</context>
         </context-group>
       </trans-unit>
       <trans-unit id="payslip.daysPaid" datatype="html">
@@ -1095,7 +1215,7 @@
         <target>الأيام المحتسبة</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/payslip/pages/payslip.page.html</context>
-          <context context-type="linenumber">78,80</context>
+          <context context-type="linenumber">85,87</context>
         </context-group>
       </trans-unit>
       <trans-unit id="payslip.daysOf" datatype="html">
@@ -1103,7 +1223,7 @@
         <target><x id="INTERPOLATION" equiv-text="{{ slip.daysPaid }}"/> من <x id="INTERPOLATION_1" equiv-text="{{ slip.daysInMonth }}"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/payslip/pages/payslip.page.html</context>
-          <context context-type="linenumber">80,81</context>
+          <context context-type="linenumber">87,88</context>
         </context-group>
       </trans-unit>
       <trans-unit id="payslip.hireMonth" datatype="html">
@@ -1111,7 +1231,7 @@
         <target>شهر التعيين</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/payslip/pages/payslip.page.html</context>
-          <context context-type="linenumber">82,84</context>
+          <context context-type="linenumber">89,91</context>
         </context-group>
       </trans-unit>
       <trans-unit id="payslip.totalDeductions" datatype="html">
@@ -1119,11 +1239,11 @@
         <target>إجمالي الاستقطاعات</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/payslip/pages/payslip.page.html</context>
-          <context context-type="linenumber">94,95</context>
+          <context context-type="linenumber">101,102</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/payslip/pages/payslip.page.html</context>
-          <context context-type="linenumber">136</context>
+          <context context-type="linenumber">143</context>
         </context-group>
       </trans-unit>
       <trans-unit id="payslip.earnings" datatype="html">
@@ -1131,7 +1251,7 @@
         <target>المستحقات</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/payslip/pages/payslip.page.html</context>
-          <context context-type="linenumber">105,106</context>
+          <context context-type="linenumber">112,113</context>
         </context-group>
       </trans-unit>
       <trans-unit id="payslip.baseSalary" datatype="html">
@@ -1139,7 +1259,7 @@
         <target>الراتب الأساسي</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/payslip/pages/payslip.page.html</context>
-          <context context-type="linenumber">108</context>
+          <context context-type="linenumber">115</context>
         </context-group>
       </trans-unit>
       <trans-unit id="payslip.taxable" datatype="html">
@@ -1147,7 +1267,7 @@
         <target>خاضع للضريبة</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/payslip/pages/payslip.page.html</context>
-          <context context-type="linenumber">114,115</context>
+          <context context-type="linenumber">121,122</context>
         </context-group>
       </trans-unit>
       <trans-unit id="payslip.nonTaxable" datatype="html">
@@ -1155,7 +1275,7 @@
         <target>غير خاضع للضريبة</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/payslip/pages/payslip.page.html</context>
-          <context context-type="linenumber">116,118</context>
+          <context context-type="linenumber">123,125</context>
         </context-group>
       </trans-unit>
       <trans-unit id="payslip.taxableIncome" datatype="html">
@@ -1163,7 +1283,7 @@
         <target>الوعاء الضريبي</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/payslip/pages/payslip.page.html</context>
-          <context context-type="linenumber">123</context>
+          <context context-type="linenumber">130</context>
         </context-group>
       </trans-unit>
       <trans-unit id="payslip.deductions" datatype="html">
@@ -1171,7 +1291,7 @@
         <target>الاستقطاعات</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/payslip/pages/payslip.page.html</context>
-          <context context-type="linenumber">128,129</context>
+          <context context-type="linenumber">135,136</context>
         </context-group>
       </trans-unit>
       <trans-unit id="payslip.roundingNote" datatype="html">
@@ -1179,7 +1299,7 @@
         <target>تُحسب المبالغ بدقة كاملة وتُقرّب إلى رقمين عشريين عند العرض فقط، لذا قد تختلف البنود عن الإجماليات بمقدار 0.01.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/payslip/pages/payslip.page.html</context>
-          <context context-type="linenumber">143,147</context>
+          <context context-type="linenumber">150,154</context>
         </context-group>
       </trans-unit>
       <trans-unit id="taxMethod.progressive" datatype="html">
@@ -1187,7 +1307,7 @@
         <target>شرائح تصاعدية</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/payslip/pages/payslip.page.ts</context>
-          <context context-type="linenumber">87</context>
+          <context context-type="linenumber">90</context>
         </context-group>
       </trans-unit>
       <trans-unit id="taxMethod.flat" datatype="html">
@@ -1195,7 +1315,7 @@
         <target>نسبة ثابتة</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/payslip/pages/payslip.page.ts</context>
-          <context context-type="linenumber">89</context>
+          <context context-type="linenumber">92</context>
         </context-group>
       </trans-unit>
       <trans-unit id="taxMethod.exempt" datatype="html">
@@ -1203,7 +1323,7 @@
         <target>معفى من الضريبة</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/payslip/pages/payslip.page.ts</context>
-          <context context-type="linenumber">91</context>
+          <context context-type="linenumber">94</context>
         </context-group>
       </trans-unit>
       <trans-unit id="confirm.title" datatype="html">
@@ -1235,7 +1355,7 @@
         <target><x id="label" equiv-text="label"/> مطلوب.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/ui/field-errors.component.ts</context>
-          <context context-type="linenumber">25</context>
+          <context context-type="linenumber">41</context>
         </context-group>
       </trans-unit>
       <trans-unit id="validation.maxLength" datatype="html">
@@ -1243,7 +1363,7 @@
         <target><x id="label" equiv-text="label"/> يجب ألا يزيد عن <x id="max" equiv-text="max"/> حرفاً.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/ui/field-errors.component.ts</context>
-          <context context-type="linenumber">28</context>
+          <context context-type="linenumber">44</context>
         </context-group>
       </trans-unit>
       <trans-unit id="validation.email" datatype="html">
@@ -1251,7 +1371,15 @@
         <target>أدخل بريداً إلكترونياً صحيحاً.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/ui/field-errors.component.ts</context>
-          <context context-type="linenumber">31</context>
+          <context context-type="linenumber">47</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="validation.select" datatype="html">
+        <source>Please select <x id="label" equiv-text="label"/>.</source>
+        <target>يرجى اختيار <x id="label" equiv-text="label"/>.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/shared/ui/field-errors.component.ts</context>
+          <context context-type="linenumber">49</context>
         </context-group>
       </trans-unit>
       <trans-unit id="validation.positive" datatype="html">
@@ -1259,7 +1387,7 @@
         <target><x id="label" equiv-text="label"/> يجب أن يكون أكبر من صفر.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/ui/field-errors.component.ts</context>
-          <context context-type="linenumber">33</context>
+          <context context-type="linenumber">51</context>
         </context-group>
       </trans-unit>
       <trans-unit id="validation.notInFuture" datatype="html">
@@ -1267,7 +1395,7 @@
         <target><x id="label" equiv-text="label"/> لا يمكن أن يكون في المستقبل.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/ui/field-errors.component.ts</context>
-          <context context-type="linenumber">35</context>
+          <context context-type="linenumber">53</context>
         </context-group>
       </trans-unit>
       <trans-unit id="validation.twoDecimals" datatype="html">
@@ -1275,7 +1403,7 @@
         <target><x id="label" equiv-text="label"/> يقبل رقمين عشريين على الأكثر.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/ui/field-errors.component.ts</context>
-          <context context-type="linenumber">37</context>
+          <context context-type="linenumber">55</context>
         </context-group>
       </trans-unit>
       <trans-unit id="validation.invalid" datatype="html">
@@ -1283,7 +1411,7 @@
         <target><x id="label" equiv-text="label"/> غير صالح.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/ui/field-errors.component.ts</context>
-          <context context-type="linenumber">41</context>
+          <context context-type="linenumber">59</context>
         </context-group>
       </trans-unit>
       <trans-unit id="payslip.month" datatype="html">

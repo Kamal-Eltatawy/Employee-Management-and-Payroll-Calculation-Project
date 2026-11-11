@@ -1,13 +1,13 @@
 <header class="page-header no-print">
   <div>
-    @if (isHr()) {
+    @if (!isOwn()) {
       <a class="back-link" routerLink="/employees">
         <app-icon name="back" [size]="16" [flip]="true" />
         <span i18n="@@employees.backToList">Employees</span>
       </a>
     }
     <h1>
-      @if (isHr()) {
+      @if (!isOwn()) {
         <ng-container i18n="@@payslip.title">Payslip</ng-container>
       } @else {
         <ng-container i18n="@@payslip.myTitle">My payslip</ng-container>
@@ -15,7 +15,9 @@
     </h1>
   </div>
   <div class="actions">
-    <app-month-picker [value]="selectedMonth()" (valueChange)="changeMonth($event)" />
+    @if (!noEmployeeRecord()) {
+      <app-month-picker [value]="selectedMonth()" (valueChange)="changeMonth($event)" />
+    }
     @if (payslip()) {
       <button type="button" class="btn btn-outline-secondary d-inline-flex align-items-center gap-2" (click)="print()">
         <app-icon name="print" />
@@ -25,6 +27,11 @@
   </div>
 </header>
 
+@if (noEmployeeRecord()) {
+  <div class="alert alert-info" role="status" i18n="@@payslip.noEmployeeRecord">
+    Your account is not linked to an employee record, so there is no payslip to show. Please contact HR.
+  </div>
+}
 @if (warning()) {
   <div class="alert alert-warning" role="alert">{{ warning() }}</div>
 }

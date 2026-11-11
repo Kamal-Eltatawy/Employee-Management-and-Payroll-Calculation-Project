@@ -16,10 +16,15 @@
   }
 </header>
 
+@if (noEmployeeRecord()) {
+  <div class="alert alert-info" role="status" i18n="@@home.noEmployeeRecord">
+    Your account is not linked to an employee record yet, so there is no payslip to show. Please contact HR.
+  </div>
+}
 @if (message()) {
   <div class="alert alert-warning" role="alert">{{ message() }}</div>
 }
-@if (loading() && !message()) {
+@if (loading()) {
   <p class="text-body-secondary" i18n="@@common.loading">Loading…</p>
 }
 
@@ -144,6 +149,6 @@
   </section>
 }
 
-@if (!isHr() && message()) {
+@if (!isHr() && failed()) {
   <a class="btn btn-primary" routerLink="/my-payslip" i18n="@@home.viewPayslip">View my payslip</a>
 }

@@ -11,11 +11,12 @@ public sealed record LoginRequest(string Email, string Password);
 /// The JSON body. The refresh token is not here: it travels only in an HttpOnly cookie (D55).
 /// It carries the user's email so a client can restore its session from the cookie alone (D61).
 /// </summary>
-public sealed record LoginResponse(string AccessToken, DateTime ExpiresAtUtc, string Role, int? EmployeeId, string Email);
+public sealed record LoginResponse(string AccessToken, DateTime ExpiresAtUtc, IReadOnlyList<string> Roles, int? EmployeeId, string Email);
 
 /// <summary>
 /// Several app instances (tabs, the English and Arabic builds) share one refresh cookie and may refresh at the same moment.
-/// A token rotated within this window is accepted once more instead of being treated as theft (D61).
+/// A token rotated within this window is accepted exactly once more instead of being treated as theft (D61);
+/// a second reuse, or any reuse after the window, ends the session.
 /// </summary>
 public sealed class RefreshTokenOptions
 {
@@ -80,9 +81,10 @@ public sealed class AuthService(
             throw new UnauthorizedException();
         }
 
-        if (stored.RotatedAtUtc is { } rotatedAt && !WithinReuseGrace(rotatedAt, utcNow))
+        if (stored.RotatedAtUtc is { } rotatedAt && (stored.GraceUsedAtUtc is not null || !WithinReuseGrace(rotatedAt, utcNow)))
         {
-            // A rotated token presented again after the grace window: someone else may hold the family. End the session.
+            // A rotated token presented again after the grace window, or a second time inside it:
+            // someone else may hold the family. End the session.
             await EndSessionAsync(stored.FamilyId, utcNow, ct);
             throw new UnauthorizedException();
         }
@@ -97,6 +99,10 @@ public sealed class AuthService(
         if (stored.RotatedAtUtc is null)
         {
             await refreshTokens.RotateAsync(stored.Id, utcNow, ct);
+        }
+        else
+        {
+            await refreshTokens.MarkGraceUsedAsync(stored.Id, utcNow, ct);
         }
 
         return await IssueAsync(user, stored.FamilyId, ct);
@@ -126,8 +132,8 @@ public sealed class AuthService(
         var refresh = refreshTokens.Issue(user.UserId, familyId, clock.UtcNow());
         await unitOfWork.SaveChangesAsync(ct);
 
-        var access = tokens.Generate(user.UserId, user.Email, user.Role, user.EmployeeId);
-        return new AuthResult(new LoginResponse(access.Value, access.ExpiresAtUtc, user.Role, user.EmployeeId, user.Email), refresh);
+        var access = tokens.Generate(user.UserId, user.Email, user.Roles, user.EmployeeId);
+        return new AuthResult(new LoginResponse(access.Value, access.ExpiresAtUtc, user.Roles, user.EmployeeId, user.Email), refresh);
     }
 
     private async Task EnsureMayHaveSessionAsync(UserCredentials user, CancellationToken ct)
@@ -138,15 +144,18 @@ public sealed class AuthService(
         }
     }
 
-    /// <summary>Hr always; an Employee only while the linked employee exists and is Active (D25).</summary>
+    /// <summary>
+    /// Hr always (D67: an Hr role wins over any other role); an Employee-only user while the linked employee exists
+    /// and is Active (D25).
+    /// </summary>
     private async Task<bool> MayHaveSessionAsync(UserCredentials user, CancellationToken ct)
     {
-        if (user.Role == Roles.Hr)
+        if (user.Roles.Contains(Roles.Hr))
         {
             return true;
         }
 
-        if (user.Role != Roles.Employee || user.EmployeeId is not { } employeeId)
+        if (!user.Roles.Contains(Roles.Employee) || user.EmployeeId is not { } employeeId)
         {
             return false;
         }

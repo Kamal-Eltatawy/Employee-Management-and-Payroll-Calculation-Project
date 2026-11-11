@@ -132,6 +132,24 @@ public sealed class ApiExceptionHandlerTests
     }
 
     [Fact]
+    public async Task Domain_error_with_a_code_is_translated_with_its_field_name()
+    {
+        var previous = System.Globalization.CultureInfo.CurrentUICulture;
+        System.Globalization.CultureInfo.CurrentUICulture = new System.Globalization.CultureInfo("ar");
+        try
+        {
+            var (status, body) = await HandleAsync(new DomainException(DomainErrorCodes.Required, "FullName is required.", "FullName"));
+
+            Assert.Equal(StatusCodes.Status422UnprocessableEntity, status);
+            Assert.Equal("الاسم الكامل مطلوب.", body.GetProperty("detail").GetString());
+        }
+        finally
+        {
+            System.Globalization.CultureInfo.CurrentUICulture = previous;
+        }
+    }
+
+    [Fact]
     public async Task Unexpected_exception_returns_500_without_leaking_internals()
     {
         var (status, body) = await HandleAsync(new InvalidOperationException("connection string is secret-123"));

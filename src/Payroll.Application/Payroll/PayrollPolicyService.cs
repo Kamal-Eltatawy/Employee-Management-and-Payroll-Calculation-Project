@@ -52,7 +52,7 @@ public sealed class PayrollPolicyService(
         var scheme = await ValidateAsync(request, excludeId: null, ct);
 
         var policy = new PayrollPolicy(scheme, request.EffectiveFrom, request.InsuranceRatePercent, request.InsuranceCap,
-            ToDefinitions(request), clock.UtcNow());
+            ToDefinitions(request), clock.CurrentMonth(), clock.UtcNow());
         policies.Add(policy);
         await unitOfWork.SaveChangesAsync(ct);
 

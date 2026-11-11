@@ -1,6 +1,8 @@
-import { Component, inject, input } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, input } from '@angular/core';
+import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { FormArray, NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { maxTwoDecimals } from '../../../shared/forms/validators';
+import { switchMap } from 'rxjs';
+import { maxTwoDecimals, requiredSelection } from '../../../shared/forms/validators';
 import { FieldErrorsComponent } from '../../../shared/ui/field-errors.component';
 import { IconComponent } from '../../../shared/ui/icon.component';
 import { PayComponentType } from '../data/employee.models';
@@ -38,7 +40,8 @@ import { PayComponentForm } from './pay-component-form';
             @if (isDuplicate(i)) {
               <div class="invalid-feedback d-block" i18n="@@payComponents.duplicate">This type is already in the list.</div>
             }
-            <app-field-errors [control]="row.controls.payComponentTypeId" label="Type" i18n-label="@@field.type" />
+            <app-field-errors [control]="row.controls.payComponentTypeId" label="Type" i18n-label="@@field.type"
+                              selectMessage="Please select a type." i18n-selectMessage="@@validation.selectType" />
           </div>
           <div class="amount-field">
             <label class="visually-hidden" [for]="'amount' + i" i18n="@@field.amount">Amount</label>
@@ -68,9 +71,21 @@ export class PayComponentsEditorComponent {
 
   private readonly fb = inject(NonNullableFormBuilder);
 
+  constructor() {
+    // OnPush (the Angular 22 default) and form state is not a signal: the parent's submit marks the rows as touched
+    // without an event in this component, so refresh on every form event (touched, status, value).
+    const changeDetector = inject(ChangeDetectorRef);
+    toObservable(this.array)
+      .pipe(
+        switchMap((array) => array.events),
+        takeUntilDestroyed(),
+      )
+      .subscribe(() => changeDetector.markForCheck());
+  }
+
   static createRow(fb: NonNullableFormBuilder, typeId = 0, amount = 0): PayComponentForm {
     return fb.group({
-      payComponentTypeId: fb.control(typeId, [Validators.min(1)]),
+      payComponentTypeId: fb.control(typeId, [requiredSelection()]),
       amount: fb.control(amount, [Validators.required, Validators.min(0.01), maxTwoDecimals()]),
     });
   }

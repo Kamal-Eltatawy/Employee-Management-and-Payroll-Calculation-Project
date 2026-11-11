@@ -13,6 +13,15 @@ export function notInFuture(today: () => Date = () => new Date()): ValidatorFn {
   };
 }
 
+/** A select whose placeholder option has the value 0 (or empty): something must be chosen. */
+export function requiredSelection(): ValidatorFn {
+  return (control: AbstractControl): ValidationErrors | null => {
+    const value: unknown = control.value;
+    const chosen = typeof value === 'number' ? value > 0 : value !== null && value !== undefined && value !== '';
+    return chosen ? null : { requiredSelection: true };
+  };
+}
+
 /** At most two decimal places (the server's PrecisionScale(18, 2)). */
 export function maxTwoDecimals(): ValidatorFn {
   return (control: AbstractControl): ValidationErrors | null => {

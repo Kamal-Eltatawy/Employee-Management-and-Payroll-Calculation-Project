@@ -9,7 +9,7 @@ public sealed class Department
 
     public Department(int id, string name, string? nameAr = null)
     {
-        Id = id;
+        Id = Guard.PositiveId(id, nameof(Id));
         Name = Guard.RequiredText(name, NameMaxLength, nameof(Name));
         NameAr = Guard.OptionalText(nameAr, NameMaxLength, nameof(NameAr));
     }

@@ -46,10 +46,40 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options)
         catch (DbUpdateException exception)
             when (exception.InnerException is SqlException { Number: UniqueIndexViolation or UniqueConstraintViolation } sql)
         {
-            throw sql.Message.Contains(EmployeeConfiguration.EmailIndexName, StringComparison.OrdinalIgnoreCase)
-                ? ConflictException.Coded(ErrorCodes.EmailInUse, ConflictMessages.EmailInUse, "email")
-                : ConflictException.Coded(ErrorCodes.UniqueConflict, "The record conflicts with an existing record.");
+            throw await ToUniqueConflictAsync(sql.Message, exception, ct);
         }
+    }
+
+    /// <summary>
+    /// A race between two requests can pass the service's "already exists" check and hit the unique index instead.
+    /// The user still gets the same coded message on the same field as from the service check (D42, D69).
+    /// </summary>
+    private async Task<ConflictException> ToUniqueConflictAsync(string sqlMessage, DbUpdateException exception, CancellationToken ct)
+    {
+        bool Violates(string indexName) => sqlMessage.Contains(indexName, StringComparison.OrdinalIgnoreCase);
+        var entity = exception.Entries.Select(entry => entry.Entity).FirstOrDefault();
+
+        if (Violates(EmployeeConfiguration.EmailIndexName))
+        {
+            return ConflictException.Coded(ErrorCodes.EmailInUse, ConflictMessages.EmailInUse, "email");
+        }
+
+        if (Violates(PayComponentTypeConfiguration.NameIndexName) && entity is PayComponentType type)
+        {
+            return ConflictException.Coded(ErrorCodes.PayComponentTypeNameTaken,
+                $"A pay component type named '{type.Name}' already exists.", "name", type.Name);
+        }
+
+        if (Violates(PayrollPolicyConfiguration.SchemeDateIndexName) && entity is PayrollPolicy policy)
+        {
+            var scheme = await TaxSchemes.AsNoTracking().Where(s => s.Id == policy.TaxSchemeId).Select(s => s.Name).FirstOrDefaultAsync(ct)
+                ?? policy.TaxSchemeId.ToString(System.Globalization.CultureInfo.InvariantCulture);
+            var date = policy.EffectiveFrom.ToString("yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture);
+            return ConflictException.Coded(ErrorCodes.PolicyDateTaken,
+                $"The {scheme} scheme already has a policy effective from {date}.", "effectiveFrom", scheme, date);
+        }
+
+        return ConflictException.Coded(ErrorCodes.UniqueConflict, "The record conflicts with an existing record.");
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

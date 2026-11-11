@@ -23,7 +23,7 @@ public sealed class TaxScheme
     public TaxScheme(int id, string name, TaxMethod method, string? nameAr = null)
     {
         NameAr = Guard.OptionalText(nameAr, NameMaxLength, nameof(NameAr));
-        Id = id;
+        Id = Guard.PositiveId(id, nameof(Id));
         Name = Guard.RequiredText(name, NameMaxLength, nameof(Name));
         Method = Guard.Defined(method, nameof(Method));
     }
@@ -50,7 +50,7 @@ public sealed class TaxScheme
     {
         if (DescribeBracketShapeProblem(brackets.Count) is { } problem)
         {
-            throw new DomainException(problem);
+            throw new DomainException($"{DomainErrorCodes.BracketShape}.{Method}", problem);
         }
     }
 }

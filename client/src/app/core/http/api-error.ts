@@ -50,6 +50,21 @@ export function toApiError(error: unknown): ApiError {
   return { status: 0, title: $localize`:@@error.unexpected:An unexpected error occurred.`, fieldErrors: {} };
 }
 
+/** Network failures and server errors: problemDetailsInterceptor already shows them as a toast. */
+export function isReportedGlobally(error: ApiError): boolean {
+  return error.status === 0 || error.status >= 500;
+}
+
+/** The message a page shows inline, or null when the toast already told the user (no double message). */
+export function inlineMessage(error: ApiError | null | undefined): string | null {
+  return error && !isReportedGlobally(error) ? (error.detail ?? error.title) : null;
+}
+
+/** A resource wraps a non-Error failure (our ApiError) in an Error whose cause is the original. */
+export function resourceApiError(error: Error | undefined): ApiError | null {
+  return error ? toApiError(error.cause ?? error) : null;
+}
+
 function isFieldErrors(value: unknown): value is Record<string, string[]> {
   return (
     typeof value === 'object' &&

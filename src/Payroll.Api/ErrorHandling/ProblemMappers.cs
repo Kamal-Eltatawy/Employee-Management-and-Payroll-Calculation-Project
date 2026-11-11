@@ -95,6 +95,13 @@ public sealed class ForbiddenProblemMapper(IApiText text) : ProblemMapper<Forbid
 
 public sealed class DomainProblemMapper(IApiText text) : ProblemMapper<DomainException>(text)
 {
-    protected override ProblemDetails Map(DomainException exception) =>
-        Problem(StatusCodes.Status422UnprocessableEntity, "Title.BusinessRule", "Business rule violated.", Detail(exception));
+    /// <summary>Field arguments (e.g. "FullName") are shown with their translated display name (D69).</summary>
+    protected override ProblemDetails Map(DomainException exception)
+    {
+        var arguments = exception.Arguments
+            .Select(argument => argument is string field && Text.FieldName(field) is { } name ? name : argument)
+            .ToArray();
+        var detail = Text.Error(exception.Code, arguments, exception.Message);
+        return Problem(StatusCodes.Status422UnprocessableEntity, "Title.BusinessRule", "Business rule violated.", detail);
+    }
 }

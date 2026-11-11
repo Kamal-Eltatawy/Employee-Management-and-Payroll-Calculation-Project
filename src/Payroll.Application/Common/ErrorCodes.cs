@@ -23,25 +23,25 @@ public static class ErrorCodes
     public const string DepartmentRequired = "Validation.DepartmentRequired";
     public const string TaxSchemeRequired = "Validation.TaxSchemeRequired";
     public const string PayComponentTypeRequired = "Validation.PayComponentTypeRequired";
-    public const string DuplicatePayComponentType = "Validation.DuplicatePayComponentType";
-    public const string HireDateInFuture = "Validation.HireDateInFuture";
+    public const string DuplicatePayComponentType = DomainErrorCodes.DuplicatePayComponentType;
+    public const string HireDateInFuture = DomainErrorCodes.HireDateInFuture;
     public const string RowVersionInvalid = "Validation.RowVersionInvalid";
     public const string SortByInvalid = "Validation.SortByInvalid";
     public const string SortDirInvalid = "Validation.SortDirInvalid";
     public const string MonthFormat = "Validation.MonthFormat";
 
-    public const string DeductionNotTaxable = "PayComponentType.DeductionNotTaxable";
+    public const string DeductionNotTaxable = DomainErrorCodes.DeductionNotTaxable;
     public const string PayComponentTypeNameTaken = "PayComponentType.NameTaken";
     public const string PayComponentTypeInUse = "PayComponentType.InUse";
 
     public const string NoPolicyForMonth = "Policy.NoneForMonth";
-    public const string PolicyFirstDay = "Policy.FirstDayOfMonth";
-    public const string PolicyClosedMonth = "Policy.ClosedMonth";
+    public const string PolicyFirstDay = DomainErrorCodes.PolicyFirstDay;
+    public const string PolicyClosedMonth = DomainErrorCodes.PolicyClosedMonth;
     public const string PolicyCoversClosedMonths = DomainErrorCodes.PolicyCoversClosedMonths;
     public const string PolicyDateTaken = "Policy.DateTaken";
-    public const string PolicyCannotMoveScheme = "Policy.CannotMoveScheme";
-    public const string BracketShape = "Policy.BracketShape";
-    public const string BracketLastOpen = "Policy.BracketLastOpen";
-    public const string BracketOnlyLastOpen = "Policy.BracketOnlyLastOpen";
-    public const string BracketAscending = "Policy.BracketAscending";
+    public const string PolicyCannotMoveScheme = DomainErrorCodes.PolicyCannotMoveScheme;
+    public const string BracketShape = DomainErrorCodes.BracketShape;
+    public const string BracketLastOpen = DomainErrorCodes.BracketLastOpen;
+    public const string BracketOnlyLastOpen = DomainErrorCodes.BracketOnlyLastOpen;
+    public const string BracketAscending = DomainErrorCodes.BracketAscending;
 }

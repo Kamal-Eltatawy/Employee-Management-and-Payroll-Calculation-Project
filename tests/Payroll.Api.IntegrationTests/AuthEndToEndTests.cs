@@ -17,6 +17,16 @@ public sealed class AuthEndToEndTests(ApiFixture api)
         Assert.Equal("Healthy", await response.Content.ReadAsStringAsync(Ct));
     }
 
+    [Theory]
+    [InlineData("/swagger/index.html")]
+    [InlineData("/openapi/v1.json")]
+    public async Task Swagger_ui_and_the_openapi_document_are_anonymous_in_development(string path)
+    {
+        var response = await api.CreateClient().GetAsync(path, Ct);
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+    }
+
     [Fact]
     public async Task Api_without_a_token_returns_401_problem_json()
     {
@@ -33,7 +43,8 @@ public sealed class AuthEndToEndTests(ApiFixture api)
 
         var response = await client.GetAsync("/api/employees", Ct);
 
-        Assert.Equal(("Hr", HttpStatusCode.OK), (login.Role, response.StatusCode));
+        Assert.Equal(new[] { "Hr" }, login.Roles);
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
     [Fact]

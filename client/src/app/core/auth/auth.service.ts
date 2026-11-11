@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable, catchError, finalize, of, shareReplay, tap } from 'rxjs';
-import { CurrentUser, LoginResponse, homeUrlFor, isExpired } from './auth.models';
+import { CurrentUser, LoginResponse, canSeeOwnPayslip, hasRole, homeUrlFor, isExpired, toRoles } from './auth.models';
 
 /**
  * The only shared client state (D41). The server is the single source of the session (D61):
@@ -18,7 +18,9 @@ export class AuthService {
   private refreshInFlight: Observable<LoginResponse> | null = null;
 
   readonly currentUser = this.user.asReadonly();
-  readonly isHr = computed(() => this.user()?.role === 'Hr');
+  /** Hr wins for the home page and the navigation (D67). */
+  readonly isHr = computed(() => hasRole(this.user(), 'Hr'));
+  readonly canSeeOwnPayslip = computed(() => canSeeOwnPayslip(this.user()));
 
   /** App initializer: restore the session from the refresh cookie, if there is one. Never fails. */
   restoreSession(): Observable<unknown> {
@@ -52,7 +54,9 @@ export class AuthService {
   }
 
   startSession(response: LoginResponse): void {
-    this.user.set(response);
+    // Defensive: the roles field may arrive as one string (older API) or as an array (D67).
+    const raw = response as unknown as { roles?: unknown; role?: unknown };
+    this.user.set({ ...response, roles: toRoles(raw.roles ?? raw.role) });
   }
 
   /** The bearer token, or null when signed out or expired. */

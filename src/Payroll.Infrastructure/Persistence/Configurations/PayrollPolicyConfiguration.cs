@@ -6,13 +6,15 @@ namespace Payroll.Infrastructure.Persistence;
 
 internal sealed class PayrollPolicyConfiguration : IEntityTypeConfiguration<PayrollPolicy>
 {
+    public const string SchemeDateIndexName = "IX_PayrollPolicies_TaxSchemeId_EffectiveFrom";
+
     public void Configure(EntityTypeBuilder<PayrollPolicy> builder)
     {
         builder.ToTable("PayrollPolicies");
         builder.HasKey(p => p.Id);
         builder.Property(p => p.InsuranceRatePercent).HasPrecision(5, 2);
         builder.Property(p => p.InsuranceCap).HasPrecision(18, 2);
-        builder.HasIndex(p => new { p.TaxSchemeId, p.EffectiveFrom }).IsUnique();
+        builder.HasIndex(p => new { p.TaxSchemeId, p.EffectiveFrom }).IsUnique().HasDatabaseName(SchemeDateIndexName);
         builder.HasOne<TaxScheme>()
             .WithMany()
             .HasForeignKey(p => p.TaxSchemeId)

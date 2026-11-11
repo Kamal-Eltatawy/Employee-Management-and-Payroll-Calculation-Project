@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
 import { ApiError } from '../../../core/http/api-error';
 import { NotificationService } from '../../../core/notifications/notification.service';
 import { applyServerErrors } from '../../../shared/forms/apply-server-errors';
-import { maxTwoDecimals, noDuplicateType, notInFuture } from '../../../shared/forms/validators';
+import { maxTwoDecimals, noDuplicateType, notInFuture, requiredSelection } from '../../../shared/forms/validators';
 import { FieldErrorsComponent } from '../../../shared/ui/field-errors.component';
 import { IconComponent } from '../../../shared/ui/icon.component';
 import { EmployeesApiService } from '../data/employees-api.service';
@@ -39,14 +39,18 @@ export class EmployeeFormPage implements OnInit {
   protected readonly loading = signal(false);
   protected readonly saving = signal(false);
   protected readonly formError = signal<string | null>(null);
+  /** Someone else saved this employee first (409 without field errors): offer to load their version. */
+  protected readonly staleVersion = signal(false);
+  protected readonly reloading = signal(false);
   private rowVersion = '';
 
   protected readonly form = this.fb.group({
     fullName: ['', [Validators.required, Validators.maxLength(100)]],
     email: ['', [Validators.required, Validators.email, Validators.maxLength(254)]],
     jobTitle: ['', [Validators.required, Validators.maxLength(100)]],
-    departmentId: [0, [Validators.min(1)]],
-    taxSchemeId: [1, [Validators.min(1)]],
+    departmentId: [0, [requiredSelection()]],
+    // No default scheme: HR chooses one, like the department (D68).
+    taxSchemeId: [0, [requiredSelection()]],
     hireDate: ['', [Validators.required, notInFuture()]],
     baseMonthlySalary: [0, [Validators.required, Validators.min(0.01), maxTwoDecimals()]],
     status: ['Active' as EmployeeStatus, [Validators.required]],
@@ -78,6 +82,7 @@ export class EmployeeFormPage implements OnInit {
 
   protected save(): void {
     this.formError.set(null);
+    this.staleVersion.set(false);
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       return;
@@ -102,7 +107,33 @@ export class EmployeeFormPage implements OnInit {
         const placedOnFields = (error.status === 400 || error.status === 409) && applyServerErrors(this.form, error);
         if (!placedOnFields) {
           this.formError.set(error.detail ?? error.title);
+          this.staleVersion.set(error.status === 409 && this.isEdit);
         }
+      },
+    });
+  }
+
+  /** Refetches the employee and refills the form, including the new rowVersion; the user's edits are replaced. */
+  protected reloadLatest(): void {
+    const id = Number(this.id());
+    if (!id) {
+      return;
+    }
+
+    this.reloading.set(true);
+    this.api.get(id).subscribe({
+      next: (employee) => {
+        this.fill(employee);
+        this.form.markAsPristine();
+        this.form.markAsUntouched();
+        this.formError.set(null);
+        this.staleVersion.set(false);
+        this.reloading.set(false);
+        this.notifications.info($localize`:@@employeeForm.reloaded:The latest saved version was loaded.`);
+      },
+      error: (error: ApiError) => {
+        this.reloading.set(false);
+        this.formError.set(error.detail ?? error.title);
       },
     });
   }

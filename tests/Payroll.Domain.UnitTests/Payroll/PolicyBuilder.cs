@@ -12,13 +12,16 @@ internal static class PolicyBuilder
     public static readonly TaxScheme Flat = new(2, "Flat Rate", TaxMethod.Flat);
     public static readonly TaxScheme Exempt = new(3, "Tax Exempt", TaxMethod.Exempt);
 
+    /// <summary>The month historical test policies were "entered" in, so the closed-month rule (D54) does not apply.</summary>
+    public static readonly PayrollMonth Entered = new(2025, 1);
+
     /// <summary>Spec §11.5 policy v1: 0% to 5,000; 10% to 15,000; 20% above. Insurance 11% capped at 1,500.</summary>
     public static PayrollPolicy V1(decimal? cap = 1500m, decimal insuranceRate = 11m) =>
         new(Standard, new DateOnly(2025, 1, 1), insuranceRate, cap,
-            [new(5000m, 0m), new(15000m, 10m), new(null, 20m)], UtcNow);
+            [new(5000m, 0m), new(15000m, 10m), new(null, 20m)], Entered, UtcNow);
 
     public static IReadOnlyList<TaxBracket> Brackets(params TaxBracketDefinition[] definitions) =>
-        new PayrollPolicy(Standard, new DateOnly(2025, 1, 1), 0m, null, definitions, UtcNow).TaxBrackets;
+        new PayrollPolicy(Standard, new DateOnly(2025, 1, 1), 0m, null, definitions, Entered, UtcNow).TaxBrackets;
 
     /// <summary>Sets what EF Core would load: the tax scheme and the pay component type navigations.</summary>
     public static Employee WithTypes(Employee employee, params PayComponentType[] types)

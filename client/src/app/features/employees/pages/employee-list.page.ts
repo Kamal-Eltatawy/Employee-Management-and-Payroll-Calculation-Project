@@ -1,8 +1,8 @@
-import { Component, DestroyRef, inject, signal, viewChild } from '@angular/core';
-import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
+import { Component, computed, inject, linkedSignal, viewChild } from '@angular/core';
+import { rxResource, toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, ParamMap, Router, RouterLink } from '@angular/router';
-import { BehaviorSubject, EMPTY, catchError, combineLatest, map, switchMap, tap } from 'rxjs';
-import { ApiError } from '../../../core/http/api-error';
+import { map } from 'rxjs';
+import { ApiError, inlineMessage, resourceApiError } from '../../../core/http/api-error';
 import { NotificationService } from '../../../core/notifications/notification.service';
 import { MoneyPipe } from '../../../shared/pipes/money.pipe';
 import { ConfirmDialogComponent } from '../../../shared/ui/confirm-dialog.component';
@@ -51,39 +51,27 @@ export class EmployeeListPage {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly notifications = inject(NotificationService);
-  private readonly reload$ = new BehaviorSubject<void>(undefined);
   private readonly confirmDialog = viewChild.required(ConfirmDialogComponent);
 
   protected readonly departments = toSignal(inject(ReferenceDataApiService).departments(), { initialValue: [] });
-  protected readonly query = signal<EmployeeQuery>(queryFromParams(this.route.snapshot.queryParamMap));
-  protected readonly result = signal<PagedResult<EmployeeListItem> | null>(null);
-  protected readonly loading = signal(true);
-  protected readonly error = signal<string | null>(null);
+  /** The list state comes from the URL only (D41). */
+  protected readonly query = toSignal(this.route.queryParamMap.pipe(map(queryFromParams)), {
+    initialValue: queryFromParams(this.route.snapshot.queryParamMap),
+  });
 
-  constructor() {
-    combineLatest([this.route.queryParamMap.pipe(map(queryFromParams)), this.reload$])
-      .pipe(
-        tap(([query]) => {
-          this.query.set(query);
-          this.loading.set(true);
-          this.error.set(null);
-        }),
-        switchMap(([query]) =>
-          this.api.search(query).pipe(
-            catchError((error: ApiError) => {
-              this.error.set(error.detail ?? error.title);
-              this.loading.set(false);
-              return EMPTY;
-            }),
-          ),
-        ),
-        takeUntilDestroyed(inject(DestroyRef)),
-      )
-      .subscribe((result) => {
-        this.result.set(result);
-        this.loading.set(false);
-      });
-  }
+  private readonly page = rxResource({
+    params: () => this.query(),
+    stream: ({ params }) => this.api.search(params),
+  });
+
+  /** The last page received: kept while the next one loads or when it fails, as before. */
+  protected readonly result = linkedSignal<PagedResult<EmployeeListItem> | undefined, PagedResult<EmployeeListItem> | null>({
+    source: () => (this.page.hasValue() ? this.page.value() : undefined),
+    computation: (value, previous) => value ?? previous?.value ?? null,
+  });
+  protected readonly loading = this.page.isLoading;
+  /** 4xx only: network failures and 5xx are already shown as a toast by problemDetailsInterceptor. */
+  protected readonly error = computed(() => inlineMessage(resourceApiError(this.page.error())));
 
   protected applySearch(search: string): void {
     this.navigate({ search: search.trim() || null, page: 1 });
@@ -133,7 +121,7 @@ export class EmployeeListPage {
     this.api.delete(employee.id).subscribe({
       next: () => {
         this.notifications.success($localize`:@@employees.deleted:${employee.fullName}:name: was deleted.`);
-        this.reload$.next();
+        this.page.reload();
       },
       error: (error: ApiError) => this.notifications.error(error.detail ?? error.title),
     });

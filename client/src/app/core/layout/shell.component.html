@@ -21,12 +21,13 @@
             <app-icon name="home" />
             <span i18n="@@nav.home">Home</span>
           </a>
-          @if (user.role === 'Hr') {
+          @if (auth.isHr()) {
             <a routerLink="/employees" routerLinkActive="active">
               <app-icon name="users" />
               <span i18n="@@nav.employees">Employees</span>
             </a>
-          } @else {
+          }
+          @if (auth.canSeeOwnPayslip()) {
             <a routerLink="/my-payslip" routerLinkActive="active">
               <app-icon name="receipt" />
               <span i18n="@@nav.myPayslip">My payslip</span>
@@ -44,10 +45,15 @@
             <span class="user-text">
               <span class="email"><bdi>{{ user.email }}</bdi></span>
               <small>
-                @if (user.role === 'Hr') {
-                  <ng-container i18n="@@role.hr">HR</ng-container>
-                } @else {
-                  <ng-container i18n="@@role.employee">Employee</ng-container>
+                @for (role of user.roles; track role; let last = $last) {
+                  @if (role === 'Hr') {
+                    <ng-container i18n="@@role.hr">HR</ng-container>
+                  } @else {
+                    <ng-container i18n="@@role.employee">Employee</ng-container>
+                  }
+                  @if (!last) {
+                    <span aria-hidden="true"> · </span>
+                  }
                 }
               </small>
             </span>

@@ -1,10 +1,15 @@
 import { Injectable, signal } from '@angular/core';
 
+export type ToastKind = 'success' | 'info' | 'error';
+
 export interface Toast {
   id: number;
-  kind: 'success' | 'error';
+  kind: ToastKind;
   message: string;
 }
+
+/** Success and info toasts close themselves after this many milliseconds; errors stay until dismissed. */
+export const TOAST_AUTO_DISMISS_MS = 5000;
 
 @Injectable({ providedIn: 'root' })
 export class NotificationService {
@@ -17,6 +22,11 @@ export class NotificationService {
     this.show('success', message);
   }
 
+  info(message: string): void {
+    this.show('info', message);
+  }
+
+  /** Errors stay on screen until the user closes them, so they are not missed. */
   error(message: string): void {
     this.show('error', message);
   }
@@ -25,9 +35,11 @@ export class NotificationService {
     this.items.update((toasts) => toasts.filter((toast) => toast.id !== id));
   }
 
-  private show(kind: Toast['kind'], message: string): void {
+  private show(kind: ToastKind, message: string): void {
     const toast: Toast = { id: this.nextId++, kind, message };
     this.items.update((toasts) => [...toasts, toast]);
-    setTimeout(() => this.dismiss(toast.id), 5000);
+    if (kind !== 'error') {
+      setTimeout(() => this.dismiss(toast.id), TOAST_AUTO_DISMISS_MS);
+    }
   }
 }

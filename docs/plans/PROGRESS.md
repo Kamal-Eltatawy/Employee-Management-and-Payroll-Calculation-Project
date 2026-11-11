@@ -57,8 +57,7 @@
 
 ## Next action
 
-1. **Kamal**: commit + push; run `.\start.ps1 -FromRegistry` (packages are public, `IMAGE_PREFIX` is set in `.env`).
-2. Optional pre-submission fixes: see `study-guide/pre-submission-suggestions.md` (gitignored, personal). Kamal picks which ones, if any.
+1. **Kamal**: the pre-submission review (D65–D69, all 34 suggestions) is written but not built yet. Migrations were squashed (old files deleted), so: `docker compose down -v`, then `dotnet ef migrations add InitialCreate --project src/Payroll.Infrastructure --startup-project src/Payroll.Api --output-dir Persistence/Migrations`, build, `dotnet test --solution Payroll.slnx`, `cd client; npm ci; npm run lint; npx ng test --watch=false; npx ng build`, then `.\start.ps1` and a manual check. Paste the output; then commit + push and check the new CI `e2e` job.
 
 `ai-usage/` transcripts are now fully English (Kamal's messages translated, personal remarks omitted and marked); session 2 covers D63–D64.
 

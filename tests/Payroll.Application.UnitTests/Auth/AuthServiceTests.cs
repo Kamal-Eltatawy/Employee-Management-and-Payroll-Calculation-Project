@@ -44,7 +44,8 @@ public sealed class AuthServiceTests
     {
         var response = (await _auth.LoginAsync(new LoginRequest(" hr@payroll.local ", "Hr-Pass1!"), Ct)).Response;
 
-        Assert.Equal((Roles.Hr, (int?)null), (response.Role, response.EmployeeId));
+        Assert.Equal(new[] { Roles.Hr }, response.Roles);
+        Assert.Null(response.EmployeeId);
         Assert.Equal("token-for-hr@payroll.local", response.AccessToken);
     }
 
@@ -55,7 +56,8 @@ public sealed class AuthServiceTests
 
         var response = (await _auth.LoginAsync(new LoginRequest("ali@demo.local", "Emp-Pass1!"), Ct)).Response;
 
-        Assert.Equal((Roles.Employee, (int?)employeeId), (response.Role, response.EmployeeId));
+        Assert.Equal(new[] { Roles.Employee }, response.Roles);
+        Assert.Equal(employeeId, response.EmployeeId);
         Assert.Equal(employeeId, _tokens.LastIssued!.Value.EmployeeId);
     }
 
@@ -132,9 +134,46 @@ public sealed class AuthServiceTests
 
         var second = await _auth.RefreshAsync(login.RefreshToken.Value, Ct);  // the Arabic tab, same cookie
 
-        Assert.Equal(first.Response.Role, second.Response.Role);
+        Assert.Equal(first.Response.Roles, second.Response.Roles);
         Assert.Equal(2, _refreshTokens.Active.Count());
         Assert.DoesNotContain(_refreshTokens.All, t => t.RevokedAtUtc is not null);
+    }
+
+    [Fact]
+    public async Task A_rotated_token_is_accepted_only_once_inside_the_grace_window()
+    {
+        var login = await LoginHrAsync();
+        await _auth.RefreshAsync(login.RefreshToken.Value, Ct);      // rotation
+        await _auth.RefreshAsync(login.RefreshToken.Value, Ct);      // the one extra use (second tab)
+        _clock.Advance(TimeSpan.FromSeconds(1));
+
+        await Assert.ThrowsAsync<UnauthorizedException>(() => _auth.RefreshAsync(login.RefreshToken.Value, Ct));
+
+        Assert.All(_refreshTokens.All, t => Assert.NotNull(t.RevokedAtUtc));
+    }
+
+    [Fact]
+    public async Task User_with_hr_and_employee_roles_signs_in_with_both_roles()
+    {
+        var employeeId = await EmployeeUserAsync("both@demo.local");
+        _credentials.Add("both-user@demo.local", "Both-Pass1!", [Roles.Employee, Roles.Hr], employeeId);
+
+        var response = (await _auth.LoginAsync(new LoginRequest("both-user@demo.local", "Both-Pass1!"), Ct)).Response;
+
+        Assert.Equal(new[] { Roles.Employee, Roles.Hr }, response.Roles);
+        Assert.Equal(employeeId, response.EmployeeId);
+        Assert.Equal(new[] { Roles.Employee, Roles.Hr }, _tokens.LastIssued!.Value.Roles);
+    }
+
+    [Fact]
+    public async Task Hr_role_keeps_the_session_even_when_the_linked_employee_is_inactive()
+    {
+        var employeeId = await EmployeeUserAsync("inactive-hr@demo.local", EmployeeStatus.Inactive);
+        _credentials.Add("hr-employee@demo.local", "Both-Pass1!", [Roles.Hr, Roles.Employee], employeeId);
+
+        var response = (await _auth.LoginAsync(new LoginRequest("hr-employee@demo.local", "Both-Pass1!"), Ct)).Response;
+
+        Assert.Contains(Roles.Hr, response.Roles);
     }
 
     [Fact]

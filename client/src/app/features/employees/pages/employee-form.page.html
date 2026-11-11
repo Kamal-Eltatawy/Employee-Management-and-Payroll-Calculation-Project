@@ -15,7 +15,13 @@
 </header>
 
 @if (formError()) {
-  <div class="alert alert-danger" role="alert">{{ formError() }}</div>
+  <div class="alert alert-danger d-flex flex-wrap align-items-center justify-content-between gap-2" role="alert">
+    <span>{{ formError() }}</span>
+    @if (staleVersion()) {
+      <button type="button" class="btn btn-sm btn-outline-danger" (click)="reloadLatest()" [disabled]="reloading()"
+              i18n="@@employeeForm.reloadLatest">Reload latest</button>
+    }
+  </div>
 }
 
 @if (loading()) {
@@ -64,7 +70,8 @@
               <option [ngValue]="department.id">{{ department.name }}</option>
             }
           </select>
-          <app-field-errors [control]="form.controls.departmentId" label="Department" i18n-label="@@field.department" />
+          <app-field-errors [control]="form.controls.departmentId" label="Department" i18n-label="@@field.department"
+                            selectMessage="Please select a department." i18n-selectMessage="@@validation.selectDepartment" />
         </div>
         <div class="col-md-4">
           <label class="form-label" for="hireDate" i18n="@@field.hireDate">Hire date</label>
@@ -83,11 +90,13 @@
           <label class="form-label" for="taxSchemeId" i18n="@@field.taxScheme">Tax scheme</label>
           <select id="taxSchemeId" class="form-select" formControlName="taxSchemeId"
                   [class.is-invalid]="form.controls.taxSchemeId.invalid && form.controls.taxSchemeId.touched">
+            <option [ngValue]="0" disabled i18n="@@employeeForm.selectTaxScheme">Select a tax scheme…</option>
             @for (scheme of taxSchemes(); track scheme.id) {
               <option [ngValue]="scheme.id">{{ scheme.name }}</option>
             }
           </select>
-          <app-field-errors [control]="form.controls.taxSchemeId" label="Tax scheme" i18n-label="@@field.taxScheme" />
+          <app-field-errors [control]="form.controls.taxSchemeId" label="Tax scheme" i18n-label="@@field.taxScheme"
+                            selectMessage="Please select a tax scheme." i18n-selectMessage="@@validation.selectTaxScheme" />
         </div>
       </div>
     </section>

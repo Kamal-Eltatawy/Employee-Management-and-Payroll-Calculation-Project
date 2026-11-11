@@ -53,4 +53,13 @@
   <data name="Policy.BracketAscending" xml:space="preserve"><value>يجب أن تكون الحدود العليا تصاعدية.</value></data>
   <data name="Title.TooManyRequests" xml:space="preserve"><value>طلبات كثيرة.</value></data>
   <data name="Auth.TooManyAttempts" xml:space="preserve"><value>محاولات كثيرة. انتظر دقيقة ثم حاول مرة أخرى.</value></data>
+  <data name="Domain.Required" xml:space="preserve"><value>{0} مطلوب.</value></data>
+  <data name="Domain.MaxLength" xml:space="preserve"><value>{0} يجب ألا يزيد عن {1} حرفاً.</value></data>
+  <data name="Domain.MustBePositive" xml:space="preserve"><value>{0} يجب أن يكون أكبر من صفر.</value></data>
+  <data name="Domain.InvalidValue" xml:space="preserve"><value>{0} قيمته غير صحيحة.</value></data>
+  <data name="Domain.MaxDecimals" xml:space="preserve"><value>{0} يقبل {1} أرقام عشرية على الأكثر.</value></data>
+  <data name="Domain.PercentRange" xml:space="preserve"><value>{0} يجب أن يكون بين 0 و 100.</value></data>
+  <data name="Domain.InvalidMonth" xml:space="preserve"><value>{0} ليس شهراً صحيحاً.</value></data>
+  <data name="Employee.Deleted" xml:space="preserve"><value>هذا الموظف محذوف.</value></data>
+  <data name="Policy.InsuranceCapNegative" xml:space="preserve"><value>الحد الأقصى للتأمينات لا يمكن أن يكون سالباً.</value></data>
 </root>

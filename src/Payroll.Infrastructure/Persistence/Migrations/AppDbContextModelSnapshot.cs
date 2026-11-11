@@ -345,7 +345,8 @@ namespace Payroll.Infrastructure.Persistence.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("Name")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasDatabaseName("IX_PayComponentTypes_Name");
 
                     b.ToTable("PayComponentTypes", (string)null);
 
@@ -430,7 +431,8 @@ namespace Payroll.Infrastructure.Persistence.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("TaxSchemeId", "EffectiveFrom")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasDatabaseName("IX_PayrollPolicies_TaxSchemeId_EffectiveFrom");
 
                     b.ToTable("PayrollPolicies", (string)null);
 
@@ -696,6 +698,9 @@ namespace Payroll.Infrastructure.Persistence.Migrations
 
                     b.Property<Guid>("FamilyId")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("GraceUsedAtUtc")
+                        .HasColumnType("datetime2");
 
                     b.Property<DateTime?>("RevokedAtUtc")
                         .HasColumnType("datetime2");

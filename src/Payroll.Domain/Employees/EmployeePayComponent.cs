@@ -8,7 +8,7 @@ public sealed class EmployeePayComponent
 {
     internal EmployeePayComponent(int payComponentTypeId, decimal amount)
     {
-        PayComponentTypeId = Guard.PositiveId(payComponentTypeId, "Pay component type");
+        PayComponentTypeId = Guard.PositiveId(payComponentTypeId, nameof(PayComponentTypeId));
         Amount = Guard.Positive(amount, nameof(Amount));
     }
 

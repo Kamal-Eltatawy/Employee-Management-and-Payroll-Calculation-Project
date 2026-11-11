@@ -58,9 +58,17 @@ public sealed class EmployeeRepository(AppDbContext db) : IEmployeeRepository
         var nextMonth = firstDay.AddMonths(1);
         var active = db.Employees.Where(e => e.Status == EmployeeStatus.Active);
 
-        var total = await db.Employees.CountAsync(ct);
-        var activeCount = await active.CountAsync(ct);
-        var hired = await db.Employees.CountAsync(e => e.HireDate >= firstDay && e.HireDate < nextMonth, ct);
+        // One round trip for the three totals (conditional counts), then one GROUP BY per distribution.
+        var totals = await db.Employees
+            .GroupBy(_ => 1)
+            .Select(g => new
+            {
+                Total = g.Count(),
+                Active = g.Count(e => e.Status == EmployeeStatus.Active),
+                Hired = g.Count(e => e.HireDate >= firstDay && e.HireDate < nextMonth),
+            })
+            .FirstOrDefaultAsync(ct);
+        var (total, activeCount, hired) = totals is null ? (0, 0, 0) : (totals.Total, totals.Active, totals.Hired);
         var byDepartment = await active
             .GroupBy(e => new { e.DepartmentId, e.Department!.Name, e.Department.NameAr })
             .Select(g => new NamedCount(g.Key.Name, g.Key.NameAr, g.Count()))

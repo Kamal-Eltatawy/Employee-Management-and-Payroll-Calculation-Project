@@ -9,7 +9,7 @@ public readonly record struct PayrollMonth : IComparable<PayrollMonth>
     {
         if (year is < 1 or > 9999 || month is < 1 or > 12)
         {
-            throw new DomainException($"{year:D4}-{month:D2} is not a valid month.");
+            throw InvalidMonth($"{year:D4}-{month:D2}");
         }
 
         Year = year;
@@ -20,9 +20,12 @@ public readonly record struct PayrollMonth : IComparable<PayrollMonth>
 
     public int Month { get; }
 
-    public DateOnly FirstDay => new(Year, Month, 1);
+    /// <summary><c>default(PayrollMonth)</c> skips the constructor (year 0, month 0); it is not a valid month.</summary>
+    public bool IsDefault => Month == 0;
 
-    public int DaysInMonth => DateTime.DaysInMonth(Year, Month);
+    public DateOnly FirstDay => IsDefault ? throw InvalidMonth(ToString()) : new DateOnly(Year, Month, 1);
+
+    public int DaysInMonth => IsDefault ? throw InvalidMonth(ToString()) : DateTime.DaysInMonth(Year, Month);
 
     /// <summary>Strict "yyyy-MM": four-digit year, two-digit month 01–12.</summary>
     public static bool TryParse(string? value, out PayrollMonth month)
@@ -46,6 +49,9 @@ public readonly record struct PayrollMonth : IComparable<PayrollMonth>
     }
 
     public static PayrollMonth From(DateOnly date) => new(date.Year, date.Month);
+
+    private static DomainException InvalidMonth(string value) =>
+        new(DomainErrorCodes.InvalidMonth, $"{value} is not a valid month.", value);
 
     public int CompareTo(PayrollMonth other) => (Year, Month).CompareTo((other.Year, other.Month));
 

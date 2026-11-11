@@ -89,7 +89,7 @@ public sealed class CalendarDayProrationCalculatorTests
 public sealed class FlatAndExemptTaxCalculatorTests
 {
     private static readonly IReadOnlyList<TaxBracket> FlatFifteen =
-        new PayrollPolicy(PolicyBuilder.Flat, new DateOnly(2025, 1, 1), 0m, null, [new(null, 15m)], PolicyBuilder.UtcNow).TaxBrackets;
+        new PayrollPolicy(PolicyBuilder.Flat, new DateOnly(2025, 1, 1), 0m, null, [new(null, 15m)], PolicyBuilder.Entered, PolicyBuilder.UtcNow).TaxBrackets;
 
     [Theory]
     [InlineData("0", "0")]

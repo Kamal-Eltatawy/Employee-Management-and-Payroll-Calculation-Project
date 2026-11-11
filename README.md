@@ -80,18 +80,22 @@ Passwords come from `.env` (`Seed__HrPassword`, `Seed__EmployeePassword`); nothi
 | `ali@demo.local` | Employee | Sees only his own payslip (`/my-payslip`) |
 | `youssef@demo.local` | Employee | His employee is **Inactive**, so login is refused with the generic 401 (D25) |
 
+A user can hold several roles (D67); with Hr among them the HR screens are shown. Ten wrong passwords lock an account for five minutes (D66).
+
 Demo employees cover the interesting cases: the spec's worked example (Ali Hassan, net **15,950.00** for a full month), an inactive employee, someone hired this month (proration), deductions larger than earnings (negative-net warning), and employees on the Flat and Exempt tax schemes.
 
 In Swagger: call `POST /api/auth/login`, click **Authorize**, paste the `accessToken`.
 
 ### Tests
 
-GitHub Actions (`.github/workflows/ci.yml`) runs on every push and pull request: .NET build with warnings as errors, all unit and integration tests (Testcontainers SQL Server), the Angular build in both languages with its tests, and the Docker image build. On `main` the images are also published to GitHub Container Registry.
+GitHub Actions (`.github/workflows/ci.yml`) runs on every push and pull request: .NET build with warnings as errors, all unit and integration tests (Testcontainers SQL Server), ESLint, the Angular build in both languages with its unit and component tests, the Docker image build, and a Playwright smoke test (login, employee list, payslip in English and Arabic) against the full Docker stack. On `main` the images are also published to GitHub Container Registry.
 
 ```powershell
 dotnet test --solution Payroll.slnx          # all .NET tests (integration tests need Docker running)
 dotnet test --project tests/Payroll.Domain.UnitTests   # one project, e.g. unit tests only (no DB, no network)
-cd client; npx ng test --watch=false         # Angular logic tests
+cd client; npx ng test --watch=false         # Angular unit + component tests
+cd client; npm run lint                       # ESLint (angular-eslint, template accessibility rules)
+cd client; $env:E2E_HR_PASSWORD="<Seed__HrPassword from .env>"; npm run e2e   # Playwright smoke test against http://localhost:8080 (stack running)
 ```
 
 ---
@@ -186,7 +190,7 @@ Worked example (spec §11.5, unit-tested): base 17,000, transport 1,000 (non-tax
 
 1. Stored payroll runs with an explicit "close payroll month" step (would replace the current-month rule of D54).
 2. Admin screens for pay component types, payroll policies and tax schemes.
-3. An HTTPS reverse proxy and a deployment stage in CI for non-local environments.
+3. An HTTPS reverse proxy and a deployment stage in CI for non-local environments (the Playwright smoke test already runs against the Docker stack in CI).
 4. Salary history, termination-month proration, restore for deleted employees.
 
 ---

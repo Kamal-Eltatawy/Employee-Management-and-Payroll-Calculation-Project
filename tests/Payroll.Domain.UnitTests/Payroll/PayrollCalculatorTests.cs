@@ -119,7 +119,7 @@ public sealed class PayrollCalculatorTests
     [Fact]
     public void Flat_scheme_taxes_the_whole_taxable_income_at_one_rate()
     {
-        var policy = new PayrollPolicy(PolicyBuilder.Flat, new DateOnly(2025, 1, 1), 11m, 1500m, [new(null, 15m)], PolicyBuilder.UtcNow);
+        var policy = new PayrollPolicy(PolicyBuilder.Flat, new DateOnly(2025, 1, 1), 11m, 1500m, [new(null, 15m)], PolicyBuilder.Entered, PolicyBuilder.UtcNow);
 
         var payslip = _calculator.Calculate(SpecEmployee(new DateOnly(2024, 6, 1), taxSchemeId: 2), policy, new PayrollMonth(2026, 3));
 
@@ -131,7 +131,7 @@ public sealed class PayrollCalculatorTests
     [Fact]
     public void Exempt_scheme_pays_no_income_tax_but_still_insurance()
     {
-        var policy = new PayrollPolicy(PolicyBuilder.Exempt, new DateOnly(2025, 1, 1), 11m, 1500m, [], PolicyBuilder.UtcNow);
+        var policy = new PayrollPolicy(PolicyBuilder.Exempt, new DateOnly(2025, 1, 1), 11m, 1500m, [], PolicyBuilder.Entered, PolicyBuilder.UtcNow);
 
         var payslip = _calculator.Calculate(SpecEmployee(new DateOnly(2024, 6, 1), taxSchemeId: 3), policy, new PayrollMonth(2026, 3));
 
@@ -150,7 +150,7 @@ public sealed class PayrollCalculatorTests
     {
         var progressiveOnly = new PayrollCalculator([new ProgressiveTaxCalculator()], new SocialInsuranceCalculator(),
             new CalendarDayProrationCalculator());
-        var policy = new PayrollPolicy(PolicyBuilder.Exempt, new DateOnly(2025, 1, 1), 11m, null, [], PolicyBuilder.UtcNow);
+        var policy = new PayrollPolicy(PolicyBuilder.Exempt, new DateOnly(2025, 1, 1), 11m, null, [], PolicyBuilder.Entered, PolicyBuilder.UtcNow);
 
         Assert.Throws<InvalidOperationException>(() =>
             progressiveOnly.Calculate(SpecEmployee(new DateOnly(2024, 6, 1), taxSchemeId: 3), policy, new PayrollMonth(2026, 3)));

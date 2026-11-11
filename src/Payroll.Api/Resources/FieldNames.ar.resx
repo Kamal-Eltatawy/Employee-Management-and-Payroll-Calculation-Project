@@ -29,4 +29,7 @@
   <data name="UpperBound" xml:space="preserve"><value>الحد الأعلى</value></data>
   <data name="RatePercent" xml:space="preserve"><value>النسبة</value></data>
   <data name="Password" xml:space="preserve"><value>كلمة المرور</value></data>
+  <data name="NameAr" xml:space="preserve"><value>الاسم بالعربية</value></data>
+  <data name="Method" xml:space="preserve"><value>طريقة حساب الضريبة</value></data>
+  <data name="Id" xml:space="preserve"><value>المعرّف</value></data>
 </root>

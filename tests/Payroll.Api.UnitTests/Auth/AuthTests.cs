@@ -26,7 +26,7 @@ public sealed class AuthTests
     {
         var generator = new JwtTokenGenerator(Microsoft.Extensions.Options.Options.Create(Options), new FakeTimeProvider(Now));
 
-        var token = generator.Generate(3, "ali@demo.local", "Employee", 7);
+        var token = generator.Generate(3, "ali@demo.local", ["Employee"], 7);
         var result = await new JsonWebTokenHandler().ValidateTokenAsync(token.Value, new TokenValidationParameters
         {
             ValidIssuer = Options.Issuer,
@@ -47,9 +47,30 @@ public sealed class AuthTests
     {
         var generator = new JwtTokenGenerator(Microsoft.Extensions.Options.Options.Create(Options), new FakeTimeProvider(Now));
 
-        var token = new JsonWebToken(generator.Generate(1, "hr@payroll.local", "Hr", null).Value);
+        var token = new JsonWebToken(generator.Generate(1, "hr@payroll.local", ["Hr"], null).Value);
 
         Assert.False(token.TryGetClaim("employee_id", out _));
+    }
+
+    [Fact]
+    public async Task Several_roles_become_one_role_claim_each()
+    {
+        var generator = new JwtTokenGenerator(Microsoft.Extensions.Options.Options.Create(Options), new FakeTimeProvider(Now));
+
+        var token = generator.Generate(4, "both@demo.local", ["Employee", "Hr"], 9);
+        var result = await new JsonWebTokenHandler().ValidateTokenAsync(token.Value, new TokenValidationParameters
+        {
+            ValidIssuer = Options.Issuer,
+            ValidAudience = Options.Audience,
+            IssuerSigningKey = JwtTokenGenerator.CreateSigningKey(Options.SigningKey),
+            ValidateLifetime = false,
+            RoleClaimType = JwtTokenGenerator.RoleClaim,
+        });
+
+        Assert.True(result.IsValid, result.Exception?.Message);
+        var principal = new ClaimsPrincipal(result.ClaimsIdentity);
+        Assert.True(principal.IsInRole("Hr"));
+        Assert.True(principal.IsInRole("Employee"));
     }
 
     [Theory]

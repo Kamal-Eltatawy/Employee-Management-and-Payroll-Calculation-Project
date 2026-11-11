@@ -12,7 +12,7 @@ public sealed class JwtTokenGenerator(IOptions<JwtOptions> options, TimeProvider
     public const string RoleClaim = "role";
     public const string EmployeeIdClaim = "employee_id";
 
-    public AccessToken Generate(int userId, string email, string role, int? employeeId)
+    public AccessToken Generate(int userId, string email, IReadOnlyList<string> roles, int? employeeId)
     {
         var settings = options.Value;
         var now = clock.GetUtcNow().UtcDateTime;
@@ -22,7 +22,8 @@ public sealed class JwtTokenGenerator(IOptions<JwtOptions> options, TimeProvider
         {
             [JwtRegisteredClaimNames.Sub] = userId.ToString(System.Globalization.CultureInfo.InvariantCulture),
             [JwtRegisteredClaimNames.Email] = email,
-            [RoleClaim] = role,
+            // One role as a string, several as a JSON array; the bearer handler turns an array into one claim per role.
+            [RoleClaim] = roles.Count == 1 ? roles[0] : roles.ToArray(),
         };
         if (employeeId is { } id)
         {

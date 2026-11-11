@@ -72,4 +72,4 @@ public sealed class ApiFixture : IAsyncLifetime
     public Task<(HttpClient Client, LoginBody Login)> SignInAsHrAsync(CancellationToken ct) => SignInAsync(HrEmail, HrPassword, ct);
 }
 
-public sealed record LoginBody(string AccessToken, DateTime ExpiresAtUtc, string Role, int? EmployeeId, string Email);
+public sealed record LoginBody(string AccessToken, DateTime ExpiresAtUtc, string[] Roles, int? EmployeeId, string Email);

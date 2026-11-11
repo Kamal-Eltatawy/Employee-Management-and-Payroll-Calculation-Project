@@ -10,9 +10,17 @@ public sealed class PayrollPolicy
 {
     private readonly List<TaxBracket> _taxBrackets = [];
 
+    // Sorted view, built on first read. EF Core fills _taxBrackets in any order, so the order is fixed here, once.
+    private IReadOnlyList<TaxBracket>? _sortedBrackets;
+
+    /// <summary>
+    /// A new policy can start only in the current month or later (D54): past months are closed.
+    /// <paramref name="currentMonth"/> is "today" for the caller; historical data is created with the month it was entered in.
+    /// </summary>
     public PayrollPolicy(TaxScheme taxScheme, DateOnly effectiveFrom, decimal insuranceRatePercent, decimal? insuranceCap,
-        IReadOnlyList<TaxBracketDefinition> taxBrackets, DateTime utcNow)
+        IReadOnlyList<TaxBracketDefinition> taxBrackets, PayrollMonth currentMonth, DateTime utcNow)
     {
+        EnsureNotInClosedMonth(effectiveFrom, currentMonth);
         TaxSchemeId = taxScheme.Id;
         Apply(taxScheme, effectiveFrom, insuranceRatePercent, insuranceCap, taxBrackets);
         CreatedAtUtc = utcNow;
@@ -33,7 +41,10 @@ public sealed class PayrollPolicy
     /// <summary>Null means no cap. A cap of 0 is a real cap (zero insurance).</summary>
     public decimal? InsuranceCap { get; private set; }
 
-    public IReadOnlyList<TaxBracket> TaxBrackets => _taxBrackets.OrderBy(b => b.SortOrder).ToList();
+    public IReadOnlyList<TaxBracket> TaxBrackets =>
+        _sortedBrackets is { } sorted && sorted.Count == _taxBrackets.Count
+            ? sorted
+            : _sortedBrackets = _taxBrackets.OrderBy(b => b.SortOrder).ToList().AsReadOnly();
 
     public DateTime CreatedAtUtc { get; private set; }
 
@@ -43,14 +54,11 @@ public sealed class PayrollPolicy
     {
         if (taxScheme.Id != TaxSchemeId)
         {
-            throw new DomainException("A payroll policy cannot move to another tax scheme.");
+            throw new DomainException(DomainErrorCodes.PolicyCannotMoveScheme, "A payroll policy cannot move to another tax scheme.");
         }
 
         EnsureModifiable(currentMonth);
-        if (effectiveFrom < currentMonth.FirstDay)
-        {
-            throw new DomainException("A payroll policy cannot be moved into a closed (past) month.");
-        }
+        EnsureNotInClosedMonth(effectiveFrom, currentMonth);
 
         Apply(taxScheme, effectiveFrom, insuranceRatePercent, insuranceCap, taxBrackets);
     }
@@ -71,18 +79,32 @@ public sealed class PayrollPolicy
         }
     }
 
+    private static void EnsureNotInClosedMonth(DateOnly effectiveFrom, PayrollMonth currentMonth)
+    {
+        if (effectiveFrom < currentMonth.FirstDay)
+        {
+            throw new DomainException(DomainErrorCodes.PolicyClosedMonth,
+                "A payroll policy can only take effect from the current month or later; past months are closed.");
+        }
+    }
+
     private void Apply(TaxScheme taxScheme, DateOnly effectiveFrom, decimal insuranceRatePercent, decimal? insuranceCap,
         IReadOnlyList<TaxBracketDefinition> taxBrackets)
     {
         if (effectiveFrom.Day != 1)
         {
-            throw new DomainException("A payroll policy must take effect on the first day of a month.");
+            throw new DomainException(DomainErrorCodes.PolicyFirstDay, "A payroll policy must take effect on the first day of a month.");
         }
 
-        EnsurePercent(insuranceRatePercent, "Insurance rate");
-        if (insuranceCap < 0)
+        Guard.Percent(insuranceRatePercent, nameof(InsuranceRatePercent));
+        if (insuranceCap is { } cap)
         {
-            throw new DomainException("Insurance cap cannot be negative.");
+            if (cap < 0)
+            {
+                throw new DomainException(DomainErrorCodes.InsuranceCapNegative, "Insurance cap cannot be negative.");
+            }
+
+            Guard.MaxDecimals(cap, nameof(InsuranceCap));
         }
 
         taxScheme.EnsureBracketsFit(taxBrackets);
@@ -96,6 +118,7 @@ public sealed class PayrollPolicy
 
     private void ReplaceBrackets(IReadOnlyList<TaxBracketDefinition> definitions)
     {
+        _sortedBrackets = null;
         // Rows are updated in place by position, so the unique (PolicyId, SortOrder) index is never violated mid-save.
         var existing = _taxBrackets.OrderBy(b => b.SortOrder).ToList();
         for (var i = 0; i < definitions.Count; i++)
@@ -122,31 +145,29 @@ public sealed class PayrollPolicy
         for (var i = 0; i < brackets.Count; i++)
         {
             var bracket = brackets[i];
-            EnsurePercent(bracket.RatePercent, "Tax rate");
+            Guard.Percent(bracket.RatePercent, nameof(TaxBracket.RatePercent));
 
             var isLast = i == brackets.Count - 1;
-            if (isLast != (bracket.UpperBound is null))
+            if (isLast && bracket.UpperBound is not null)
             {
-                throw new DomainException("Exactly the last tax bracket must be open-ended (no upper bound).");
+                throw new DomainException(DomainErrorCodes.BracketLastOpen, "The last tax bracket must be open-ended (no upper bound).");
+            }
+
+            if (!isLast && bracket.UpperBound is null)
+            {
+                throw new DomainException(DomainErrorCodes.BracketOnlyLastOpen, "Only the last tax bracket can be open-ended.");
             }
 
             if (bracket.UpperBound is { } upper)
             {
                 if (upper <= previousUpper)
                 {
-                    throw new DomainException("Tax bracket upper bounds must be positive and strictly ascending.");
+                    throw new DomainException(DomainErrorCodes.BracketAscending, "Tax bracket upper bounds must be positive and strictly ascending.");
                 }
 
+                Guard.MaxDecimals(upper, nameof(TaxBracket.UpperBound));
                 previousUpper = upper;
             }
-        }
-    }
-
-    private static void EnsurePercent(decimal value, string field)
-    {
-        if (value is < 0 or > 100)
-        {
-            throw new DomainException($"{field} must be between 0 and 100.");
         }
     }
 }

@@ -8,7 +8,9 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "start:ar": "ng serve --configuration=ar --port 4201",
-    "extract-i18n": "ng extract-i18n --output-path src/locale"
+    "extract-i18n": "ng extract-i18n --output-path src/locale",
+    "lint": "eslint .",
+    "e2e": "playwright test"
   },
   "private": true,
   "packageManager": "npm@10.9.9",
@@ -28,9 +30,15 @@
     "@angular/cli": "^22.2.6",
     "@angular/compiler-cli": "^22.2.0",
     "@angular/localize": "^22.2.5",
+    "@eslint/js": "^10.0.1",
+    "@playwright/test": "^1.65.0",
+    "@types/node": "^24.19.2",
+    "angular-eslint": "^22.6.0",
+    "eslint": "^10.14.0",
     "jsdom": "^30.0.0",
     "prettier": "^3.8.1",
     "typescript": "~6.0.2",
+    "typescript-eslint": "^8.72.2",
     "vitest": "^5.0.0"
   }
 }

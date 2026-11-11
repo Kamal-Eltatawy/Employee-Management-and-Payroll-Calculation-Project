@@ -2,7 +2,7 @@ import { HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { catchError, throwError } from 'rxjs';
 import { NotificationService } from '../notifications/notification.service';
-import { toApiError } from './api-error';
+import { isReportedGlobally, toApiError } from './api-error';
 
 /**
  * Every HTTP failure leaves HttpClient as a typed ApiError (D42).
@@ -15,7 +15,7 @@ export const problemDetailsInterceptor: HttpInterceptorFn = (request, next) => {
   return next(request).pipe(
     catchError((error: unknown) => {
       const apiError = toApiError(error);
-      if (apiError.status === 0 || apiError.status >= 500) {
+      if (isReportedGlobally(apiError)) {
         notifications.error(apiError.detail ?? apiError.title);
       }
 

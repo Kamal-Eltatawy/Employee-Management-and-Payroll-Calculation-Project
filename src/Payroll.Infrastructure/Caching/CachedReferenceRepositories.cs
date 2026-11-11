@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Caching.Memory;
 using Payroll.Application.Abstractions;
+using Payroll.Application.Common;
 using Payroll.Domain.Departments;
 using Payroll.Domain.Payroll;
 
@@ -43,6 +44,11 @@ public sealed class CachedTaxSchemeRepository(ITaxSchemeRepository inner, IMemor
 /// <summary>
 /// The policy effective for a closed (past) month can never change (D54), so it is cached. The current and future months
 /// still go to the database, because their policies can be created, edited or deleted.
+/// <para>
+/// The cached <see cref="PayrollPolicy"/> instance is shared by every request, so it is read-only by contract:
+/// <see cref="GetEffectiveForAsync"/> results are only read by the payroll calculator. Code that changes a policy must load it
+/// through <see cref="GetByIdAsync"/>, which always returns a fresh, tracked copy, and closed-month policies cannot change anyway.
+/// </para>
 /// </summary>
 public sealed class CachedPayrollPolicyRepository(IPayrollPolicyRepository inner, IMemoryCache cache, TimeProvider clock)
     : IPayrollPolicyRepository
@@ -53,8 +59,8 @@ public sealed class CachedPayrollPolicyRepository(IPayrollPolicyRepository inner
 
     public async Task<PayrollPolicy?> GetEffectiveForAsync(int taxSchemeId, PayrollMonth month, CancellationToken ct)
     {
-        var currentMonth = PayrollMonth.From(DateOnly.FromDateTime(clock.GetLocalNow().DateTime));
-        if (month >= currentMonth)
+        // Same "today" as the services and validators (D15), so the closed-month rule cannot drift.
+        if (month >= clock.CurrentMonth())
         {
             return await inner.GetEffectiveForAsync(taxSchemeId, month, ct);
         }

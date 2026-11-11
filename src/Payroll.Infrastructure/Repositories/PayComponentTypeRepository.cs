@@ -14,7 +14,7 @@ public sealed class PayComponentTypeRepository(AppDbContext db) : IPayComponentT
         db.PayComponentTypes.SingleOrDefaultAsync(t => t.Id == id, ct);
 
     public async Task<IReadOnlyList<PayComponentType>> GetByIdsAsync(IReadOnlyCollection<int> ids, CancellationToken ct) =>
-        await db.PayComponentTypes.Where(t => ids.Contains(t.Id)).ToListAsync(ct);
+        await db.PayComponentTypes.AsNoTracking().Where(t => ids.Contains(t.Id)).ToListAsync(ct);
 
     public Task<bool> NameExistsAsync(string name, int? excludeId, CancellationToken ct) =>
         db.PayComponentTypes.AnyAsync(t => t.Name == name.Trim() && (excludeId == null || t.Id != excludeId), ct);

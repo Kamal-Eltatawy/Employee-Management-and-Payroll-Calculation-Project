@@ -70,6 +70,7 @@ public sealed class Employee
         string fullName, string email, string jobTitle, int departmentId, int taxSchemeId, DateOnly hireDate,
         decimal baseMonthlySalary, EmployeeStatus status, DateOnly today, DateTime utcNow)
     {
+        EnsureNotDeleted();
         Apply(fullName, email, jobTitle, departmentId, taxSchemeId, hireDate, baseMonthlySalary, status, today);
         UpdatedAtUtc = utcNow;
     }
@@ -77,15 +78,16 @@ public sealed class Employee
     /// <summary>Replaces the assigned pay components. Existing rows are kept (amount updated) when the type stays.</summary>
     public void SetPayComponents(IReadOnlyCollection<PayComponentAssignment> assignments, DateTime utcNow)
     {
+        EnsureNotDeleted();
         if (assignments.GroupBy(a => a.PayComponentTypeId).Any(group => group.Count() > 1))
         {
-            throw new DomainException("A pay component type can be assigned only once.");
+            throw new DomainException(DomainErrorCodes.DuplicatePayComponentType, "A pay component type can be assigned only once.");
         }
 
         foreach (var assignment in assignments)
         {
-            Guard.PositiveId(assignment.PayComponentTypeId, "Pay component type");
-            Guard.Positive(assignment.Amount, "Pay component amount");
+            Guard.PositiveId(assignment.PayComponentTypeId, nameof(EmployeePayComponent.PayComponentTypeId));
+            Guard.Positive(assignment.Amount, nameof(EmployeePayComponent.Amount));
         }
 
         var typeIds = assignments.Select(a => a.PayComponentTypeId).ToHashSet();
@@ -111,7 +113,7 @@ public sealed class Employee
     {
         if (DeletedAtUtc is not null)
         {
-            throw new DomainException("The employee is already deleted.");
+            throw new DomainException(DomainErrorCodes.EmployeeDeleted, "The employee is deleted.");
         }
 
         DeletedAtUtc = utcNow;
@@ -133,22 +135,40 @@ public sealed class Employee
         }
     }
 
+    /// <summary>A soft-deleted employee is read-only. EF's query filter hides it too, but the rule belongs to the aggregate.</summary>
+    private void EnsureNotDeleted()
+    {
+        if (DeletedAtUtc is not null)
+        {
+            throw new DomainException(DomainErrorCodes.EmployeeDeleted, "The employee is deleted.");
+        }
+    }
+
+    /// <summary>Validates every value first and only then assigns, so a failed update never leaves the entity half-changed.</summary>
     private void Apply(
         string fullName, string email, string jobTitle, int departmentId, int taxSchemeId, DateOnly hireDate,
         decimal baseMonthlySalary, EmployeeStatus status, DateOnly today)
     {
         if (hireDate > today)
         {
-            throw new DomainException("Hire date cannot be in the future.");
+            throw new DomainException(DomainErrorCodes.HireDateInFuture, "Hire date cannot be in the future.");
         }
 
-        FullName = Guard.RequiredText(fullName, FullNameMaxLength, "Full name");
-        Email = NormalizeEmail(Guard.RequiredText(email, EmailMaxLength, nameof(Email)));
-        JobTitle = Guard.RequiredText(jobTitle, JobTitleMaxLength, "Job title");
-        DepartmentId = Guard.PositiveId(departmentId, "Department");
-        TaxSchemeId = Guard.PositiveId(taxSchemeId, "Tax scheme");
+        var validFullName = Guard.RequiredText(fullName, FullNameMaxLength, nameof(FullName));
+        var validEmail = NormalizeEmail(Guard.RequiredText(email, EmailMaxLength, nameof(Email)));
+        var validJobTitle = Guard.RequiredText(jobTitle, JobTitleMaxLength, nameof(JobTitle));
+        var validDepartmentId = Guard.PositiveId(departmentId, nameof(DepartmentId));
+        var validTaxSchemeId = Guard.PositiveId(taxSchemeId, nameof(TaxSchemeId));
+        var validSalary = Guard.Positive(baseMonthlySalary, nameof(BaseMonthlySalary));
+        var validStatus = Guard.Defined(status, nameof(Status));
+
+        FullName = validFullName;
+        Email = validEmail;
+        JobTitle = validJobTitle;
+        DepartmentId = validDepartmentId;
+        TaxSchemeId = validTaxSchemeId;
         HireDate = hireDate;
-        BaseMonthlySalary = Guard.Positive(baseMonthlySalary, "Base monthly salary");
-        Status = Guard.Defined(status, nameof(Status));
+        BaseMonthlySalary = validSalary;
+        Status = validStatus;
     }
 }

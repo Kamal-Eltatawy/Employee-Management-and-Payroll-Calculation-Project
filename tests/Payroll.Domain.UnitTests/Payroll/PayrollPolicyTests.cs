@@ -8,7 +8,7 @@ public sealed class PayrollPolicyTests
     private static PayrollPolicy Create(DateOnly? effectiveFrom = null, decimal rate = 11m, decimal? cap = 1500m,
         params TaxBracketDefinition[] brackets) =>
         new(PolicyBuilder.Standard, effectiveFrom ?? new DateOnly(2026, 6, 1), rate, cap,
-            brackets.Length == 0 ? new TaxBracketDefinition[] { new(5000m, 0m), new(null, 10m) } : brackets, PolicyBuilder.UtcNow);
+            brackets.Length == 0 ? new TaxBracketDefinition[] { new(5000m, 0m), new(null, 10m) } : brackets, PolicyBuilder.Entered, PolicyBuilder.UtcNow);
 
     [Fact]
     public void Valid_policy_keeps_brackets_in_order()
@@ -44,7 +44,7 @@ public sealed class PayrollPolicyTests
 
     [Fact]
     public void No_brackets_are_rejected() =>
-        Assert.Throws<DomainException>(() => new PayrollPolicy(PolicyBuilder.Standard, new DateOnly(2026, 6, 1), 11m, null, [], PolicyBuilder.UtcNow));
+        Assert.Throws<DomainException>(() => new PayrollPolicy(PolicyBuilder.Standard, new DateOnly(2026, 6, 1), 11m, null, [], PolicyBuilder.Entered, PolicyBuilder.UtcNow));
 
     [Fact]
     public void Effective_from_must_be_the_first_of_a_month() =>
@@ -103,10 +103,10 @@ public sealed class PayrollPolicyTests
     {
         var from = new DateOnly(2026, 6, 1);
 
-        Assert.Single(new PayrollPolicy(PolicyBuilder.Flat, from, 11m, null, [new(null, 15m)], PolicyBuilder.UtcNow).TaxBrackets);
+        Assert.Single(new PayrollPolicy(PolicyBuilder.Flat, from, 11m, null, [new(null, 15m)], PolicyBuilder.Entered, PolicyBuilder.UtcNow).TaxBrackets);
         Assert.Throws<DomainException>(() =>
-            new PayrollPolicy(PolicyBuilder.Flat, from, 11m, null, [new(5000m, 0m), new(null, 15m)], PolicyBuilder.UtcNow));
-        Assert.Throws<DomainException>(() => new PayrollPolicy(PolicyBuilder.Flat, from, 11m, null, [], PolicyBuilder.UtcNow));
+            new PayrollPolicy(PolicyBuilder.Flat, from, 11m, null, [new(5000m, 0m), new(null, 15m)], PolicyBuilder.Entered, PolicyBuilder.UtcNow));
+        Assert.Throws<DomainException>(() => new PayrollPolicy(PolicyBuilder.Flat, from, 11m, null, [], PolicyBuilder.Entered, PolicyBuilder.UtcNow));
     }
 
     [Fact]
@@ -114,9 +114,9 @@ public sealed class PayrollPolicyTests
     {
         var from = new DateOnly(2026, 6, 1);
 
-        Assert.Empty(new PayrollPolicy(PolicyBuilder.Exempt, from, 11m, 1500m, [], PolicyBuilder.UtcNow).TaxBrackets);
+        Assert.Empty(new PayrollPolicy(PolicyBuilder.Exempt, from, 11m, 1500m, [], PolicyBuilder.Entered, PolicyBuilder.UtcNow).TaxBrackets);
         Assert.Throws<DomainException>(() =>
-            new PayrollPolicy(PolicyBuilder.Exempt, from, 11m, null, [new(null, 10m)], PolicyBuilder.UtcNow));
+            new PayrollPolicy(PolicyBuilder.Exempt, from, 11m, null, [new(null, 10m)], PolicyBuilder.Entered, PolicyBuilder.UtcNow));
     }
 
     [Fact]

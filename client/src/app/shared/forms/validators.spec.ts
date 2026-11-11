@@ -1,5 +1,5 @@
 import { FormArray, FormControl, FormGroup } from '@angular/forms';
-import { maxTwoDecimals, noDuplicateType, notInFuture } from './validators';
+import { maxTwoDecimals, noDuplicateType, notInFuture, requiredSelection } from './validators';
 
 describe('notInFuture', () => {
   const today = () => new Date(2026, 2, 15); // 15 March 2026, local time
@@ -46,5 +46,19 @@ describe('noDuplicateType', () => {
 
   it('ignores rows without a type yet', () => {
     expect(noDuplicateType()(new FormArray([row(0), row(0)]))).toBeNull();
+  });
+});
+
+describe('requiredSelection', () => {
+  const validate = (value: unknown) => requiredSelection()(new FormControl(value));
+
+  it('rejects the placeholder value', () => {
+    expect(validate(0)).toEqual({ requiredSelection: true });
+    expect(validate(null)).toEqual({ requiredSelection: true });
+    expect(validate('')).toEqual({ requiredSelection: true });
+  });
+
+  it('accepts a chosen id', () => {
+    expect(validate(3)).toBeNull();
   });
 });

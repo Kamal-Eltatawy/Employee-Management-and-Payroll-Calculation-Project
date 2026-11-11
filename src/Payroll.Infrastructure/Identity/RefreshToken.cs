@@ -19,6 +19,9 @@ public sealed class RefreshToken
     /// <summary>Replaced by a newer token of the same family.</summary>
     public DateTime? RotatedAtUtc { get; set; }
 
+    /// <summary>A rotated token was accepted once more inside the grace window (D61); a second reuse ends the session.</summary>
+    public DateTime? GraceUsedAtUtc { get; set; }
+
     /// <summary>The session was ended (logout, reuse, user no longer allowed).</summary>
     public DateTime? RevokedAtUtc { get; set; }
 }
