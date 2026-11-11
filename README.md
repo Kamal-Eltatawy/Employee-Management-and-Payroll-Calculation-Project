@@ -193,7 +193,9 @@ Worked example (spec §11.5, unit-tested): base 17,000, transport 1,000 (non-tax
 
 ## 6. Scope & time
 
-The committed scope was agreed up front at about **12.25 hours** (D49), split into phases that each ended in a working, committed state:
+**Actual time spent: about 8 hours**, with AI assistance (see section 7 and `/ai-usage`).
+
+Before implementation, the scope was estimated at about 12.25 hours of manual work (D49). That figure was a planning estimate, not the time spent. The work was split into phases that each ended in a working, committed state:
 
 | Phase | Content | Status |
 |---|---|---|
@@ -210,7 +212,7 @@ The committed scope was agreed up front at about **12.25 hours** (D49), split in
 
 Scope added during implementation, at my request: tax schemes per employee with pluggable tax methods (D53), keeping the current month open for policy corrections (D54), rotating refresh tokens (D55), Arabic and English in the UI and the API (D56, D58), a new layout and home dashboards (D57, D59), a one-command Docker run (D60), a CI pipeline (D63), a server-owned session shared by both languages (D61), and a SOLID/scalability review (D62). Each addition is recorded in the spec's decision log with its reasoning.
 
-The assessment suggests 6–8 hours. The core requirements fit that; the committed scope was knowingly larger (D49) and the additions above went further. I chose depth over breadth where it served the evaluation criteria (architecture, validation, tests, auth) and documented every decision so the trade-offs are visible.
+The assessment suggests 6–8 hours, and the work stayed within about 8 hours: AI assistance made the larger planned scope (D49) and the additions above fit in that time. I chose depth over breadth where it served the evaluation criteria (architecture, validation, tests, auth) and documented every decision so the trade-offs are visible.
 
 ## 7. AI usage
 
